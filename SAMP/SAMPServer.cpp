@@ -11,7 +11,7 @@ namespace SAMP {
 		m_server_addr.sin_family=AF_INET;  
 		m_server_addr.sin_addr.s_addr=(server_ip);  
 		m_server_addr.sin_port=htons(server_port);
-		m_server_socket = socket(AF_INET, SOCK_DGRAM, 0);
+		m_server_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 		bind(m_server_socket, (struct sockaddr *)&m_server_addr, sizeof m_server_addr);
 

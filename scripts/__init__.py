@@ -66,6 +66,7 @@ def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
 		rpc_data = {'unknown': 1, 'team': 255, 'skin': 20,'x':0.0,'y':0.0,'z':0.0,'z_angle':0.0,'weapon_1': 0,'weapon_2': 0,'weapon_3': 0, 'ammo_1': 0, 'ammo_2': 0, 'ammo_3': 0}
 		connection.SendRPC(SAMP.RPC_RequestClass, rpc_data)
 	elif rpcid == SAMP.RPC_RequestSpawn:
+		rpc_data = {'unknown': 204}
 		connection.SendRPC(SAMP.RPC_RequestSpawn, rpc_data)
 	elif rpcid == SAMP.RPC_ClientCmd:
 		split_cmds = re.findall(r'\S+', rpc_data["Command"])

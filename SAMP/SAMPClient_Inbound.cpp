@@ -136,7 +136,7 @@ namespace SAMP {
 				return;
 			}
 		}
-		printf("Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		//printf("Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 
 	void SAMPInboundClientHandler::m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id) {
@@ -145,7 +145,7 @@ namespace SAMP {
 		uint32_t bits = 0;
 		data->Read(rpc_id);
 		data->ReadCompressed(bits);
-
+		printf("GOT RPC: %d\n", rpc_id);
 		Py::OnGotRPC(mp_client, rpc_id, data, true);
 	}
 	void SAMPInboundClientHandler::m_handle_conn_req(RakNet::BitStream *data, PacketEnumeration id) {
