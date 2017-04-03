@@ -90,13 +90,16 @@ namespace SAMP {
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)ID_RPC);
 		bs.Write((uint8_t)rpcid);
+
 		bs.WriteCompressed((uint32_t)rpc_data->GetNumberOfBitsUsed());
 		bs.Write(rpc_data);
+		
 		if(this->GetInbound()) {
-			printf("Send RPC %d inbound (%d)\n",rpcid,rpc_data->GetNumberOfBytesUsed());
+			printf("Send RPC %d inbound (%d|%d)\n",rpcid, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
 		} else {
-			printf("Send RPC %d outbound (%d)\n",rpcid,rpc_data->GetNumberOfBytesUsed());
+			printf("Send RPC %d outbound (%d|%d)\n",rpcid, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
 		}
+		
 		mp_packet_handler->AddToOutputStream(&bs, RELIABLE, SAMP::MEDIUM_PRIORITY);
 	}
 	void Client::SendMessage(int msgid, RakNet::BitStream *rpc_data) {

@@ -4,6 +4,8 @@
 #include "PySAMPClient.h"
 #include "SAMP\SAMPServer.h"
 #include "SAMP\SAMPClient.h"
+
+#include "structmember.h"
 PyMethodDef SAMPServer_methods[] = {
     								{"Listen",  (PyCFunction)pyi_sampserver_listen, METH_VARARGS,
  								    "Initiates the listening socket"},
@@ -36,6 +38,10 @@ PyTypeObject gs_SAMPServerType = {
     "SAMP Server Object",       /* tp_doc */
 };
 
+static PyMemberDef SAMPServer_members[] = {
+	{"context", T_OBJECT_EX, offsetof(gs_SAMPServer, mp_context), 0,"stats updatehandler function"},
+    {NULL}  /* Sentinel */
+};
 
 extern std::vector<gs_SAMPServer *> m_py_servers;
 
@@ -70,6 +76,7 @@ bool PySAMP_ServerReady() {
 
 	gs_SAMPServerType.tp_new = SAMPServer_New;
 	gs_SAMPServerType.tp_alloc = PyType_GenericAlloc;
+	gs_SAMPServerType.tp_members = SAMPServer_members;
 	if (PyType_Ready(&gs_SAMPServerType) < 0)
 		return false;
 	return true;

@@ -51,12 +51,7 @@ PyTypeObject gs_SAMPClientType = {
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "SAMP Client Object",       /* tp_doc */
 };
-/*
-	PyObject *mp_rpc_handler; //S->C rpc hndlr
-	PyObject *mp_sync_handler;//S->C sync hndlr
-	PyObject *mp_conn_accepted_handler;//S->C sync hndlr
-	PyObject *mp_stats_update_handler; //C->S stats hndlr
-*/
+
 static PyMemberDef SAMPClient_members[] = {
     {"proxy_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_proxy_connection), 0,"proxy connection object"},
 	{"source_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_source_connection), 0,"source connection object"},
@@ -64,6 +59,7 @@ static PyMemberDef SAMPClient_members[] = {
 	{"sync_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_sync_handler), 0,"rpc handler function"},
 	{"conn_accepted_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_conn_accepted_handler), 0,"connection accepted handler function"},
 	{"stats_update_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_stats_update_handler), 0,"stats updatehandler function"},
+	{"context", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_context), 0,"stats updatehandler function"},
     {NULL}  /* Sentinel */
 };
 
@@ -163,7 +159,6 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 			SAMP::WriteAimSync(&aim_sync,out_bs, send_to_server);
 			break;
 	}
-	
 	out_bs->ResetReadPointer();
 	self->samp_client->SendMessage(msg_id, out_bs);
 

@@ -9,6 +9,9 @@ namespace SAMP {
 		{ID_RPC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_rpc},
 		{ID_INTERNAL_PING, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_internal_ping},
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_detect_lost_connections},
+		{ID_PLAYER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 	};
 	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
 		m_raknet_mode = false;
@@ -59,7 +62,7 @@ namespace SAMP {
 		RakNet::BitStream bs;
 		uint8_t msgid;
 		stream->Read(msgid);
-		printf("Nonraknet got: %d\n",msgid);
+		//printf("Nonraknet got: %d\n",msgid);
 		uint16_t cookie;
 		switch(msgid) {
 			case ID_OPEN_CONNECTION_COOKIE:
@@ -131,7 +134,26 @@ namespace SAMP {
 		}
 		printf("Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...) {
+		int offset = stream->GetReadOffset();
 
+		char name[256];
+		va_list args;
+		va_start (args, fmt);
+		vsprintf (name,fmt, args);
+		va_end (args);
+
+		stream->ResetReadPointer();
+
+		FILE *fd = fopen(name, "wb");
+		char *data = (char *)malloc(stream->GetNumberOfBytesUsed());
+		stream->ReadBits((unsigned char *)data, stream->GetNumberOfBitsUsed());
+		fwrite(data, stream->GetNumberOfBytesUsed(), 1, fd);
+		free(data);
+		fclose(fd);
+
+		stream->SetReadOffset(offset);
+	}
 	void SAMPOutboundClientHandler::m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id) {
 		uint8_t rpc_id;
 
@@ -139,7 +161,28 @@ namespace SAMP {
 		data->Read(rpc_id);
 		data->ReadCompressed(bits);
 
-		Py::OnGotRPC(mp_client, rpc_id, data, false);
+		RakNet::BitStream bs;
+		#define MAX_SYNC_SIZE 1024
+		unsigned char sync_data[MAX_SYNC_SIZE];
+		int unread_bits = data->GetNumberOfUnreadBits();
+		data->ReadBits((unsigned char *)&sync_data, unread_bits);
+		bs.WriteBits(sync_data, unread_bits);
+
+		//printf("S->C got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
+		dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
+		bs.ResetReadPointer();
+		Py::OnGotRPC(mp_client, rpc_id, &bs, false);
+	}
+	void SAMPOutboundClientHandler::m_handle_sync(RakNet::BitStream *data, PacketEnumeration id) {
+		RakNet::BitStream bs;
+		#define MAX_SYNC_SIZE 1024
+		unsigned char sync_data[MAX_SYNC_SIZE];
+		int unread_bits = data->GetNumberOfUnreadBits();
+		data->ReadBits((unsigned char *)&sync_data, unread_bits);
+		bs.WriteBits(sync_data, unread_bits);
+		bs.ResetReadPointer();
+		//AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
+		Py::OnGotSync(mp_client, id, &bs, false);
 	}
 	void SAMPOutboundClientHandler::m_handle_conn_req(RakNet::BitStream *data, PacketEnumeration id) {
 		uint32_t ip;
@@ -157,7 +200,7 @@ namespace SAMP {
 
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)ID_NEW_INCOMING_CONNECTION);
-		bs.Write((uint32_t)m_client_addr.sin_addr.S_un.S_addr); //TODO: make this real
+		bs.Write((uint32_t)m_client_addr.sin_addr.S_un.S_addr);
 		bs.Write((uint16_t)m_client_addr.sin_port);
 		AddToOutputStream(&bs, RELIABLE, SAMP::HIGH_PRIORITY);
 

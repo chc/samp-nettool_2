@@ -57,10 +57,13 @@ namespace Py {
 
 		PyImport_AppendInittab("SAMP", PyInit_SAMP);
 	
+		Py_SetProgramName(L"NetTool");
 		Py_SetPythonHome(L"E:\\Code\\Python-3.5.0"); //temp windows fix
+		Py_SetPath(L"E:\\Code\\nettool_new\\scripts\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\nettool_new\\Debug;E:\\Code\\nettool_new\\scripts;");
+		wprintf(L"PyPath: %s\n",Py_GetPath());
 		Py_Initialize();
 
-		const char *path = "scripts//__init__.py";
+		const char *path = "scripts\\__init__.py";
 		FILE *fd = fopen(path, "rb");
 		PyRun_AnyFile(fd, path);
 		fclose(fd);
@@ -80,12 +83,12 @@ namespace Py {
 
 	void PySAMP_CheckAndPrintErrors() {
 		PyObject *ptype, *pvalue, *ptraceback;
-		if(PyErr_Occurred()) {
+		PyObject* exceptionType = PyErr_Occurred();
+		if(exceptionType) {
 			PyErr_Fetch(&ptype, &pvalue, &ptraceback);
-			printf("%s\n", PyBytes_AsString(ptype));
-			printf("%s\n", PyBytes_AsString(pvalue));
-			printf("%s\n", PyBytes_AsString(ptraceback));
-
+			wprintf(L"%s\n", PyUnicode_AsWideCharString(ptype, NULL));
+			wprintf(L"%s\n", PyUnicode_AsWideCharString(pvalue, NULL));
+			wprintf(L"%s\n", PyUnicode_AsWideCharString(ptraceback, NULL));
 			PyErr_Clear();
 		}
 	}
@@ -127,8 +130,12 @@ namespace Py {
 	}
 	void OnGotRPC(SAMP::Client *client, uint32_t rpc_id, RakNet::BitStream *data, bool client_to_server) {
 		RPCNameMap *rpc_map = GetRPCNameMapByID(rpc_id);
-		if(!rpc_map)
+		printf("C->S Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		assert(rpc_map);
+		if(!rpc_map) {	
+
 			return;
+		}
 		std::vector<gs_SAMPClient *> py_clients_cpy = m_py_clients;
 		std::vector<gs_SAMPClient *>::iterator it = py_clients_cpy.begin();
 		while(it != py_clients_cpy.end()) {

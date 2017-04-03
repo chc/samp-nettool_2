@@ -39,6 +39,7 @@ namespace SAMP {
 		void m_handle_auth_key(RakNet::BitStream *data, PacketEnumeration id);
 		void m_new_incoming_conn(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id);
+		void m_handle_sync(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_internal_ping(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_detect_lost_connections(RakNet::BitStream *data, PacketEnumeration id);
 

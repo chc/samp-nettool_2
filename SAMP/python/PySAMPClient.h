@@ -15,6 +15,7 @@ typedef struct {
 	PyObject *mp_stats_update_handler; //C->S stats hndlr
 	PyObject *mp_proxy_connection;
 	PyObject *mp_source_connection;
+	PyObject *mp_context; //just a custom object you can add anything to
 	
 
 	SAMP::Server *samp_server;

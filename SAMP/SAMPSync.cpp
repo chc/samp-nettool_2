@@ -41,11 +41,18 @@ namespace SAMP {
 			in->Read((bool)temp_bool);
 			if(temp_bool) {
 				in->Read(player_sync->leftright_keys);
+			} else {
+				player_sync->leftright_keys = 0;
 			}
+
 			in->Read((bool)temp_bool);
+
 			if(temp_bool) {
 				in->Read(player_sync->updown_keys);
+			} else {
+				player_sync->updown_keys = 0;
 			}
+
 			in->Read(player_sync->keys);
 			in->Read(player_sync->pos[0]);
 			in->Read(player_sync->pos[1]);
@@ -81,11 +88,15 @@ namespace SAMP {
 				in->Read(player_sync->surfoffset[0]);
 				in->Read(player_sync->surfoffset[1]);
 				in->Read(player_sync->surfoffset[2]);
+			} else {
+				player_sync->surf_flags = 0;
 			}
 
 			in->Read((bool)temp_bool);
 			if(temp_bool) {
 				in->Read(player_sync->anim);
+			} else {
+				player_sync->anim = 0;
 			}
 		}
 	}
@@ -117,17 +128,15 @@ namespace SAMP {
 			out->Write(player_sync->surfoffset[2]);
 			out->Write(player_sync->surf_flags);
 			out->Write(player_sync->anim);
-
-			out->AlignWriteToDWORDBoundary();
 		} else {
 			//write sync data
-			//out->Write(player_sync->playerid);
+			out->Write(player_sync->playerid);
 
-			out->Write((bool)player_sync->leftright_keys != 0);
+			out->Write((bool)(player_sync->leftright_keys != 0));
 			if(player_sync->leftright_keys != 0)
 				out->Write(player_sync->leftright_keys);
 
-			out->Write((bool)player_sync->updown_keys != 0);
+			out->Write((bool)(player_sync->updown_keys != 0));
 			if(player_sync->updown_keys != 0)
 				out->Write(player_sync->updown_keys);
 
@@ -156,18 +165,19 @@ namespace SAMP {
 
 			out->WriteVector(player_sync->move_speed[0], player_sync->move_speed[1], player_sync->move_speed[2]);
 				
-			out->Write((bool)player_sync->surf_flags != 0);
+			out->Write((bool)(player_sync->surf_flags != 0));
 			if(player_sync->surf_flags) {
 				out->Write(player_sync->surf_flags);
 				out->Write(player_sync->surfoffset[0]);
 				out->Write(player_sync->surfoffset[1]);
 				out->Write(player_sync->surfoffset[2]);
 			}
-			out->Write((bool)player_sync->anim != 0);
+			out->Write((bool)(player_sync->anim != 0));
 			if(player_sync->anim) {
 				out->Write(player_sync->anim);
 			}
 		}
+		out->AlignWriteToDWORDBoundary();
 	}
 
 	void ReadVehicleSync(SAMP::VEHICLE_SYNC_INFO *vehicle_sync, RakNet::BitStream *in, bool client_to_server) {
@@ -319,6 +329,7 @@ namespace SAMP {
 			out->WriteCompressed(false);
 			//if true, read uint16_t(float of speed)
 		}
+		out->AlignWriteToDWORDBoundary();
 	}
 
 	void ReadAimSync(SAMP::SAMPAimSync *aim_sync, RakNet::BitStream *in, bool client_to_server) {
@@ -355,6 +366,7 @@ namespace SAMP {
 		out->WriteBits(&aim_sync->cam_zoom, 6);
 		out->WriteBits(&aim_sync->weapon_state, 2);
 		out->Write(aim_sync->unknown);
+		out->AlignWriteToDWORDBoundary();
 	}
 
 	void ReadBulletSync(SAMP::SAMPBulletSync *bullet_sync, RakNet::BitStream *in, bool client_to_server) {
@@ -392,7 +404,7 @@ namespace SAMP {
 		out->Write(bullet_sync->center[1]);
 		out->Write(bullet_sync->center[2]);
 		out->Write(bullet_sync->weapon);
-
+		out->AlignWriteToDWORDBoundary();
 	}
 
 

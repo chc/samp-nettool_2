@@ -65,7 +65,7 @@ namespace SAMP {
 	void SAMPInboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
 		uint8_t msgid;
 		stream->Read(msgid);
-		printf("Nonraknet got: %d\n",msgid);
+		//printf("Nonraknet got: %d\n",msgid);
 		switch(msgid) {
 			case ID_OPEN_CONNECTION_REQUEST:
 				send_cookie_request();
@@ -138,18 +138,28 @@ namespace SAMP {
 		}
 		//printf("Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
-
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPInboundClientHandler::m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id) {
 		uint8_t rpc_id;
 
 		uint32_t bits = 0;
 		data->Read(rpc_id);
 		data->ReadCompressed(bits);
-		printf("GOT RPC: %d\n", rpc_id);
-		Py::OnGotRPC(mp_client, rpc_id, data, true);
+
+		RakNet::BitStream bs;
+		#define MAX_SYNC_SIZE 1024
+		unsigned char sync_data[MAX_SYNC_SIZE];
+		int unread_bits = data->GetNumberOfUnreadBits();
+		data->ReadBits((unsigned char *)&sync_data, unread_bits);
+		bs.WriteBits(sync_data, unread_bits);
+
+		dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
+		bs.ResetReadPointer();
+		//printf("C->S got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
+		Py::OnGotRPC(mp_client, rpc_id, &bs, true);
 	}
 	void SAMPInboundClientHandler::m_handle_conn_req(RakNet::BitStream *data, PacketEnumeration id) {
-		printf("Got conn req\n");
+		//printf("Got conn req\n");
 		//send_samp_rakauth("277C2AD934406F33");
 		const char *key = "277C2AD934406F33";
 		uint8_t len = strlen(key);
@@ -181,10 +191,15 @@ namespace SAMP {
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 	void SAMPInboundClientHandler::m_handle_sync(RakNet::BitStream *data, PacketEnumeration id) {
-		//RakNet::BitStream bs;
-		//bs.Write(data);
+		RakNet::BitStream bs;
+		#define MAX_SYNC_SIZE 1024
+		unsigned char sync_data[MAX_SYNC_SIZE];
+		int unread_bits = data->GetNumberOfUnreadBits();
+		data->ReadBits((unsigned char *)&sync_data, unread_bits);
+		bs.WriteBits(sync_data, unread_bits);
+		bs.ResetReadPointer();
 		//AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
-		Py::OnGotSync(mp_client, id, data, true);
+		Py::OnGotSync(mp_client, id, &bs, true);
 	}
 	void SAMPInboundClientHandler::m_handle_stats_update(RakNet::BitStream *data, PacketEnumeration id) {
 		int32_t money, drunk;

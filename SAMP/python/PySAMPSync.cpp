@@ -20,6 +20,12 @@ namespace Py {
 		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
 		PyDict_SetItem(sync_dict, PyUnicode_FromString("pos"), py_pos);
 
+		py_pos = PyList_New(3);
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->move_speed[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->move_speed[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->move_speed[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("vel"), py_pos);
+
 		PyObject *py_quats = PyList_New(4);
 		PyList_SET_ITEM(py_quats,0,PyFloat_FromDouble(sync->quat[0]));
 		PyList_SET_ITEM(py_quats,1,PyFloat_FromDouble(sync->quat[1]));
@@ -73,6 +79,11 @@ namespace Py {
 		out->quat[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
 		out->quat[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
 		out->quat[3] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 3));
+
+		dict_item = PyDict_GetItemString(dict, "vel");
+		out->move_speed[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->move_speed[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->move_speed[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
 
 		dict_item = PyDict_GetItemString(dict, "health");
 		out->health = PyLong_AsLong(dict_item);

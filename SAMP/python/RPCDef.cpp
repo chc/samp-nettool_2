@@ -28,7 +28,16 @@ RPCNameMap mp_rpc_map[] = {
 													{"Unknown", ERPCVariableType_Uint32,true, true}, 
 													{NULL, ERPCVariableType_NoInit}}},
 	{"EnterVehicle", ESAMPRPC_EnterVehicle, {NULL, ERPCVariableType_NoInit}},
-	{"AddPlayerToWorld", ESAMPRPC_AddPlayerToWorld, {NULL, ERPCVariableType_NoInit}},
+	{"AddPlayerToWorld", ESAMPRPC_AddPlayerToWorld,  {{"id", ERPCVariableType_Uint16,false, true},
+													  {"team", ERPCVariableType_Uint8,false, true},
+													  {"skin", ERPCVariableType_Uint32,false, true},
+													  {"x", ERPCVariableType_Float,false, true},
+													  {"y", ERPCVariableType_Float,false, true},
+													  {"z", ERPCVariableType_Float,false, true},
+													  {"z_angle", ERPCVariableType_Float,false, true},
+													  {"colour", ERPCVariableType_Uint32,false, true},
+													  {"fightstyle", ERPCVariableType_Uint8,false, true},
+													{NULL, ERPCVariableType_NoInit}}},
 	{"Death", ESAMPRPC_Death, {
 								{"reason", ERPCVariableType_Uint8,true, true}, 
 								{"killerid", ERPCVariableType_Uint16,true, true}, 
@@ -99,7 +108,8 @@ RPCNameMap mp_rpc_map[] = {
 													{NULL, ERPCVariableType_NoInit}}
 													},
 	{"RequestSpawn", ESAMPRPC_RequestSpawn, {
-													{"unknown", ERPCVariableType_Uint8,false, true}, 
+													{"unknown", ERPCVariableType_Uint32,false, true},
+													{"unknown2", ERPCVariableType_Uint32,false, true},
 													{NULL, ERPCVariableType_NoInit}}
 													},
 	{"ConnectionRejected", ESAMPRPC_ConnectionRejected, {
@@ -153,7 +163,8 @@ RPCNameMap mp_rpc_map[] = {
 												{NULL, ERPCVariableType_NoInit}
 											}},
 	{"VehicleDestroy", ESAMPRPC_VehicleDelete, {
-											{"id", ERPCVariableType_Uint32,true, true}, 
+											{"id", ERPCVariableType_Uint16,false, true}, 
+											{"unknown1", ERPCVariableType_Uint32,false, true}, //literally just an uninitalized integer from SAMP server, possibly from alignment
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"ExitVehicle", ESAMPRPC_ExitVehicle, {NULL, ERPCVariableType_NoInit}},
@@ -200,8 +211,19 @@ RPCNameMap mp_rpc_map[] = {
 											{"colour", ERPCVariableType_Uint32,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
+	{"SetObjectMaterial", ESAMPRPC_SetObjectMaterial, {
+											{"id", ERPCVariableType_Uint16,true, true}, 
+											{"index", ERPCVariableType_Uint16,true, true}, 
+											{"model", ERPCVariableType_Uint16,true, true}, 
+											{"txdname", ERPCVariableType_LenStr,true, true}, 
+											{"texturename", ERPCVariableType_LenStr,true, true}, 
+											{"materialcolour", ERPCVariableType_Uint32,true, true}, 
+											{"unknown", ERPCVariableType_Uint8,true, true},
+											{NULL, ERPCVariableType_NoInit}
+										}},
 	{"PlayerUpdate", ESAMPRPC_PlayerUpdate, {
 											{"unknown", ERPCVariableType_Uint32,true, true}, 
+											{"unknown2", ERPCVariableType_Uint32,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"SetMapIcon", ESAMPRPC_SetMapIcon, {
@@ -265,19 +287,35 @@ RPCNameMap mp_rpc_map[] = {
 												{"drawdist", ERPCVariableType_Float,true, true}, 
 												{NULL, ERPCVariableType_NoInit}
 													}},
+	{"DeleteObject", ESAMPRPC_DeleteObject, {
+		{"id", ERPCVariableType_Uint16,false, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
 	{"SetCameraPos", ESAMPRPC_SetCameraPos, {
 											{"x", ERPCVariableType_Float,true, true}, 
 											{"y", ERPCVariableType_Float,true, true}, 
 											{"z", ERPCVariableType_Float,true, true}
 											}},
+	{"SetCameraLookAt", ESAMPRPC_SetCameraLookAt, {
+											{"x", ERPCVariableType_Float,false, true}, 
+											{"y", ERPCVariableType_Float,false, true}, 
+											{"z", ERPCVariableType_Float,false, true},
+											{"cut", ERPCVariableType_Uint8,false, true}
+											}},
+												
 	{"ResetMoney", ESAMPRPC_ResetMoney, {NULL, ERPCVariableType_NoInit}},
 	{"StopAudioStream", ESAMPRPC_StopAudioStream, {NULL, ERPCVariableType_NoInit}},
 	{"SetInterior", ESAMPRPC_SetInterior, {
 											{"id", ERPCVariableType_Uint8,true, true}, 
 											}},
 	{"SetPlayerName", ESAMPRPC_SetPlayerName, {
-											{"id", ERPCVariableType_Uint16,true, true}, 
-											{"name", ERPCVariableType_LenStr,true, true}, 
+											{"id", ERPCVariableType_Uint16,false, true}, 
+											{"name", ERPCVariableType_LenStr,false, true}, 
+											{"unknown1", ERPCVariableType_Uint8,false, true}, 
+											{"unknown2", ERPCVariableType_Uint8,false, true}, 
+											{"unknown3", ERPCVariableType_Uint8,false, true}, 
+											{"unknown4", ERPCVariableType_Uint8,false, true}, 
+											{"unknown5", ERPCVariableType_Uint8,false, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"AddGangZone", ESAMPRPC_AddGangZone, {NULL, ERPCVariableType_NoInit}},
@@ -295,8 +333,15 @@ RPCNameMap mp_rpc_map[] = {
 				{"seat", ERPCVariableType_Uint8,true, true}, 
 				{NULL, ERPCVariableType_NoInit}
 			}},
+	{"SetPlayerSkillLevel", ESAMPRPC_SetPlayerSkillLevel, {
+				{"id", ERPCVariableType_Uint16,false, true}, 
+				{"weapon", ERPCVariableType_Uint32,false, true}, 
+				{"level", ERPCVariableType_Uint16,false, true}, 
+				{"unknown", ERPCVariableType_Uint8,false, true}, 
+				{NULL, ERPCVariableType_NoInit}
+			}},
 	{"SetPlayerDrunkLevel", ESAMPRPC_SetPlayerDrunkLevel, {
-				{"level", ERPCVariableType_Uint32},
+				{"level", ERPCVariableType_Uint32, false, true},
 				{NULL, ERPCVariableType_NoInit}
 			}},
 	{"OnPickupPickup", ESAMPRPC_PickupPickup, {
@@ -317,6 +362,23 @@ RPCNameMap mp_rpc_map[] = {
 									{"id", ERPCVariableType_Uint8,true, true}, 
 									{NULL, ERPCVariableType_NoInit}
 								}},
+									
+	{"SetPlayerSpawnInfo", ESAMPRPC_SetPlayerSpawnInfo, {
+									{"team", ERPCVariableType_Uint8,false, true}, 
+									{"skin", ERPCVariableType_Uint32,false, true}, 
+									{"unknown", ERPCVariableType_Uint8,false, true},
+									{"x", ERPCVariableType_Float,false, true}, 
+									{"y", ERPCVariableType_Float,false, true}, 
+									{"z", ERPCVariableType_Float,false, true}, 
+									{"z_angle", ERPCVariableType_Float,false, true}, 
+									{"weapon_1", ERPCVariableType_Uint32, false, true}, 
+									{"weapon_2", ERPCVariableType_Uint32,false, true}, 
+									{"weapon_3", ERPCVariableType_Uint32,false, true}, 
+									{"ammo_1", ERPCVariableType_Uint32,false, true}, 
+									{"ammo_2", ERPCVariableType_Uint32,false, true}, 
+									{"ammo_3", ERPCVariableType_Uint32,false, true}, 
+									{NULL, ERPCVariableType_NoInit}
+								}},
 	{"SetPlayerHoldingWeapon", ESAMPRPC_SetPlayerHoldingWeapon, {
 									{"weaponid", ERPCVariableType_Uint32,true, true}, 
 									{NULL, ERPCVariableType_NoInit}
@@ -332,10 +394,16 @@ RPCNameMap mp_rpc_map[] = {
 		{"unknown_flags", ERPCVariableType_Uint32,true, true}, 
 		{"unknown_flags2", ERPCVariableType_Uint32,true, true}, 
 		{"unknown_flags3", ERPCVariableType_Uint16,true, true}, 
+		{"unknown_flags4", ERPCVariableType_Uint32,true, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"SetPlayerSpecialAction", ESAMPRPC_SetPlayerSpecialAction, {
 		{"action", ERPCVariableType_Uint8,true, true}, 
+		{NULL, ERPCVariableType_NoInit}
+	}},
+	{"SetPlayerFightingStyle", ESAMPRPC_SetPlayerFightingStyle, {
+		{"playerid", ERPCVariableType_Uint16,false, true}, 
+		{"action", ERPCVariableType_Uint8,false, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"ApplyAnimation", ESAMPRPC_ApplyAnimation, {
@@ -356,6 +424,33 @@ RPCNameMap mp_rpc_map[] = {
 		},
 		GameInitRPCToPyDict, GameInitPyDictToRPC
 	},
+	{"RemovePlayerMapIcon", ESAMPRPC_RemoveMapIcon, {
+		{"id", ERPCVariableType_Uint8,true, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
+		{"SetVehicleParamsPacked", ESAMPRPC_SetVehicleParamsPacked, {
+			{"vehicleid", ERPCVariableType_Uint16,true, true},
+			{"flags", ERPCVariableType_Uint16,true, true},
+			{"align", ERPCVariableType_Uint8,true, true}, //always u
+			{NULL, ERPCVariableType_NoInit}
+	}},
+	{"CreateActor", ESAMPRPC_CreateActor, {
+			{"id", ERPCVariableType_Uint16,true, true},
+			{"model", ERPCVariableType_Uint16,true, true},
+			{"unknown", ERPCVariableType_Uint16,true, true},
+			{"x", ERPCVariableType_Float,true, true},
+			{"y", ERPCVariableType_Float,true, true},
+			{"z", ERPCVariableType_Float,true, true},
+			{"z_angle", ERPCVariableType_Float,true, true},
+			{"health", ERPCVariableType_Float,true, true},
+			{"unknown", ERPCVariableType_Uint16,true, true},
+			{NULL, ERPCVariableType_NoInit}
+	}},
+	{"DestroyActor", ESAMPRPC_DestroyActor, {
+			{"id", ERPCVariableType_Uint16,true, true},
+			{"unknown", ERPCVariableType_Uint8,true, true},
+			{NULL, ERPCVariableType_NoInit}
+	}},
 };
 
 

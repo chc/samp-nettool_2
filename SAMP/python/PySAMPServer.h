@@ -8,6 +8,7 @@ namespace SAMP {
 typedef struct {
     PyObject_HEAD
 	PyObject *mp_new_conn_hndlr;
+	PyObject *mp_context;
 
 	PyObject *mp_rpc_hndlr; //C->S rpc hndlr
 	PyObject *mp_sync_hndlr;//C->S sync hndlr
