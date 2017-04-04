@@ -211,6 +211,11 @@ RPCNameMap mp_rpc_map[] = {
 											{"colour", ERPCVariableType_Uint32,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
+	{"ShowNameTag", ESAMPRPC_ShowNameTag, {
+											{"playerid", ERPCVariableType_Uint16,true, true}, 
+											{"state", ERPCVariableType_Uint16,true, true}, 
+											{NULL, ERPCVariableType_NoInit}
+										}},
 	{"SetObjectMaterial", ESAMPRPC_SetObjectMaterial, {
 											{"id", ERPCVariableType_Uint16,true, true}, 
 											{"index", ERPCVariableType_Uint16,true, true}, 
@@ -428,28 +433,37 @@ RPCNameMap mp_rpc_map[] = {
 		{"id", ERPCVariableType_Uint8,true, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
-		{"SetVehicleParamsPacked", ESAMPRPC_SetVehicleParamsPacked, {
-			{"vehicleid", ERPCVariableType_Uint16,true, true},
-			{"flags", ERPCVariableType_Uint16,true, true},
-			{"align", ERPCVariableType_Uint8,true, true}, //always u
-			{NULL, ERPCVariableType_NoInit}
+	{"SetVehicleParamsPacked", ESAMPRPC_SetVehicleParamsPacked, {
+		{"vehicleid", ERPCVariableType_Uint16,true, true},
+		{"flags", ERPCVariableType_Uint16,true, true},
+		{"align", ERPCVariableType_Uint8,true, true}, //always u
+		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"CreateActor", ESAMPRPC_CreateActor, {
-			{"id", ERPCVariableType_Uint16,true, true},
-			{"model", ERPCVariableType_Uint16,true, true},
-			{"unknown", ERPCVariableType_Uint16,true, true},
-			{"x", ERPCVariableType_Float,true, true},
-			{"y", ERPCVariableType_Float,true, true},
-			{"z", ERPCVariableType_Float,true, true},
-			{"z_angle", ERPCVariableType_Float,true, true},
-			{"health", ERPCVariableType_Float,true, true},
-			{"unknown", ERPCVariableType_Uint16,true, true},
-			{NULL, ERPCVariableType_NoInit}
+		{"id", ERPCVariableType_Uint16,true, true},
+		{"model", ERPCVariableType_Uint16,true, true},
+		{"unknown", ERPCVariableType_Uint16,true, true},
+		{"x", ERPCVariableType_Float,true, true},
+		{"y", ERPCVariableType_Float,true, true},
+		{"z", ERPCVariableType_Float,true, true},
+		{"z_angle", ERPCVariableType_Float,true, true},
+		{"health", ERPCVariableType_Float,true, true},
+		{"unknown", ERPCVariableType_Uint16,true, true},
+		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"DestroyActor", ESAMPRPC_DestroyActor, {
-			{"id", ERPCVariableType_Uint16,true, true},
-			{"unknown", ERPCVariableType_Uint8,true, true},
-			{NULL, ERPCVariableType_NoInit}
+		{"id", ERPCVariableType_Uint16,true, true},
+		{"unknown", ERPCVariableType_Uint8,true, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
+	{"ApplyActorAnim", ESAMPRPC_ApplyActorAnim, {
+		{"actorid", ERPCVariableType_Uint16,true, true},
+		{"animlib", ERPCVariableType_LenStr,true, true}, 
+		{"animname", ERPCVariableType_LenStr,true, true}, 
+		{"delta", ERPCVariableType_Float,true, true}, 
+		{"flags", ERPCVariableType_Uint8,true, true}, 
+		{"time", ERPCVariableType_Uint32,true, true}, 
+		{NULL, ERPCVariableType_NoInit}
 	}},
 };
 

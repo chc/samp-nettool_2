@@ -13,6 +13,7 @@
 		ESAMPRPC_GiveMoney = 18,
 		ESAMPRPC_SetPlayerFacingAngle = 19,
 		ESAMPRPC_ResetMoney = 20,	
+		ESAMPRPC_ResetPlayerWeapons = 21,
 		ESAMPRPC_SetVehicleParams = 24,
 		ESAMPRPC_ClientJoin = 25,
 		ESAMPRPC_EnterVehicle = 26,
@@ -43,6 +44,7 @@
 		ESAMPRPC_RemovePlayerFromVehicle = 71,
 		ESAMPRPC_SetPlayerColor = 72,
 		ESAMPRPC_ShowGameText = 73,
+		ESAMPRPC_ShowNameTag = 80,
 		ESAMPRPC_SelectTextDraw = 83,
 		ESAMPRPC_SetObjectMaterial = 84,
 		ESAMPRPC_ApplyAnimation = 86,
@@ -79,7 +81,8 @@
 		ESAMPRPC_VehicleDelete = 165,
 		ESAMPRPC_PlayerDeath = 166,
 		ESAMPRPC_CreateActor = 171,
-		ESAMPRPC_DestroyActor = 171,
+		ESAMPRPC_DestroyActor = 172,
+		ESAMPRPC_ApplyActorAnim = 173,
 		ESAMPRPC_OnDamageActor = 177,
 	};
 

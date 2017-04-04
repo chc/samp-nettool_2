@@ -136,7 +136,7 @@ namespace SAMP {
 				return;
 			}
 		}
-		//printf("Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		printf("C->S Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPInboundClientHandler::m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id) {

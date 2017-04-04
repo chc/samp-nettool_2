@@ -1,13 +1,15 @@
+#include "main.h"
 #include "SAMPAuth.h"
 #include "SAMPClient.h"
 #include "SAMPClient_Outbound.h"
-
+#include "GetTime.h"
 namespace SAMP {
 	SAMPOutboundClientMsgHandler SAMPOutboundClientHandler::m_msg_handlers[] = {
 		{ID_CONNECTION_REQUEST_ACCEPTED , ESAMPAuthState_WaitConnReq, &SAMPOutboundClientHandler::m_handle_conn_req},
 		{ID_AUTH_KEY, ESAMPAuthState_SentAuthKey, &SAMPOutboundClientHandler::m_handle_auth_key},
 		{ID_RPC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_rpc},
 		{ID_INTERNAL_PING, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_internal_ping},
+		{ID_PING, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_internal_ping},
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_detect_lost_connections},
 		{ID_PLAYER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
@@ -132,7 +134,7 @@ namespace SAMP {
 				return;
 			}
 		}
-		printf("Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		printf("S->C Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...) {
 		int offset = stream->GetReadOffset();
@@ -227,10 +229,15 @@ namespace SAMP {
 	}
 	void SAMPOutboundClientHandler::m_handle_internal_ping(RakNet::BitStream *data, PacketEnumeration id) {
 		uint8_t msgid;
+		uint32_t times[2];
 		RakNet::BitStream bs;
 		data->Read(msgid);
+		data->Read(times[0]);
 		bs.Write((uint8_t)ID_CONNECTED_PONG);
-		bs.Write(data);
+		bs.Write(times[0]);
+
+		times[1] = RakNet::GetTime();
+		bs.Write(times[1]);
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 	void SAMPOutboundClientHandler::m_handle_detect_lost_connections(RakNet::BitStream *data, PacketEnumeration id) {
