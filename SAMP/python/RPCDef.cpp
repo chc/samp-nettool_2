@@ -309,7 +309,22 @@ RPCNameMap mp_rpc_map[] = {
 											}},
 												
 	{"ResetMoney", ESAMPRPC_ResetMoney, {NULL, ERPCVariableType_NoInit}},
-	{"StopAudioStream", ESAMPRPC_StopAudioStream, {NULL, ERPCVariableType_NoInit}},
+	{"ResetPlayerWeapons", ESAMPRPC_ResetPlayerWeapons, {
+											{"flags", ERPCVariableType_Uint8,false, true}, 
+											}},
+	
+	//
+	{"PlayAudioStream", ESAMPRPC_PlayAudioStream, {
+											{"url", ERPCVariableType_LenStr,false, true}, 
+											{"x", ERPCVariableType_Float,false, true}, 
+											{"y", ERPCVariableType_Float,false, true}, 
+											{"z", ERPCVariableType_Float,false, true}, 
+											{"distance", ERPCVariableType_Float,false, true}, 
+											{"usepos", ERPCVariableType_Uint16,false, true}, 
+											}},
+	{"StopAudioStream", ESAMPRPC_StopAudioStream, {
+											{"unknown", ERPCVariableType_Uint8,false, true}, 
+											}},
 	{"SetInterior", ESAMPRPC_SetInterior, {
 											{"id", ERPCVariableType_Uint8,true, true}, 
 											}},
@@ -411,6 +426,14 @@ RPCNameMap mp_rpc_map[] = {
 		{"action", ERPCVariableType_Uint8,false, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
+	{"SetVehicleVelocity", ESAMPRPC_SetVehicleVelocity, {
+		{"vehicleid", ERPCVariableType_Uint16,false, true}, 
+		{"x", ERPCVariableType_Float,false, true}, 
+		{"y", ERPCVariableType_Float,false, true}, 
+		{"z", ERPCVariableType_Float,false, true}, 
+		{NULL, ERPCVariableType_NoInit}
+	}},
+		
 	{"ApplyAnimation", ESAMPRPC_ApplyAnimation, {
 		{"playerid", ERPCVariableType_Uint16,true, true}, 
 		{"animlib", ERPCVariableType_LenStr,true, true}, 
@@ -429,6 +452,12 @@ RPCNameMap mp_rpc_map[] = {
 		},
 		GameInitRPCToPyDict, GameInitPyDictToRPC
 	},
+	{"SetVehicleHealth", ESAMPRPC_SetVehicleHealth, {
+		{"id", ERPCVariableType_Uint16,false, true},
+		{"health", ERPCVariableType_Float,false, true},
+		{"unknown", ERPCVariableType_Uint8,false, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
 	{"RemovePlayerMapIcon", ESAMPRPC_RemoveMapIcon, {
 		{"id", ERPCVariableType_Uint8,true, true},
 		{NULL, ERPCVariableType_NoInit}

@@ -20,6 +20,7 @@ namespace SAMP {
 		{ID_BULLET_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_STATS_UPDATE, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_stats_update},
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_detect_lost_connections},
+		{ID_CONNECTED_PONG, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_connected_pong},
 	};
 	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
 		m_raknet_mode = false;
@@ -215,4 +216,7 @@ namespace SAMP {
 		bs.Write(data);
 		AddToOutputStream(&bs, RELIABLE, SAMP::HIGH_PRIORITY);
 	}
+	void SAMPInboundClientHandler::m_connected_pong(RakNet::BitStream *data, PacketEnumeration id) {
+	}
+
 }
