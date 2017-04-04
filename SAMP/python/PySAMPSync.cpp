@@ -130,6 +130,13 @@ namespace Py {
 		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
 		PyDict_SetItem(sync_dict, PyUnicode_FromString("pos"), py_pos);
 
+
+		py_pos = PyList_New(3);
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->vel[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->vel[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->vel[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("vel"), py_pos);
+
 		PyObject *py_vel = PyList_New(3);
 		PyList_SET_ITEM(py_vel ,0,PyFloat_FromDouble(sync->vel[0]));
 		PyList_SET_ITEM(py_vel ,1,PyFloat_FromDouble(sync->vel[1]));
@@ -168,6 +175,11 @@ namespace Py {
 		out->pos[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
 		out->pos[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
 		out->pos[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		dict_item = PyDict_GetItemString(dict, "vel");
+		out->vel[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->vel[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->vel[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
 
 
 		dict_item = PyDict_GetItemString(dict, "quat");

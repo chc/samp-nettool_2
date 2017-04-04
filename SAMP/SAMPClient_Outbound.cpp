@@ -231,12 +231,10 @@ namespace SAMP {
 		uint8_t msgid;
 		uint32_t times[2];
 		RakNet::BitStream bs;
-		data->Read(msgid);
 		data->Read(times[0]);
 		bs.Write((uint8_t)ID_CONNECTED_PONG);
+		times[1] = (times[0] + (RakNet::GetTime() - times[0]));
 		bs.Write(times[0]);
-
-		times[1] = RakNet::GetTime();
 		bs.Write(times[1]);
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}

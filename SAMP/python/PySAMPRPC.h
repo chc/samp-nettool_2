@@ -56,6 +56,7 @@
 		ESAMPRPC_SendClientMessage = 93,
 		ESAMPRPC_ChatMessage = 101,
 		ESAMPRPC_EditTextDraw = 105,
+		ESAMPRPC_OnVehicleDamage = 106,
 		ESAMPRPC_AddGangZone = 108,
 		ESAMPRPC_GiveTakeDamage = 115,
 		ESAMPRPC_SetCarPlate = 123,
