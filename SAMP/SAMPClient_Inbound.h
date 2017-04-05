@@ -49,6 +49,8 @@ namespace SAMP {
 		void m_handle_stats_update(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_detect_lost_connections(RakNet::BitStream *data, PacketEnumeration id);
 		void m_connected_pong(RakNet::BitStream *data, PacketEnumeration id);
+		void m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id);
+		
 	};
 }
 #endif //SAMPCLIENT_INBOUND_H

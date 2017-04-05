@@ -42,6 +42,7 @@ namespace SAMP {
 		void m_handle_sync(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_internal_ping(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_detect_lost_connections(RakNet::BitStream *data, PacketEnumeration id);
+		void m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id);
 
 		int m_player_id;
 		struct sockaddr_in m_client_addr;

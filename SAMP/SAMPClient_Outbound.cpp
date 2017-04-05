@@ -14,6 +14,7 @@ namespace SAMP {
 		{ID_PLAYER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_disconnect},
 	};
 	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
 		m_raknet_mode = false;
@@ -243,5 +244,11 @@ namespace SAMP {
 		bs.Write((uint8_t)id);
 		bs.Write(data);
 		AddToOutputStream(&bs, RELIABLE, SAMP::HIGH_PRIORITY);
+	}
+	void SAMPOutboundClientHandler::m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id) {
+		printf("D/C Packet len: %d %d\n",data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		uint8_t type;
+		data->Read(type); //always uninitalized
+		printf("DC Type: %d\n", type);
 	}
 }

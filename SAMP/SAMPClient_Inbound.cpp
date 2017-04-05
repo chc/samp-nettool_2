@@ -21,6 +21,7 @@ namespace SAMP {
 		{ID_STATS_UPDATE, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_stats_update},
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_detect_lost_connections},
 		{ID_CONNECTED_PONG, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_connected_pong},
+		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_disconnect},
 	};
 	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
 		m_raknet_mode = false;
@@ -218,5 +219,12 @@ namespace SAMP {
 	}
 	void SAMPInboundClientHandler::m_connected_pong(RakNet::BitStream *data, PacketEnumeration id) {
 	}
+	void SAMPInboundClientHandler::m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id) {
+		printf("D/C Packet len: %d %d\n",data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		uint8_t type;
+		data->Read(type);
+		printf("DC Type: %d\n", type);
+	}
+	
 
 }

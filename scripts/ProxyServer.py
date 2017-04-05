@@ -34,6 +34,9 @@ def proxy_client_accepted(connection, playerid, challenge):
 	RPCData["GPCI"] = SAMP.GenGPCI(1001*4)
 	connection.SendRPC(SAMP.RPC_ClientJoin, RPCData)
 
+	RPCData = {'class_id': 0}
+	connection.SendRPC(SAMP.RPC_RequestClass, RPCData)
+
 
 #client mode handlers
 def server_conn_sync_hndlr(connection, type, sync_data):
@@ -47,7 +50,7 @@ def server_conn_stats_update_hndlr(connection, money, drunk):
 
 
 def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
-	print("We got RPC: {}\n".format(rpcid))
+	print("We got RPC: {} - {}\n".format(rpcid,rpc_data))
 	if connection.proxy_connection != None:
 		connection.proxy_connection.SendRPC(rpcid, rpc_data)
 		return None
@@ -91,7 +94,7 @@ class ProxyClient():
 		'num_spawn_classes': 1, 'cj_walk': False, 'firing_sendrate': 40, 'nametag_los': True, 'limit_chat_radius': False, 
 		'allow_weapons': False, 'incar_sendrate': 40, 'unknown_2': 0, 'lagcomp': 1, 'lan_mode': False, 'show_nametags': True, 
 		'nametag_dist': 70.0, 'server_weather': 1, 'manual_veh_lighting': False, 'unknown_3': 0, 'onfoot_sendrate': 40, 'stunt_bonus': True, 
-		'hostname': 'SA-MP 0.3 Server', 'server_hour': 12, 'send_multiplier': 2, 
+		'hostname': 'Proxy Server (New)', 'server_hour': 12, 'send_multiplier': 2, 
 		'preloaded_models': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
 		'playerid': 0, 'chat_radius': 10000.0, 'show_player_markers': 1, 'drop_money_on_death': 0, 'unknown_4': 0}
 		connection.SendRPC(SAMP.RPC_InitGame, init_data)
@@ -136,18 +139,6 @@ class ProxyServer(): #TODO BASE SERVER
 		self.server.SetNewConnectionHandler(server_new_conn_hndlr)
 		self.server.Listen(listen_address)
 		
-		
-
-
-
-
-
-
-
-
-
-
-
 def getClientProxiedDelegator():
 	delegator = {}
 	return delegator
