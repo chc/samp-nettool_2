@@ -22,6 +22,7 @@ namespace SAMP {
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_detect_lost_connections},
 		{ID_CONNECTED_PONG, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_connected_pong},
 		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_disconnect},
+		{ID_RECEIVED_STATIC_DATA, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_recv_static_data},
 	};
 	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
 		m_raknet_mode = false;
@@ -108,7 +109,8 @@ namespace SAMP {
 		}
 		struct timeval current_time;
 		gettimeofday(&current_time, NULL);
-		if(current_time.tv_usec - m_last_sent_ping.tv_usec > SAMP_SEND_PING_TIME) {
+		
+		if(current_time.tv_sec - m_last_sent_ping.tv_sec > SAMP_SEND_PING_TIME) {
 			gettimeofday(&m_last_sent_ping, NULL);
 			send_ping();
 		}
@@ -220,10 +222,12 @@ namespace SAMP {
 	void SAMPInboundClientHandler::m_connected_pong(RakNet::BitStream *data, PacketEnumeration id) {
 	}
 	void SAMPInboundClientHandler::m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id) {
-		printf("D/C Packet len: %d %d\n",data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		printf("C->S D/C Packet len: %d %d\n",data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
 		uint8_t type;
 		data->Read(type);
-		printf("DC Type: %d\n", type);
+		printf("C->S DC Type: %d\n", type);
+	}
+	void SAMPInboundClientHandler::m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id) {
 	}
 	
 

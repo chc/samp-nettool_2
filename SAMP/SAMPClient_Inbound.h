@@ -1,7 +1,7 @@
 #ifndef SAMPCLIENT_INBOUND_H
 #define SAMPCLIENT_INBOUND_H
 #include "SAMPPacket.h"
-#define SAMP_SEND_PING_TIME 1000
+#define SAMP_SEND_PING_TIME 15
 namespace SAMP {
 	class SAMPInboundClientHandler;
 	typedef struct _SAMPClientMsgHandlers {
@@ -50,6 +50,7 @@ namespace SAMP {
 		void m_handle_detect_lost_connections(RakNet::BitStream *data, PacketEnumeration id);
 		void m_connected_pong(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id);
+		void m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id);
 		
 	};
 }

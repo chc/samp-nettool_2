@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include <StringCompressor.h>
+
 std::vector<gs_SAMPServer *> m_py_servers;
 std::vector<gs_SAMPClient *> m_py_clients;
 PyObject *nf_gen_gpci_method(PyObject *self, PyObject *args);
@@ -50,6 +51,7 @@ PyMODINIT_FUNC PyInit_SAMP(void) {
 }
 
 namespace Py {
+	FILE *m_fd;
 	void Init() {
 		StringCompressor::AddReference();
 
@@ -63,13 +65,15 @@ namespace Py {
 		wprintf(L"PyPath: %s\n",Py_GetPath());
 		Py_Initialize();
 
+		PyEval_InitThreads();
+
 		const char *path = "scripts\\__init__.py";
-		FILE *fd = fopen(path, "rb");
-		PyRun_AnyFile(fd, path);
-		fclose(fd);
-	
+		m_fd = fopen(path, "rb");
+		PyRun_AnyFile(m_fd, path);
+		
 	}
 	void Tick() {
+		Py_BEGIN_ALLOW_THREADS
 		//maybe this should be somewhere else
 		std::vector<gs_SAMPClient *> py_clients_cpy = m_py_clients;
 		std::vector<gs_SAMPClient *>::iterator it = py_clients_cpy.begin();
@@ -79,6 +83,7 @@ namespace Py {
 				client->samp_client->think(NULL);
 			it++;
 		}
+		Py_END_ALLOW_THREADS
 	}
 
 	void PySAMP_CheckAndPrintErrors() {
@@ -132,8 +137,7 @@ namespace Py {
 		RPCNameMap *rpc_map = GetRPCNameMapByID(rpc_id);
 		printf("C->S Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
 		assert(rpc_map);
-		if(!rpc_map) {	
-
+		if(!rpc_map) {
 			return;
 		}
 		std::vector<gs_SAMPClient *> py_clients_cpy = m_py_clients;
