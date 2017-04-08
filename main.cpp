@@ -2,6 +2,9 @@
 #include "SelectNetEventManager.h"
 #include "NetProxy.h"
 #include "SAMP\SAMPServer.h"
+
+#include "SAMP/python/PySAMPRPC.h"
+
 std::vector<SAMP::Server *> m_servers;
 Net::SelectNetEventManager* g_event_mgr = NULL;
 void addSAMPServer(SAMP::Server *server) {
@@ -15,8 +18,20 @@ int main() {
 	#endif
 	g_event_mgr = new Net::SelectNetEventManager(); //must be before py init
 	Py::Init();
-
-	
+	/*
+	int missing=0, found=0;
+	for(int rpc_id=0;rpc_id<180;rpc_id++) {
+		RPCNameMap *rpc_map = GetRPCNameMapByID(rpc_id);
+		if(!rpc_map) {
+			missing++;
+			printf("Don't have RPC %d\n",rpc_id);
+		} else {
+			found++;
+			printf("I have RPC %d (%s)\n",rpc_id,rpc_map->name);
+		}
+	}
+	printf("%d missing, %d found\n",missing,found);
+	*/
 	std::vector<SAMP::Server *>::iterator it;
 	for(;;) {
 		//proxy->think();
@@ -27,7 +42,6 @@ int main() {
 			(*it)->think(NULL);
 			it++;
 		}
-		
 		Py::Tick();
 	}
 }

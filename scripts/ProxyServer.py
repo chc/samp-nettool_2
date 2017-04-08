@@ -5,6 +5,25 @@ import re
 import uuid
 import random
 
+import _thread
+import time
+
+import decimal
+
+clients = []
+
+def sync_thread():
+	while True:
+		for client in clients:
+			for player in client.players:
+				if "incar" in player and player['incar'] > 0:
+					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 1000.0, 'player_armour': 50, 'player_health': 66, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0, 'vehicleid': player['incar']}
+					client.connection.SendSync(SAMP.PACKET_VEHICLE_SYNC, rpc_details)
+					print("send veh sync\n")
+				else:
+					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 100, 'armour': 50, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0}
+					client.connection.SendSync(SAMP.PACKET_PLAYER_SYNC, rpc_details)
+		time.sleep(50.0 / 1000.0)
 
 #proxy mode handlers
 #must live outside of proxyclient due to C code limitations
@@ -61,7 +80,9 @@ def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
 	if rpcid in connection.context['delegator']:
 		connection.context['delegator'][rpcid](connection, rpcid, rpc_data)
 
+
 class ProxyClient():
+
 	def getProxyDelegator(self):
 		ret = {}
 		
@@ -69,13 +90,51 @@ class ProxyClient():
 
 		
 	def __init__(self, server, connection):
+		global clients
 		print("New proxyclient\n")
 		connection.context = {'server': server, 'proxy_client': self, 'connection': connection}
 		connection.rpc_handler = (server_conn_rpc_hndlr)
 		connection.sync_handler = (server_conn_sync_hndlr)
 		connection.stats_update_handler = (server_conn_stats_update_hndlr)
 		self.connection = connection
-		print("DOne proxy client\n")
+		self.players = []
+		clients.append(self)
+		print("Done proxy client\n")
+
+
+	#debug stuff
+	def init_fake_players(self):
+
+		self.vehicles = [
+			{'id': 1, 'modelid': 411, 'x':-2017.87, 'y': 200.0, 'z': 27.54, 'zrot': 0.0, 'col1': 41, 'col2': 11, 'health': 1000.0, 'interior': 0, 'door_damage': 0, 'panel_damage': 0, 'light_damage': 0, 'tire_damage': 0, 'siren': 0, 'comp1': 0,'comp2': 0,'comp3': 0,'comp4': 0,'comp5': 0,'comp6': 0,'comp7': 0,'comp8': 0,'comp9': 0,'comp10': 0,'comp11': 0,'comp12': 0,'comp13': 0,'comp14': 0, 'col32_1': 0, 'col32_2': 0, 'unknown': 0},
+		]
+		self.players = [
+		#-2007.87 174.93 27.54
+			{'name': 'Joe_Bob', 'score': 1111, 'ping': 666, 'id': 666, 'skin': 200, 'pos': [-2007.87, 174.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'Jeff_CarDriver', 'score': 2111, 'ping': 1337, 'id': 112, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255, 'incar': 1},
+			{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'id': 113, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'asxasd', 'score': 2111, 'ping': 1337, 'id': 114, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'id': 115, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'assdfd', 'score': 2111, 'ping': 1337, 'id': 116, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'aadfgd', 'score': 2111, 'ping': 1337, 'id': 117, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'agcasd', 'score': 2111, 'ping': 1337, 'id': 118, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			#{'name': 'gfdgsd', 'score': 2111, 'ping': 1337, 'id': 119, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			#{'name': 'a435sd', 'score': 2111, 'ping': 1337, 'id': 121, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			#{'name': 'as23sd', 'score': 2111, 'ping': 1337, 'id': 122, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			#{'name': 'asfsdf', 'score': 2111, 'ping': 1337, 'id': 123, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			#{'name': '234asd', 'score': 2111, 'ping': 1337, 'id': 124, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		]
+		y_offset = 0.0
+		for player in self.players:
+			y_offset = y_offset + 1.5
+			player['pos'][1] = player['pos'][1] + y_offset
+			rpc_details = {'id': player['id'], 'colour': 0xFFFFFFFF, 'x': player['pos'][0], 'y': player['pos'][1], 'z': player['pos'][2], 'z_angle': player['z_angle'], 'fightstyle': player['fightstyle'], 'skin': player['skin'], 'team': player['team'], 'npc': 0, 'name': player['name']}
+			self.connection.SendRPC(SAMP.RPC_ServerJoin, rpc_details)
+			self.connection.SendRPC(SAMP.RPC_AddPlayerToWorld, rpc_details)
+
+		for veh in self.vehicles:
+			self.connection.SendRPC(SAMP.RPC_VehicleCreate, veh)
+	####
 
 
 
@@ -86,6 +145,8 @@ class ProxyClient():
 		ret[SAMP.RPC_ClientJoin] = self.handle_clientjoin_rpc
 		ret[SAMP.RPC_ClientCmd] = self.handle_clientcmd_rpc
 		ret[SAMP.RPC_SendChatMessage] = self.handle_sendchatmsg_rpc
+		ret[SAMP.RPC_RequestClass] = self.handle_requestclass_rpc
+		ret[SAMP.RPC_RequestSpawn] = self.handle_requestspawn_rpc
 		return ret
 	def handle_clientjoin_rpc(self, connection, rpcid, rpc_data):
 		print("Got client join: - {}\n".format(rpc_data))
@@ -104,6 +165,8 @@ class ProxyClient():
 		rpc_data = {'unknown': 204}
 		connection.SendRPC(SAMP.RPC_RequestSpawn, rpc_data)
 
+		self.init_fake_players()
+
 	def handle_clientcmd_rpc(self, connection, rpcid, rpc_data):
 		print("Got command: {}\n".format(rpc_data))
 		split_cmds = re.findall(r'\S+', rpc_data["Command"])
@@ -121,7 +184,7 @@ class ProxyClient():
 	def handle_sendchatmsg_rpc(self, connection, rpcid, rpc_data):
 		connection.SendRPC(SAMP.RPC_SendChatMessage, {'playerid': 0, "Message": rpc_data["Message"]})
 	def handle_requestclass_rpc(self, connection, rpcid, rpc_data):
-		rpc_data = {'unknown': 1, 'team': 255, 'skin': 122,'x':-2000.0,'y':150.0,'z':0.0,'z_angle':0.0,'weapon_1': 24,'weapon_2': 0,'weapon_3': 0, 'ammo_1': 1000, 'ammo_2': 0, 'ammo_3': 0, 'unknown2': 0}
+		rpc_data = {'unknown': 1, 'team': 255, 'skin': 122,'x':-2000.0,'y':150.0,'z':30.0,'z_angle':0.0,'weapon_1': 24,'weapon_2': 0,'weapon_3': 0, 'ammo_1': 1000, 'ammo_2': 0, 'ammo_3': 0, 'unknown2': 0}
 		connection.SendRPC(SAMP.RPC_RequestClass, rpc_data)
 
 
@@ -142,3 +205,10 @@ class ProxyServer(): #TODO BASE SERVER
 def getClientProxiedDelegator():
 	delegator = {}
 	return delegator
+
+#t = _thread.start_new_thread(send_syncs, (1, 666))
+
+#time.sleep(5)
+#t.exit()
+
+_thread.start_new_thread(sync_thread, () )

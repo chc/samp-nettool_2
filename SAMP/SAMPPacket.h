@@ -8,6 +8,8 @@
 
 #include <stack>
 
+#include "OS/Mutex.h"
+
 namespace SAMP {
 
 	#define UDP_HEADER_SIZE 28
@@ -150,8 +152,8 @@ namespace SAMP {
 	};
 	class SAMPPacketHandler /*: public Net::PacketHandler*/ {
 	public:
-		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; };
-		~SAMPPacketHandler() {};
+		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); };
+		~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
 		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
 		void AddToOutputStream(RakNet::BitStream *bs, 
@@ -163,6 +165,8 @@ namespace SAMP {
 		struct sockaddr_in m_in_addr;
 
 		std::vector<RakNetByteSeq> m_send_queue;
+
+		OS::CMutex *mp_mutex;
 	};
 
 }

@@ -3,6 +3,7 @@
 #include "python\Python.h"
 namespace SAMP {
 	void SAMPPacketHandler::AddToOutputStream(RakNet::BitStream *bs, PacketReliability reliability, PacketPriority priority) {
+		
 		RakNetByteSeq seq;
 		seq.seqid = m_transtate_out.m_out_seq++;
 		seq.reliability = reliability;
@@ -11,7 +12,9 @@ namespace SAMP {
 		bs->ResetReadPointer();
 		seq.data->Write(bs);
 		seq.data->ResetReadPointer();
+		mp_mutex->lock();
 		m_send_queue.push_back(seq);
+		mp_mutex->unlock();
 	}
 	void sendPacket(RakNetPacketHead packet, bool splits_processed, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt) {
 		//NetDbgPrintf("Send input packet called\n");

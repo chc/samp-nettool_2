@@ -51,7 +51,6 @@ PyMODINIT_FUNC PyInit_SAMP(void) {
 }
 
 namespace Py {
-	FILE *m_fd;
 	void Init() {
 		StringCompressor::AddReference();
 
@@ -61,16 +60,17 @@ namespace Py {
 	
 		Py_SetProgramName(L"NetTool");
 		Py_SetPythonHome(L"E:\\Code\\Python-3.5.0"); //temp windows fix
-		Py_SetPath(L"E:\\Code\\nettool_new\\scripts\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\nettool_new\\Debug;E:\\Code\\nettool_new\\scripts;");
+		Py_SetPath(L"E:\\Code\\nettool_new\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\scripts");
+		
 		wprintf(L"PyPath: %s\n",Py_GetPath());
 		Py_Initialize();
 
 		PyEval_InitThreads();
 
 		const char *path = "scripts\\__init__.py";
-		m_fd = fopen(path, "rb");
-		PyRun_AnyFile(m_fd, path);
-		
+		FILE *fd = fopen(path, "r");
+		PyRun_AnyFile(fd, path);
+		fclose(fd);		
 	}
 	void Tick() {
 		Py_BEGIN_ALLOW_THREADS
