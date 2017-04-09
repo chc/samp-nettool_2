@@ -97,7 +97,8 @@ namespace Py {
 			PyErr_Clear();
 		}
 	}
-	void OnNewConnection(SAMP::Server *server, SAMP::Client *client) {
+	EConnRejectReason OnNewConnection(SAMP::Server *server, SAMP::Client *client, std::string password) {
+		EConnRejectReason response;
 		std::vector<gs_SAMPServer *>::iterator it = m_py_servers.begin();
 		while(it != m_py_servers.end()) {
 			gs_SAMPServer *serv = *it;
@@ -108,9 +109,11 @@ namespace Py {
 				conn_obj->samp_server = server;
 				conn_obj->samp_client = client;				
 
-				PyObject *arglist = Py_BuildValue("OO",serv, conn_obj);
+				PyObject *arglist = Py_BuildValue("OOs",serv, conn_obj, password.c_str());
 				PyObject *ret = (PyObject *)PyObject_CallObject(serv->mp_new_conn_hndlr, arglist);
 				PySAMP_CheckAndPrintErrors();
+
+				response = (EConnRejectReason)PyLong_AsLong(ret);
 
 
 				if(std::find(m_py_clients.begin(),m_py_clients.end(), conn_obj) == m_py_clients.end())
@@ -121,6 +124,7 @@ namespace Py {
 			}
 			it++;
 		}
+		return response;
 	}
 	wchar_t *copyPythonString(PyObject *string) {
 		if(string) {

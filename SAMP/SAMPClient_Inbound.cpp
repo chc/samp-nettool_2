@@ -63,7 +63,7 @@ namespace SAMP {
 			it++;
 		}
 
-		freeRaknetPacket(&packet);
+		//freeRaknetPacket(&packet);
 	}
 	void SAMPInboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
 		uint8_t msgid;
@@ -99,14 +99,18 @@ namespace SAMP {
 	void SAMPInboundClientHandler::m_new_incoming_conn(RakNet::BitStream *data, PacketEnumeration id) {
 	}
 	void SAMPInboundClientHandler::tick(fd_set *set) {
+		mp_mutex->lock();
 		if(m_send_queue.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
+			/*
 			for(std::vector<RakNetByteSeq>::iterator it = m_send_queue.begin();it != m_send_queue.end();it++) {
 				RakNetByteSeq seq = *it;
 				delete seq.data;
 			}
+			*/
 			m_send_queue.clear();
 		}
+		mp_mutex->unlock();
 		struct timeval current_time;
 		gettimeofday(&current_time, NULL);
 		
@@ -157,16 +161,25 @@ namespace SAMP {
 		data->ReadBits((unsigned char *)&sync_data, unread_bits);
 		bs.WriteBits(sync_data, unread_bits);
 
-		dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
+		//dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
 		bs.ResetReadPointer();
 		//printf("C->S got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
 		Py::OnGotRPC(mp_client, rpc_id, &bs, true);
 	}
 	void SAMPInboundClientHandler::m_handle_conn_req(RakNet::BitStream *data, PacketEnumeration id) {
-		//printf("Got conn req\n");
+		char pass[256];
+		uint8_t len = 0;
+		pass[0] = 0;
+
+		data->Read(pass, data->GetNumberOfBytesUsed()-1);
+
+		if(pass[0] != 0) {
+			m_password = pass;
+		}
+		printf("Got conn req (%s)\n", pass);
 		//send_samp_rakauth("277C2AD934406F33");
 		const char *key = "277C2AD934406F33";
-		uint8_t len = strlen(key);
+		len = strlen(key);
 
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)ID_AUTH_KEY);
@@ -179,13 +192,34 @@ namespace SAMP {
 	}
 	void SAMPInboundClientHandler::m_handle_auth_key(RakNet::BitStream *data, PacketEnumeration id) {
 		RakNet::BitStream bs;
-		bs.Write((uint8_t)ID_CONNECTION_REQUEST_ACCEPTED);
-
-		bs.Write((uint32_t)m_in_addr.sin_addr.S_un.S_addr);
-		bs.Write((uint16_t)m_in_addr.sin_port);
-		bs.Write((uint16_t)16);
-		bs.Write((uint32_t)0xFFFFFFFF);
-		Py::OnNewConnection(mp_client->GetServer(), mp_client);
+		EConnRejectReason response = Py::OnNewConnection(mp_client->GetServer(), mp_client, m_password);
+		switch(response) {
+			case EConnRejectReason_Accepted:
+				bs.Write((uint8_t)ID_CONNECTION_REQUEST_ACCEPTED);
+				bs.Write((uint32_t)m_in_addr.sin_addr.S_un.S_addr);
+				bs.Write((uint16_t)m_in_addr.sin_port);
+				bs.Write((uint16_t)16);
+				bs.Write((uint32_t)0xFFFFFFFF);
+			break;
+			case EConnRejectReason_InvalidPass:
+				bs.Write((uint8_t)ID_INVALID_PASS);
+			break;
+			case EConnRejectReason_Banned:
+				bs.Write((uint8_t)ID_CONNECTION_BANNED);
+			break;
+			case EConnRejectReason_ServerFull:
+				bs.Write((uint8_t)ID_NO_FREE_INCOMING_CONNECTIONS);
+			break;
+			case EConnRejectReason_ConnFailed:
+				bs.Write((uint8_t)ID_CONNECTION_ATTEMPT_FAILED);
+			break;
+			case EConnRejectReason_Disconnected:
+				bs.Write((uint8_t)ID_DISCONNECTION_NOTIFICATION);
+			break;
+			case EConnRejectReason_FailedEncryption:
+				bs.Write((uint8_t)ID_FAILED_INIT_ENCRYPTION);
+			break;
+		}
 
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}

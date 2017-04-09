@@ -200,6 +200,8 @@ namespace Py {
 		dict_item = PyDict_GetItemString(dict, "weapon");
 		out->weapon = PyLong_AsLong(dict_item);
 
+		out->siren = PyDict_GetItemString(dict, "siren") == Py_True;
+		out->landing_gear = PyDict_GetItemString(dict, "landing_gear") == Py_True;
 	}
 
 	PyObject* SyncToPyDict_Aim(SAMP::SAMPAimSync *sync, bool client_to_server) {
@@ -378,5 +380,14 @@ namespace Py {
 		PyModule_AddIntConstant(module, "PACKET_VEHICLE_SYNC", SAMP::ID_VEHICLE_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_BULLET_SYNC", SAMP::ID_BULLET_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_AIM_SYNC", SAMP::ID_AIM_SYNC);
+
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_ACCEPTED", EConnRejectReason_Accepted);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_INVALID_PASS", EConnRejectReason_InvalidPass);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_BANNED", EConnRejectReason_Banned);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_SERVER_FULL", EConnRejectReason_ServerFull);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_CONN_FAILED", EConnRejectReason_ConnFailed);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_CONN_LOST", EConnRejectReason_ConnLost);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_DISCONNECTED", EConnRejectReason_Disconnected);
+		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_FAILED_ENCRYPTION", EConnRejectReason_FailedEncryption);
 	}
 }

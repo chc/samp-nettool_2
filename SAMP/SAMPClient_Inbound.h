@@ -32,6 +32,8 @@ namespace SAMP {
 		bool m_sent_cookie_packet;
 		uint16_t m_server_cookie;
 
+		std::string m_password; //pw user sent to try join
+
 		SAMP::Client *mp_client;
 
 		SAMPPacketHandlerSendFunc mp_send_func;

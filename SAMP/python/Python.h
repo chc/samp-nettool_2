@@ -3,7 +3,7 @@
 #include <Python.h>
 #include <stdint.h>
 #include <BitStream.h>
-
+#include <string>
 #include "PySAMPClient.h"
 
 namespace SAMP {
@@ -12,13 +12,24 @@ namespace SAMP {
 	enum PacketEnumeration;
 };
 
+enum EConnRejectReason {
+		EConnRejectReason_Accepted,
+		EConnRejectReason_InvalidPass,
+		EConnRejectReason_Banned,
+		EConnRejectReason_ServerFull,
+		EConnRejectReason_ConnFailed, //spoof failed bad internet, w/e
+		EConnRejectReason_ConnLost, //dcs, "the server is restarting", reconnets
+		EConnRejectReason_Disconnected, //drop connection
+		EConnRejectReason_FailedEncryption, //confuse the player!!
+};
+
 namespace Py {
 	void Init();
 	void Tick();
 	void PySAMP_CheckAndPrintErrors();
 
 
-	void OnNewConnection(SAMP::Server *server, SAMP::Client *client);
+	EConnRejectReason OnNewConnection(SAMP::Server *server, SAMP::Client *client, std::string password = "");
 	void OnGotRPC(SAMP::Client *client, uint32_t rpc_id, RakNet::BitStream *data, bool client_to_server);
 	void OnConnectionAccepted(SAMP::Client *client, int playerid, uint32_t challenge);
 	void OnGotSync(SAMP::Client *client, SAMP::PacketEnumeration type, RakNet::BitStream *data, bool client_to_server);

@@ -21,7 +21,7 @@ namespace SAMP {
 	#define MAX_RPC_SIZE MAX_SPLIT_PACKET_SIZE - 256
 	#define SAMP_MAGIC 0x504d4153
 	#define SAMP_COOKIE 0x6969
-
+	
 	enum PacketEnumeration
 	{
 		ID_INTERNAL_PING = 6,
@@ -49,7 +49,8 @@ namespace SAMP {
 		ID_DISCONNECTION_NOTIFICATION,	
 		ID_CONNECTION_LOST,
 		ID_CONNECTION_REQUEST_ACCEPTED,
-		ID_CONNECTION_BANNED = 36,
+		ID_FAILED_INIT_ENCRYPTION,
+		ID_CONNECTION_BANNED,
 		ID_INVALID_PASS,
 		ID_MODIFIED_PACKET,
 		ID_PONG,
@@ -135,16 +136,21 @@ namespace SAMP {
 		std::vector<RakNetByteSeq> m_inject_seqs;
 	} RaknetStreamTransState;
 
+	/*
+		ID is not stored here because its the key for the map its stored in
+	*/
+	typedef struct {
+		std::map<int, RakNetByteSeq> m_sequences; //index, data
+		int m_count; //number of packets
+
+	} RaknetSplitData;
+
 
 	/*
 		Base SAMP Packet Handler for client to server messaging
 	*/
 	typedef void (*SAMPPacketHandlerSendFunc)(RakNet::BitStream &bs, void *extra, bool encrypt);
 	typedef void (*SAMPPacketHandlerRecvFunc)(RakNet::BitStream &out, void *extra, bool decrypt);
-	void readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input);
-	void sendPacket(RakNetPacketHead head, bool splits_processed, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt);
-	void sendByteSeqs(RaknetStreamTransState &trans_state, const std::vector<RakNetByteSeq> seqs, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt);
-	void freeRaknetPacket(RakNetPacketHead *packet);
 	enum ESAMPAuthState {
 		ESAMPAuthState_WaitConnReq,
 		ESAMPAuthState_SentAuthKey,
@@ -152,7 +158,7 @@ namespace SAMP {
 	};
 	class SAMPPacketHandler /*: public Net::PacketHandler*/ {
 	public:
-		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); };
+		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); m_transtate_out.m_out_split_id = 0; m_transtate_out.m_out_seq = 0; };
 		~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
 		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
@@ -160,6 +166,23 @@ namespace SAMP {
 			PacketReliability reliability, 
 			PacketPriority priority = HIGH_PRIORITY);
 	protected:
+		//split packet stuff
+		int GetHeaderLength(RakNetPacketHead *packet, bool with_data);
+		int GetSeqLength(RakNetByteSeq *seq);
+		int getPacketAckSerializedLen(RakNetPacketHead *packet);
+		std::vector<RakNetPacketHead *> getSplitPacket(RakNetPacketHead *packet);
+		void tryProcessSplitPackets();
+		RakNet::BitStream *perform_packet_split(int chunk_bits, int &remaining, RakNet::BitStream *bitstream);
+		void performPacketSplitting(std::vector<RakNetPacketHead *> &ret, RakNetPacketHead *packet);
+		void freeSplitPackets(std::vector<RakNetPacketHead *> split_packets);
+		void processSplitPacket(RaknetSplitData *data);
+		//
+
+		void readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input);
+		void sendPacket(RakNetPacketHead head, bool splits_processed, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt);
+		void sendByteSeqs(RaknetStreamTransState &trans_state, const std::vector<RakNetByteSeq> seqs, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt);
+		void freeRaknetPacket(RakNetPacketHead *packet);
+
 		RaknetStreamTransState m_transtate_out;
 
 		struct sockaddr_in m_in_addr;

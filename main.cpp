@@ -12,6 +12,7 @@ void addSAMPServer(SAMP::Server *server) {
 	g_event_mgr->addNetworkServer(server);
 }
 int main() {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_CHECK_CRT_DF );
 	#ifdef _WIN32
 		WSADATA wsdata;
 		WSAStartup(MAKEWORD(1, 0), &wsdata);

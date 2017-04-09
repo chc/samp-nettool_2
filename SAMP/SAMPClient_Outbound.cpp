@@ -58,8 +58,6 @@ namespace SAMP {
 			process_racket_sequence(byte_seq);
 			it++;
 		}
-
-		freeRaknetPacket(&packet);
 	}
 	void SAMPOutboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
 		RakNet::BitStream bs;
@@ -104,6 +102,7 @@ namespace SAMP {
 		mp_send_func(bs, mp_client, true);
 	}
 	void SAMPOutboundClientHandler::tick(fd_set *set) {
+		mp_mutex->lock();
 		if(m_send_queue.size() > 0 || m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, true);
 			for(std::vector<RakNetByteSeq>::iterator it = m_send_queue.begin();it != m_send_queue.end();it++) {
@@ -121,6 +120,7 @@ namespace SAMP {
 			}
 
 		}
+		mp_mutex->unlock();
 	}
 
 	void SAMPOutboundClientHandler::process_racket_sequence(RakNetByteSeq &byte_seq) {
@@ -172,7 +172,7 @@ namespace SAMP {
 		bs.WriteBits(sync_data, unread_bits);
 
 		//printf("S->C got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
-		dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
+		//dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
 		bs.ResetReadPointer();
 		Py::OnGotRPC(mp_client, rpc_id, &bs, false);
 	}

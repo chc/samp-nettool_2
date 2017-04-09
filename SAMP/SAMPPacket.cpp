@@ -1,6 +1,7 @@
 #include "SAMPPacket.h"
 #include "SAMPClient.h"
 #include "python\Python.h"
+#include <algorithm>
 namespace SAMP {
 	void SAMPPacketHandler::AddToOutputStream(RakNet::BitStream *bs, PacketReliability reliability, PacketPriority priority) {
 		
@@ -12,11 +13,12 @@ namespace SAMP {
 		bs->ResetReadPointer();
 		seq.data->Write(bs);
 		seq.data->ResetReadPointer();
+
 		mp_mutex->lock();
 		m_send_queue.push_back(seq);
 		mp_mutex->unlock();
 	}
-	void sendPacket(RakNetPacketHead packet, bool splits_processed, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt) {
+	void SAMPPacketHandler::sendPacket(RakNetPacketHead packet, bool splits_processed, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt) {
 		//NetDbgPrintf("Send input packet called\n");
 		//const char *direction = "[S->C]";
 		//if(send_to_server) {		
@@ -25,22 +27,22 @@ namespace SAMP {
 		//dump_raknet_packet(packet, send_to_server);
 
 		if(!splits_processed) {
-			/*
-			std::vector<RakNetPacketHead *> split_packets = getSplitPacket(packet, send_to_server);
+			
+			std::vector<RakNetPacketHead *> split_packets = getSplitPacket(&packet);
 			std::vector<RakNetPacketHead *>::iterator it = split_packets.begin();
 			if(split_packets.size() > 0) {
 				//NetDbgPrintf("Got %d split packets\n",split_packets.size());
 				while(it != split_packets.end()) {
 			
 					RakNetPacketHead *p = *it;
-					sendPacket(p, send_to_server, true);
+					sendPacket(*p, true, mp_send_func, extra, encrypt);
 					//NetDbgPrintf("Sending split packet : %d\n", send_to_server);
 					it++;
 				}
-				//freeSplitPackets(split_packets); TODO: probs can completely remove
+				freeSplitPackets(split_packets);
+				//freeRaknetPacket(&packet);
 				return;
 			}
-			*/
 		}
 
 		unsigned int slen = sizeof(struct sockaddr_in);
@@ -141,8 +143,10 @@ namespace SAMP {
 			output.Write(false);
 		}
 		mp_send_func(output, extra, encrypt);
+
+		//freeRaknetPacket(&packet); //will need to stay for resends later
 	}
-	void sendByteSeqs(RaknetStreamTransState &trans_state, const std::vector<RakNetByteSeq> seqs, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt) {
+	void SAMPPacketHandler::sendByteSeqs(RaknetStreamTransState &trans_state, const std::vector<RakNetByteSeq> seqs, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt) {
 		RakNetPacketHead head;
 		std::vector<int>::iterator it = trans_state.m_send_acks.begin();
 		while(it != trans_state.m_send_acks.end()) {
@@ -161,7 +165,7 @@ namespace SAMP {
 
 		sendPacket(head, false, mp_send_func, extra, encrypt);
 	}
-	void readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input) {
+	void SAMPPacketHandler::readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input) {
 		RakNet::BitStream output;
 		bool hasacks;
 		input->Read(hasacks);
@@ -230,11 +234,156 @@ namespace SAMP {
 			head.byte_seqs.push_back(packet);
 		}
 	}
-	void freeRaknetPacket(RakNetPacketHead *packet) {
+	std::map<void *, int> deleted;
+	void SAMPPacketHandler::freeRaknetPacket(RakNetPacketHead *packet) {
 		std::vector<RakNetByteSeq>::iterator it = packet->byte_seqs.begin();
 		while(it != packet->byte_seqs.end()) {
 			RakNetByteSeq seq = *it;
+			deleted[seq.data]++;
+			if(deleted[seq.data] > 1) {
+				printf("** Double delete %p %d\n",seq.data, deleted[seq.data]);
+			}
 			delete seq.data;
+			it++;
+		}
+	}
+	int SAMPPacketHandler::getPacketAckSerializedLen(RakNetPacketHead *packet) {
+		return sizeof(uint16_t) * 50;
+	}
+	int SAMPPacketHandler::GetHeaderLength(RakNetPacketHead *packet, bool with_data) {	
+		#define SEQ_HEAD_MAX_LEN 10
+		int seq_len = (packet->byte_seqs.size() * SEQ_HEAD_MAX_LEN);
+		std::vector<RakNetByteSeq>::iterator it = packet->byte_seqs.begin();
+		while(it != packet->byte_seqs.end()) {
+			RakNetByteSeq seq = *it;
+			seq_len += seq.data->GetNumberOfBytesUsed();
+			it++;
+		}
+		return seq_len;
+	}
+	int SAMPPacketHandler::GetSeqLength(RakNetByteSeq *seq) {
+		return SEQ_HEAD_MAX_LEN + seq->data->GetNumberOfBytesUsed();
+	} 
+	/*
+		TODO: free split packets
+	*/
+	std::vector<RakNetPacketHead *> SAMPPacketHandler::getSplitPacket(RakNetPacketHead *packet) {
+		std::vector<RakNetPacketHead *> ret;
+		int ack_size = getPacketAckSerializedLen(packet);
+		int seq_total_size = GetHeaderLength(packet, true);
+		int total_size = BYTES_TO_BITS(ack_size + seq_total_size);
+		if(total_size > SPLIT_CHUNK_SIZE_BITS) { //must perform split
+			//NetDbgPrintf("Must perform split: %d\n",total_size);
+			performPacketSplitting(ret, packet);
+		}  else {
+			/*
+			RakNetPacketHead *cpy_pkt = new RakNetPacketHead;
+			cpy_pkt->acknowlegements = packet->acknowlegements;
+			cpy_pkt->byte_seqs = packet->byte_seqs;
+			ret.push_back(cpy_pkt);
+			*/
+		}
+
+		return ret;
+	}
+
+	/*
+		No input packets should be split at input
+
+		Step 1:
+			Go through all seqs splitting sequences > MTUSize into seperate chunks
+		Step 2:
+			Go through all seqs, calculating header + seq size, adding sequences until cursize + seq size > MTUSize
+	*/
+	void SAMPPacketHandler::performPacketSplitting(std::vector<RakNetPacketHead *> &ret, RakNetPacketHead *packet) {
+		//RakNetByteSeq seq = packet->byte_seqs.at(0);
+
+		std::vector<RakNetByteSeq> split_seqs;
+
+		//step 1
+		int header_len = GetHeaderLength(packet, false);
+		std::vector<RakNetByteSeq>::iterator it = packet->byte_seqs.begin();
+		while(it != packet->byte_seqs.end()) {
+			int cur_channel;
+			RakNetByteSeq seq = *it;
+
+			if(header_len + seq.data->GetNumberOfBytesUsed() < MTUSize) {
+				seq.has_split_packet = false;
+				split_seqs.push_back(seq);
+			} else { //must do splitting
+				RakNet::BitStream *full_bs = seq.data;
+				int cur_seq = 0;
+				cur_channel = m_transtate_out.m_out_split_id++;
+				int i = 0;
+				int num_packets = ceil((float)full_bs->GetNumberOfBitsUsed() / (float)SPLIT_CHUNK_SIZE_BITS);
+				full_bs->ResetReadPointer();
+				seq.split_packet_count = num_packets;
+				seq.has_split_packet = true;
+
+				int write_len = full_bs->GetNumberOfBitsUsed();
+				while(write_len > 0) {
+					
+					cur_seq = m_transtate_out.m_out_seq++;
+					seq.data = perform_packet_split(SPLIT_CHUNK_SIZE_BITS, write_len, full_bs);
+					seq.has_split_packet = true;
+					seq.seqid = (uint16_t)cur_seq;
+					seq.split_packet_index = i++;
+					seq.split_packet_id = cur_channel;
+					seq.split_packet_count = num_packets;
+					split_seqs.push_back(seq);
+				}
+			}
+			it++;
+		}
+
+		//step 2 - TODO: free
+		int packet_size = 0;
+		RakNetPacketHead *head = new RakNetPacketHead;
+		ret.push_back(head);
+		it = split_seqs.begin();
+		while(it != split_seqs.end()) {
+			RakNetByteSeq seq = *it;
+			if(this->GetHeaderLength(head, true) + GetSeqLength(&seq) > SPLIT_CHUNK_SIZE) {
+				head = new RakNetPacketHead;
+				ret.push_back(head);
+			}
+			head->byte_seqs.push_back(seq);
+			it++;
+		}
+	
+		if(std::find(ret.begin(),ret.end(),head) == ret.end()) {
+			ret.push_back(head);
+		}
+		//NetDbgPrintf("Sending split packet size %d\n",ret.size());
+	}
+	RakNet::BitStream *SAMPPacketHandler::perform_packet_split(int chunk_bits, int &remaining, RakNet::BitStream *bitstream) {
+		RakNet::BitStream *ret = new RakNet::BitStream(BITS_TO_BYTES(chunk_bits));
+		if(remaining >= chunk_bits) {
+			remaining -= chunk_bits;
+			ret->Write(bitstream, chunk_bits);
+		} else {
+			ret->Write(bitstream, remaining);
+			remaining = 0;
+		}
+		return ret;
+	}
+	void SAMPPacketHandler::freeSplitPackets(std::vector<RakNetPacketHead *> split_packets) {
+		std::vector<RakNetPacketHead *>::iterator it = split_packets.begin();
+		while(it != split_packets.end()) {
+			RakNetPacketHead *p = *it;		
+			std::vector<RakNetByteSeq>::iterator seq_it = p->byte_seqs.begin();
+			/*
+			while(seq_it != p->byte_seqs.end()) {
+				RakNetByteSeq seq = *seq_it;
+				deleted[seq.data]++;
+				if(deleted[seq.data] > 1) {
+					printf("** Double delete %p %d\n",seq.data, deleted[seq.data]);
+				}
+				delete seq.data; //deleted by free packet
+				seq_it++;
+			}
+			*/
+			delete p;
 			it++;
 		}
 	}

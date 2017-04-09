@@ -27,7 +27,10 @@ RPCNameMap mp_rpc_map[] = {
 													{"Name", ERPCVariableType_LenStr,true, true}, 
 													{"Unknown", ERPCVariableType_Uint32,true, true}, 
 													{NULL, ERPCVariableType_NoInit}}},
-	{"EnterVehicle", ESAMPRPC_EnterVehicle, {NULL, ERPCVariableType_NoInit}},
+	{"EnterVehicle", ESAMPRPC_EnterVehicle, {
+													{"vehicleid", ERPCVariableType_Uint16,true, false}, 
+													{"seat", ERPCVariableType_Uint8,true, false}},
+	},
 	{"SetPlayerTime", ESAMPRPC_SetPlayerTime, {
 													{"hour", ERPCVariableType_Uint8,false, true}, 
 													{"minute", ERPCVariableType_Uint8,false, true}, 

@@ -19,11 +19,10 @@ def sync_thread():
 				if "incar" in player and player['incar'] > 0:
 					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 1000.0, 'player_armour': 50, 'player_health': 66, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0, 'vehicleid': player['incar']}
 					client.connection.SendSync(SAMP.PACKET_VEHICLE_SYNC, rpc_details)
-					print("send veh sync\n")
 				else:
 					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 100, 'armour': 50, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0}
 					client.connection.SendSync(SAMP.PACKET_PLAYER_SYNC, rpc_details)
-		time.sleep(50.0 / 1000.0)
+		time.sleep(16.0 / 1000.0)
 
 #proxy mode handlers
 #must live outside of proxyclient due to C code limitations
@@ -81,6 +80,9 @@ def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
 		connection.context['delegator'][rpcid](connection, rpcid, rpc_data)
 
 
+def id_generator(size, chars):
+	return ''.join(random.choice(chars) for _ in range(size))
+
 class ProxyClient():
 
 	def getProxyDelegator(self):
@@ -102,6 +104,10 @@ class ProxyClient():
 		print("Done proxy client\n")
 
 
+
+	def get_random_name(self):
+		chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+		return id_generator(20, chars)
 	#debug stuff
 	def init_fake_players(self):
 
@@ -110,25 +116,44 @@ class ProxyClient():
 		]
 		self.players = [
 		#-2007.87 174.93 27.54
-			{'name': 'Joe_Bob', 'score': 1111, 'ping': 666, 'id': 666, 'skin': 200, 'pos': [-2007.87, 174.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'Jeff_CarDriver', 'score': 2111, 'ping': 1337, 'id': 112, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255, 'incar': 1},
-			{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'id': 113, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'asxasd', 'score': 2111, 'ping': 1337, 'id': 114, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'id': 115, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'assdfd', 'score': 2111, 'ping': 1337, 'id': 116, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'aadfgd', 'score': 2111, 'ping': 1337, 'id': 117, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'agcasd', 'score': 2111, 'ping': 1337, 'id': 118, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			#{'name': 'gfdgsd', 'score': 2111, 'ping': 1337, 'id': 119, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			#{'name': 'a435sd', 'score': 2111, 'ping': 1337, 'id': 121, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			#{'name': 'as23sd', 'score': 2111, 'ping': 1337, 'id': 122, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			#{'name': 'asfsdf', 'score': 2111, 'ping': 1337, 'id': 123, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			#{'name': '234asd', 'score': 2111, 'ping': 1337, 'id': 124, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'Joe_Bob', 'score': 1111, 'ping': 666, 'skin': 200, 'pos': [-2007.87, 174.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			{'name': 'Jeff_CarDriver', 'score': 2111, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255, 'incar': 1},
+		#	{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'asxasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'assdfd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'aadfgd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'agcasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'gfdgsd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'a435sd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'as23sd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': 'asfsdf', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+		#	{'name': '234asd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
+			
 		]
+
+		template_user = {'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-1917.87, 104.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255}
 		y_offset = 0.0
+		id_offset = 300
+		count = 2
+
+		#for x in range(0, 100):
+			#self.players.append(template_user)
+
 		for player in self.players:
 			y_offset = y_offset + 1.5
+			id_offset = id_offset + 1
+			count = count + 10
+			random.seed(count)
+			player['id'] = id_offset
+			player["skin"] = random.randrange(0,311, count)
+			name = "ID_{}".format(id_offset)
+			if "name" not in player:
+				player["name"] = "ID_{}".format(id_offset)
+
+				#player["name"] = self.get_random_name()
 			player['pos'][1] = player['pos'][1] + y_offset
-			rpc_details = {'id': player['id'], 'colour': 0xFFFFFFFF, 'x': player['pos'][0], 'y': player['pos'][1], 'z': player['pos'][2], 'z_angle': player['z_angle'], 'fightstyle': player['fightstyle'], 'skin': player['skin'], 'team': player['team'], 'npc': 0, 'name': player['name']}
+			rpc_details = {'id': player['id'], 'colour': 0xFFFFFFFF, 'x': player['pos'][0], 'y': player['pos'][1], 'z': player['pos'][2], 'z_angle': player['z_angle'], 'fightstyle': player['fightstyle'], 'skin': player['skin'], 'team': player['team'], 'npc': 0, 'name': name}
 			self.connection.SendRPC(SAMP.RPC_ServerJoin, rpc_details)
 			self.connection.SendRPC(SAMP.RPC_AddPlayerToWorld, rpc_details)
 
@@ -189,8 +214,14 @@ class ProxyClient():
 
 
 #must exist outside ProxyServer due to C implementation limitations
-def server_new_conn_hndlr(server, connection):
+def server_new_conn_hndlr(server, connection, password):
+
 	server.context.clients.append(ProxyClient(server.context, connection))
+
+#	if password == "123321":
+	return SAMP.CONN_RESPONSE_REASON_ACCEPTED
+#	else:
+#		return SAMP.CONN_RESPONSE_REASON_INVALID_PASS
 
 class ProxyServer(): #TODO BASE SERVER
 
@@ -206,9 +237,4 @@ def getClientProxiedDelegator():
 	delegator = {}
 	return delegator
 
-#t = _thread.start_new_thread(send_syncs, (1, 666))
-
-#time.sleep(5)
-#t.exit()
-
-_thread.start_new_thread(sync_thread, () )
+_thread.start_new_thread(sync_thread, ())
