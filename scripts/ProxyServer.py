@@ -30,13 +30,20 @@ def proxy_client_rpc_hndlr(connection, rpcid, rpc_data):
 	if not "proxy_delegator" in connection.context:
 		connection.context['proxy_delegator'] = connection.context['proxy_client'].getProxyDelegator()
 
-	print("Proxy got: {}\n".format(rpc_data))
+	print("Proxy got: {}\n".format(rpcid))
 	if connection.source_connection != None:
 			connection.source_connection.SendRPC(rpcid, rpc_data)
 	
+proxy_last_anim_num = 0
+last_anim_num = 0
 def proxy_client_sync_hndlr(connection, type, sync_data):
 	#print("S->C Got Sync: {} {}\n".format(type,sync_data))
+	global proxy_last_anim_num
 	if connection.source_connection != None:
+		if "anim" in sync_data:
+			if proxy_last_anim_num > 250000000:
+				proxy_last_anim_num = -250000000
+			sync_data["anim"] = proxy_last_anim_num
 		connection.source_connection.SendSync(type, sync_data)	
 
 #add to client response, check for if banned/wrong pw/server full, etc
@@ -56,9 +63,21 @@ def proxy_client_accepted(connection, playerid, challenge):
 	connection.SendRPC(SAMP.RPC_RequestClass, RPCData)
 
 
+
+
 #client mode handlers
 def server_conn_sync_hndlr(connection, type, sync_data):
+	global last_anim_num
 	if connection.proxy_connection != None:
+		print("Send sync: {} {}\n".format(type, sync_data))
+#		if "keys" in sync_data:
+#			sync_data["keys"] =  2
+		if "angle" in sync_data and not isinstance(sync_data["angle"], list):
+			if last_anim_num > 360:
+				last_anim_num = -260
+			last_anim_num = last_anim_num + 1
+			sync_data["angle"] = last_anim_num
+			
 		connection.proxy_connection.SendSync(type, sync_data)
 		return None
 
@@ -68,7 +87,7 @@ def server_conn_stats_update_hndlr(connection, money, drunk):
 
 
 def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
-	print("We got RPC: {} - {}\n".format(rpcid,rpc_data))
+	print("We got RPC: {}\n".format(rpcid))
 	if connection.proxy_connection != None:
 		connection.proxy_connection.SendRPC(rpcid, rpc_data)
 		return None
@@ -110,14 +129,13 @@ class ProxyClient():
 		return id_generator(20, chars)
 	#debug stuff
 	def init_fake_players(self):
-
 		self.vehicles = [
 			{'id': 1, 'modelid': 411, 'x':-2017.87, 'y': 200.0, 'z': 27.54, 'zrot': 0.0, 'col1': 41, 'col2': 11, 'health': 1000.0, 'interior': 0, 'door_damage': 0, 'panel_damage': 0, 'light_damage': 0, 'tire_damage': 0, 'siren': 0, 'comp1': 0,'comp2': 0,'comp3': 0,'comp4': 0,'comp5': 0,'comp6': 0,'comp7': 0,'comp8': 0,'comp9': 0,'comp10': 0,'comp11': 0,'comp12': 0,'comp13': 0,'comp14': 0, 'col32_1': 0, 'col32_2': 0, 'unknown': 0},
 		]
 		self.players = [
 		#-2007.87 174.93 27.54
-			{'name': 'Joe_Bob', 'score': 1111, 'ping': 666, 'skin': 200, 'pos': [-2007.87, 174.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
-			{'name': 'Jeff_CarDriver', 'score': 2111, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255, 'incar': 1},
+			{'name': 'Joe_Bob', 'score': 1111, 'ping': 666, 'skin': 200, 'pos': [-2007.87, 174.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255, 'id': 51},
+			{'name': 'Jeff_CarDriver', 'score': 2111, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255, 'incar': 1, 'id': 50},
 		#	{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
 		#	{'name': 'asxasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
 		#	{'name': 'asdasd', 'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 134.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255},
@@ -132,28 +150,35 @@ class ProxyClient():
 			
 		]
 
-		template_user = {'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-1917.87, 104.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255}
-		y_offset = 0.0
+		template_user = {'score': 2111, 'ping': 1337, 'skin': 122, 'pos': [-2017.87, 144.93, 27.54], 'z_angle': 0.0, 'fightstyle': 0, 'team': 255}
+		y_offset = 1.5
 		id_offset = 300
 		count = 2
 
-		#for x in range(0, 100):
-			#self.players.append(template_user)
+		the_players = self.players
+
+		for x in range(0, 50):
+			id_offset = id_offset + 1
+			template_user['id'] = id_offset
+			template_user["skin"] = random.randrange(0,311, count)
+			name = "ID_{}".format(id_offset)
+			y_offset = y_offset + 1.5
+			template_user["pos"][1] = template_user["pos"][1] + y_offset
+			template_user["name"] = "ID_{}".format(id_offset)
+			dic_copy = template_user.copy()
+			dic_copy["pos"] = dic_copy["pos"].copy()
+			self.players.append(dic_copy)
 
 		for player in self.players:
-			y_offset = y_offset + 1.5
-			id_offset = id_offset + 1
+			
+			
 			count = count + 10
 			random.seed(count)
-			player['id'] = id_offset
-			player["skin"] = random.randrange(0,311, count)
-			name = "ID_{}".format(id_offset)
-			if "name" not in player:
-				player["name"] = "ID_{}".format(id_offset)
+
 
 				#player["name"] = self.get_random_name()
 			player['pos'][1] = player['pos'][1] + y_offset
-			rpc_details = {'id': player['id'], 'colour': 0xFFFFFFFF, 'x': player['pos'][0], 'y': player['pos'][1], 'z': player['pos'][2], 'z_angle': player['z_angle'], 'fightstyle': player['fightstyle'], 'skin': player['skin'], 'team': player['team'], 'npc': 0, 'name': name}
+			rpc_details = {'id': player['id'], 'colour': 0xFFFFFFFF, 'x': player['pos'][0], 'y': player['pos'][1], 'z': player['pos'][2], 'z_angle': player['z_angle'], 'fightstyle': player['fightstyle'], 'skin': player['skin'], 'team': player['team'], 'npc': 0, 'name': player['name']}
 			self.connection.SendRPC(SAMP.RPC_ServerJoin, rpc_details)
 			self.connection.SendRPC(SAMP.RPC_AddPlayerToWorld, rpc_details)
 

@@ -104,6 +104,8 @@ namespace SAMP {
 	#define BYTES_TO_BITS(x) ((x)<<3)
 	#define ALIGNED_BITS(x) (BYTES_TO_BITS(BITS_TO_BYTES(x)))
 
+	#define NUMBER_OF_ORDERED_STREAMS 32 // 2^5
+
 	typedef struct {
 		uint8_t reliability;
 		uint16_t seqid;
@@ -134,6 +136,9 @@ namespace SAMP {
 		int m_out_split_id;
 
 		std::vector<RakNetByteSeq> m_inject_seqs;
+
+		unsigned int m_ordering_index[NUMBER_OF_ORDERED_STREAMS];
+		int m_ordering_channel;
 	} RaknetStreamTransState;
 
 	/*
@@ -142,7 +147,6 @@ namespace SAMP {
 	typedef struct {
 		std::map<int, RakNetByteSeq> m_sequences; //index, data
 		int m_count; //number of packets
-
 	} RaknetSplitData;
 
 
@@ -158,7 +162,7 @@ namespace SAMP {
 	};
 	class SAMPPacketHandler /*: public Net::PacketHandler*/ {
 	public:
-		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); m_transtate_out.m_out_split_id = 0; m_transtate_out.m_out_seq = 0; };
+		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); m_transtate_out.m_out_split_id = 0; m_transtate_out.m_out_seq = 0; m_transtate_out.m_ordering_channel = 0; memset(&m_transtate_out.m_ordering_index,0,NUMBER_OF_ORDERED_STREAMS * sizeof(int)); };
 		~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
 		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
@@ -190,6 +194,8 @@ namespace SAMP {
 		std::vector<RakNetByteSeq> m_send_queue;
 
 		OS::CMutex *mp_mutex;
+
+		std::map<int, RaknetSplitData> m_split_data;
 	};
 
 }

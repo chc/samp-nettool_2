@@ -151,8 +151,26 @@ namespace Py {
 		PyDict_SetItem(sync_dict, PyUnicode_FromString("weapon"), PyLong_FromLong(sync->weapon));
 
 		PyDict_SetItem(sync_dict, PyUnicode_FromString("siren"), sync->siren ? Py_True : Py_False);
-		PyDict_SetItem(sync_dict, PyUnicode_FromString("landing_gear"), sync->landing_gear ? Py_True : Py_False);
 
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("landinggear_state"), sync->landinggear_state ? Py_True : Py_False);
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("train_speed"), PyFloat_FromDouble(sync->train_speed));
+
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("hydra"), sync->hydra ? Py_True : Py_False);
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("trailer"), sync->trailer ? Py_True : Py_False);
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("angle"), PyLong_FromLong(sync->angle));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("train"), sync->train ? Py_True : Py_False);
+
+		/*
+		out->siren = PyLong_AsLong(PyDict_GetItemString(dict, "siren"));
+		out->landinggear_state = PyLong_AsLong(PyDict_GetItemString(dict, "landinggear_state"));
+
+		out->train_speed = PyFloat_AsDouble(PyDict_GetItemString(dict, "train_speed"));
+
+		out->hydra = PyLong_AsLong(PyDict_GetItemString(dict, "hydra"));
+		out->trailer = PyLong_AsLong(PyDict_GetItemString(dict, "trailer"));
+		out->angle = PyLong_AsLong(PyDict_GetItemString(dict, "angle"));
+		out->train = PyDict_GetItemString(dict, "train") == Py_True;
+		*/
 		return sync_dict;
 	}
 	void PyDictToSync_Vehicle(SAMP::VEHICLE_SYNC_INFO *out, PyObject* dict, bool client_to_server) {
@@ -201,7 +219,14 @@ namespace Py {
 		out->weapon = PyLong_AsLong(dict_item);
 
 		out->siren = PyDict_GetItemString(dict, "siren") == Py_True;
-		out->landing_gear = PyDict_GetItemString(dict, "landing_gear") == Py_True;
+		out->landinggear_state = PyDict_GetItemString(dict, "landinggear_state") == Py_True;
+
+		out->train_speed = PyFloat_AsDouble(PyDict_GetItemString(dict, "train_speed"));
+
+		out->hydra = PyDict_GetItemString(dict, "hydra") == Py_True;
+		out->trailer = PyDict_GetItemString(dict, "trailer") == Py_True;
+		out->angle = PyLong_AsLong(PyDict_GetItemString(dict, "angle"));
+		out->train = PyDict_GetItemString(dict, "train") == Py_True;
 	}
 
 	PyObject* SyncToPyDict_Aim(SAMP::SAMPAimSync *sync, bool client_to_server) {
@@ -293,7 +318,7 @@ namespace Py {
 
 
 		if(!client_to_server) {
-			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->player_id));
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid));
 		}
 
 		return sync_dict;
@@ -302,9 +327,9 @@ namespace Py {
 		PyObject *dict_item;
 		if(!client_to_server) {
 			dict_item = PyDict_GetItemString(dict, "playerid");
-			out->player_id = (uint16_t)PyLong_AsLong(dict_item);
+			out->playerid = (uint16_t)PyLong_AsLong(dict_item);
 		} else {
-			out->player_id = (uint16_t)-1;
+			out->playerid = (uint16_t)-1;
 		}
 
 		dict_item = PyDict_GetItemString(dict, "origin");
@@ -331,6 +356,118 @@ namespace Py {
 		dict_item = PyDict_GetItemString(dict, "id");
 		out->id = (uint8_t)PyLong_AsLong(dict_item);
 	}
+	PyObject* SyncToPyDict_Passenger(SAMP::PASSENGER_SYNC_DATA *sync, bool client_to_server) {
+		PyObject *sync_dict = PyDict_New();
+		PyObject *py_pos = PyList_New(3);
+		PyObject *dict_item;
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->position[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->position[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->position[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("position"), py_pos);
+
+
+		if(sync->playerid != -1)
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid));
+
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("vehicleid"), PyLong_FromLong(sync->vehicleid));
+
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("leftright_keys"), PyLong_FromLong(sync->leftright_keys));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("updown_keys"), PyLong_FromLong(sync->updown_keys));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("keys"), PyLong_FromLong(sync->keys));
+
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("currentweapon"), PyLong_FromLong(sync->currentweapon));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("player_health"), PyLong_FromLong(sync->health));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("player_armour"), PyLong_FromLong(sync->armour));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("seat_flags"), PyLong_FromLong(sync->seat_flags));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("driveby"), PyLong_FromLong(sync->driveby));
+		return sync_dict;
+	}
+	void PyDictToSync_Passenger(SAMP::PASSENGER_SYNC_DATA *out, PyObject* dict, bool client_to_server) {
+
+		PyObject *dict_item;
+		if(!client_to_server) {
+			dict_item = PyDict_GetItemString(dict, "playerid");
+			out->playerid = (uint16_t)PyLong_AsLong(dict_item);
+		} else {
+			out->playerid = (uint16_t)-1;
+		}
+
+		dict_item = PyDict_GetItemString(dict, "vehicleid");
+		out->vehicleid = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "leftright_keys");
+		out->leftright_keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "updown_keys");
+		out->updown_keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "keys");
+		out->keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "currentweapon");
+		out->currentweapon = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "player_health");
+		out->health= PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "player_armour");
+		out->armour = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "seat_flags");
+		out->seat_flags = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "driveby");
+		out->driveby = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "position");
+		out->position[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->position[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->position[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+	}
+	PyObject* SyncToPyDict_Spectator(SAMP::SPECTATOR_SYNC_DATA *sync, bool client_to_server) {
+		PyObject *sync_dict = PyDict_New();
+		PyObject *py_pos = PyList_New(3);
+		PyObject *dict_item;
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->position[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->position[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->position[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("position"), py_pos);
+		
+		if(sync->playerid != -1)
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid));
+
+		dict_item = PyDict_GetItemString(sync_dict, "leftright_keys");
+		sync->leftright_keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(sync_dict, "updown_keys");
+		sync->updown_keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(sync_dict, "keys");
+		sync->keys = PyLong_AsLong(dict_item);
+
+		return sync_dict;
+	}
+	void PyDictToSync_Spectator(SAMP::SPECTATOR_SYNC_DATA *out, PyObject* dict, bool client_to_server) {
+		PyObject *dict_item;
+		if(!client_to_server) {
+			dict_item = PyDict_GetItemString(dict, "playerid");
+			out->playerid = (uint16_t)PyLong_AsLong(dict_item);
+		} else {
+			out->playerid = (uint16_t)-1;
+		}
+
+		dict_item = PyDict_GetItemString(dict, "position");
+		out->position[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->position[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->position[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		PyDict_SetItem(dict, PyUnicode_FromString("leftright_keys"), PyLong_FromLong(out->leftright_keys));
+		PyDict_SetItem(dict, PyUnicode_FromString("updown_keys"), PyLong_FromLong(out->updown_keys));
+		PyDict_SetItem(dict, PyUnicode_FromString("keys"), PyLong_FromLong(out->keys));
+	}
+
 	/*
 	PyObject* SyncToPyDict_Marker(SAMP::SAMPMarkerSync *sync, bool client_to_server) {
 		if(client_to_server) {
@@ -375,9 +512,12 @@ namespace Py {
 			//out->pos[i][2] = PyFloat_AsDouble(PyList_GetItem(item, 2));
 		}
 	}*/
+
 	void PySAMP_AddPacketDefs(PyObject *module) {
 		PyModule_AddIntConstant(module, "PACKET_PLAYER_SYNC", SAMP::ID_PLAYER_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_VEHICLE_SYNC", SAMP::ID_VEHICLE_SYNC);
+		PyModule_AddIntConstant(module, "PACKET_PASSENGER_SYNC", SAMP::ID_PASSENGER_SYNC);
+		PyModule_AddIntConstant(module, "PACKET_UNOCCUPIED_SYNC", SAMP::ID_UNOCCUPIED_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_BULLET_SYNC", SAMP::ID_BULLET_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_AIM_SYNC", SAMP::ID_AIM_SYNC);
 

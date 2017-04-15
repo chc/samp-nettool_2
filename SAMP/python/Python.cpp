@@ -139,7 +139,11 @@ namespace Py {
 	}
 	void OnGotRPC(SAMP::Client *client, uint32_t rpc_id, RakNet::BitStream *data, bool client_to_server) {
 		RPCNameMap *rpc_map = GetRPCNameMapByID(rpc_id);
-		printf("C->S Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		if(client_to_server) {
+			printf("C->S Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		} else {
+			printf("S->C Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
+		}
 		assert(rpc_map);
 		if(!rpc_map) {
 			return;
@@ -181,6 +185,8 @@ namespace Py {
 		SAMP::VEHICLE_SYNC_INFO vehicle_sync;
 		SAMP::SAMPBulletSync bullet_sync;
 		SAMP::SAMPAimSync aim_sync;
+		SAMP::PASSENGER_SYNC_DATA passenger_sync;
+		SAMP::SPECTATOR_SYNC_DATA spectator_sync;
 		PyObject *dict = NULL;
 		switch(type) {
 			case SAMP::ID_PLAYER_SYNC:
@@ -191,6 +197,10 @@ namespace Py {
 				ReadVehicleSync(&vehicle_sync, data, client_to_server);
 				dict = SyncToPyDict_Vehicle(&vehicle_sync, client_to_server);
 				break;
+			case SAMP::ID_PASSENGER_SYNC:
+				ReadPassengerSync(&passenger_sync, data, client_to_server);
+				dict = SyncToPyDict_Passenger(&passenger_sync, client_to_server);
+				break;
 			case SAMP::ID_AIM_SYNC:
 				ReadAimSync(&aim_sync, data, client_to_server);
 				dict = SyncToPyDict_Aim(&aim_sync, client_to_server);
@@ -198,6 +208,10 @@ namespace Py {
 			case SAMP::ID_BULLET_SYNC:
 				ReadBulletSync(&bullet_sync, data, client_to_server);
 				dict = SyncToPyDict_Bullet(&bullet_sync, client_to_server);
+				break;
+			case SAMP::ID_SPECTATOR_SYNC:
+				ReadSpectatorSync(&spectator_sync, data, client_to_server);
+				dict = SyncToPyDict_Spectator(&spectator_sync, client_to_server);
 				break;
 			default:
 				return;

@@ -12,8 +12,9 @@ namespace SAMP {
 		{ID_INTERNAL_PING, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_internal_ping},
 		{ID_PLAYER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
+		{ID_PASSENGER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		//{ID_MARKERS_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
-		//{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
+		{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		//{ID_TRAILER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		//{ID_PASSENGER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
@@ -36,6 +37,8 @@ namespace SAMP {
 		m_transtate_out.m_out_seq = 0;
 
 		m_in_addr = *in_addr;
+
+		m_transtate_out.m_ordering_channel = 1;
 
 		gettimeofday(&m_last_sent_ping, NULL);
 	}
@@ -62,7 +65,8 @@ namespace SAMP {
 			process_racket_sequence(byte_seq);
 			it++;
 		}
-
+		if(m_transtate_out.m_send_acks.size() > 0)
+			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
 		//freeRaknetPacket(&packet);
 	}
 	void SAMPInboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
@@ -100,7 +104,7 @@ namespace SAMP {
 	}
 	void SAMPInboundClientHandler::tick(fd_set *set) {
 		mp_mutex->lock();
-		if(m_send_queue.size() > 0) {
+		if(m_send_queue.size() > 0 || m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
 			/*
 			for(std::vector<RakNetByteSeq>::iterator it = m_send_queue.begin();it != m_send_queue.end();it++) {
@@ -126,10 +130,6 @@ namespace SAMP {
 		bs.Write((uint32_t)RakNet::GetTime());
 
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
-		bs.Reset();
-
-		bs.Write((uint8_t)ID_RECEIVED_STATIC_DATA);
-		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 
 	void SAMPInboundClientHandler::process_racket_sequence(RakNetByteSeq &byte_seq) {
@@ -139,12 +139,13 @@ namespace SAMP {
 		data->Read(msgid);
 		for(int i=0;i<sizeof(m_msg_handlers)/sizeof(_SAMPClientMsgHandlers);i++) {
 			if(m_msg_handlers[i].id == msgid) {
+				//printf("C->S Got msg %d - %d(%d) - seq %d\n", msgid, data->GetNumberOfBitsUsed(),data->GetNumberOfBytesUsed(),byte_seq.seqid);
 				func = m_msg_handlers[i].mpHandler;
 				(*this.*func)(data, (PacketEnumeration)msgid);
 				return;
 			}
 		}
-		printf("C->S Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		//printf("C->S Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPInboundClientHandler::m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id) {
@@ -161,7 +162,7 @@ namespace SAMP {
 		data->ReadBits((unsigned char *)&sync_data, unread_bits);
 		bs.WriteBits(sync_data, unread_bits);
 
-		//dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
+		dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
 		bs.ResetReadPointer();
 		//printf("C->S got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
 		Py::OnGotRPC(mp_client, rpc_id, &bs, true);
@@ -225,6 +226,7 @@ namespace SAMP {
 	}
 	void SAMPInboundClientHandler::m_handle_internal_ping(RakNet::BitStream *data, PacketEnumeration id) {
 		RakNet::BitStream bs;
+		bs.Write((uint8_t)id);
 		bs.Write(data);
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
@@ -262,6 +264,9 @@ namespace SAMP {
 		printf("C->S DC Type: %d\n", type);
 	}
 	void SAMPInboundClientHandler::m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id) {
+		RakNet::BitStream bs;
+		bs.Write((uint8_t)ID_RECEIVED_STATIC_DATA);
+		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 	
 

@@ -206,10 +206,22 @@ namespace SAMP {
 			in->Read(vehicle_sync->player_health);
 			in->Read(vehicle_sync->player_armour);
 			in->Read(vehicle_sync->weapon);
-			in->Read(vehicle_sync->siren_on);
-			in->Read(vehicle_sync->landinggear_state);
-			in->Read(vehicle_sync->trailerid_or_thurstangle);
+
+			uint8_t val;
+			in->Read(val);
+			vehicle_sync->siren = val;
+
+			in->Read(val);
+			vehicle_sync->landinggear_state = val;
+
+			
+			uint16_t angle;
+			in->Read(angle);
+			vehicle_sync->angle = angle;
+
 			in->Read(vehicle_sync->train_speed);
+			vehicle_sync->train = vehicle_sync->train_speed != 0.0;
+
 		} else {
 			in->Read(vehicle_sync->playerid);
 			in->Read(vehicle_sync->vehicleid);
@@ -251,9 +263,20 @@ namespace SAMP {
 
 			in->ReadCompressed(vehicle_sync->siren);
 
-			in->ReadCompressed(vehicle_sync->landing_gear);
+			in->ReadCompressed(vehicle_sync->landinggear_state);
 
-			//thrust angles/trailer id
+			in->ReadCompressed(vehicle_sync->hydra);
+			in->ReadCompressed(vehicle_sync->trailer);
+			in->Read(vehicle_sync->angle);
+
+
+			in->ReadCompressed(vehicle_sync->train);
+			if(vehicle_sync->train) {
+				uint16_t val;
+				in->Read(val);
+				vehicle_sync->train_speed = val;
+			}
+
 
 		}
 	}
@@ -281,11 +304,11 @@ namespace SAMP {
 			out->Write(vehicle_sync->player_health);
 			out->Write(vehicle_sync->player_armour);
 			out->Write(vehicle_sync->weapon);
-			out->Write(vehicle_sync->siren_on);
-			out->Write(vehicle_sync->landinggear_state);
-			out->Write(vehicle_sync->trailerid_or_thurstangle);
+			out->Write((uint8_t)vehicle_sync->siren);
+			out->Write((uint8_t)vehicle_sync->landinggear_state);
+			out->Write((uint16_t)vehicle_sync->angle); //thrust/bike angle
 			out->Write(vehicle_sync->train_speed);
-			out->Write((uint8_t)0); //unknown
+			//out->Write((uint8_t)0); //unknown
 		} else {
 			out->Write(vehicle_sync->playerid);
 			out->Write(vehicle_sync->vehicleid);
@@ -318,17 +341,20 @@ namespace SAMP {
 
 			out->Write(vehicle_sync->weapon);
 			out->WriteCompressed(vehicle_sync->siren);
-			out->WriteCompressed(vehicle_sync->landing_gear);
+			out->WriteCompressed(vehicle_sync->landinggear_state);
 
-			out->WriteCompressed(false); //hydra
-			out->WriteCompressed(false); //trailer
+			out->WriteCompressed(vehicle_sync->hydra); //hydra
+			out->WriteCompressed(vehicle_sync->trailer); //trailer
 
-			out->Write((uint32_t)0); //trust angles/trailer id
+			out->Write(vehicle_sync->angle);
 
-			//train stuff
-			out->WriteCompressed(false);
-			//if true, read uint16_t(float of speed)
+			out->WriteCompressed(vehicle_sync->train);
+
+			if(vehicle_sync->train) {
+				out->Write((uint16_t)vehicle_sync->train_speed);
+			}
 		}
+
 		out->AlignWriteToDWORDBoundary();
 	}
 
@@ -371,9 +397,9 @@ namespace SAMP {
 
 	void ReadBulletSync(SAMP::SAMPBulletSync *bullet_sync, RakNet::BitStream *in, bool client_to_server) {
 		if(!client_to_server) {
-			in->Read(bullet_sync->player_id);
+			in->Read(bullet_sync->playerid);
 		} else {
-			bullet_sync->player_id = (uint16_t)-1;
+			bullet_sync->playerid = (uint16_t)-1;
 		}
 		in->Read(bullet_sync->type);	
 		in->Read(bullet_sync->id);
@@ -390,7 +416,7 @@ namespace SAMP {
 	}
 	void WriteBulletSync(SAMP::SAMPBulletSync *bullet_sync, RakNet::BitStream *out, bool client_to_server) {
 		if(!client_to_server) {
-			out->Write(bullet_sync->player_id);
+			out->Write(bullet_sync->playerid);
 		}
 		out->Write(bullet_sync->type);
 		out->Write(bullet_sync->id);
@@ -406,6 +432,70 @@ namespace SAMP {
 		out->Write(bullet_sync->weapon);
 		out->AlignWriteToDWORDBoundary();
 	}
+	void ReadPassengerSync(SAMP::PASSENGER_SYNC_DATA *passenger_sync, RakNet::BitStream *in, bool client_to_server) {
+		if(!client_to_server) {
+			in->Read(passenger_sync->playerid);
+		} else {
+			passenger_sync->playerid = (uint16_t)-1;
+		}
+		in->Read(passenger_sync->vehicleid);
+		in->ReadBits((unsigned char *)&passenger_sync->seat_flags, 7);
+		in->ReadBits((unsigned char *)&passenger_sync->driveby, 1);
+		in->Read(passenger_sync->currentweapon);
+		in->Read(passenger_sync->health);
+		in->Read(passenger_sync->armour);
+		in->Read(passenger_sync->leftright_keys);
+		in->Read(passenger_sync->updown_keys);
+		in->Read(passenger_sync->keys);
 
+		in->Read(passenger_sync->position[0]);
+		in->Read(passenger_sync->position[1]);
+		in->Read(passenger_sync->position[2]);
+	}
+	void WritePassengerSync(SAMP::PASSENGER_SYNC_DATA *passenger_sync, RakNet::BitStream *out, bool client_to_server) {
+		if(!client_to_server) {
+			out->Write(passenger_sync->playerid);
+		}
+		out->Write(passenger_sync->vehicleid);
+		out->WriteBits((unsigned char *)&passenger_sync->seat_flags, 7);
+		out->WriteBits((unsigned char *)&passenger_sync->driveby, 1);
+		out->Write(passenger_sync->currentweapon);
+		out->Write(passenger_sync->health);
+		out->Write(passenger_sync->armour);
+		out->Write(passenger_sync->leftright_keys);
+		out->Write(passenger_sync->updown_keys);
+		out->Write(passenger_sync->keys);
+		out->Write(passenger_sync->position[0]);
+		out->Write(passenger_sync->position[1]);
+		out->Write(passenger_sync->position[2]);
+		out->AlignWriteToDWORDBoundary();
+	}
+
+	void ReadSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server) {
+		if(!client_to_server) {
+			in->Read(spectator_sync->playerid);
+		} else {
+			spectator_sync->playerid = -1;
+		}
+		in->Read(spectator_sync->leftright_keys);
+		in->Read(spectator_sync->updown_keys);
+		in->Read(spectator_sync->keys);
+
+		in->Read(spectator_sync->position[0]);
+		in->Read(spectator_sync->position[1]);
+		in->Read(spectator_sync->position[2]);
+	}
+	void WriteSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *out, bool client_to_server) {
+		if(!client_to_server) {
+			out->Write(spectator_sync->playerid);
+		}
+		out->Write(spectator_sync->leftright_keys);
+		out->Write(spectator_sync->updown_keys);
+		out->Write(spectator_sync->keys);
+		out->Write(spectator_sync->position[0]);
+		out->Write(spectator_sync->position[1]);
+		out->Write(spectator_sync->position[2]);
+		out->AlignWriteToDWORDBoundary();
+	}
 
 }

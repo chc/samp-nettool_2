@@ -4,6 +4,8 @@
 #include "SAMPClient_Outbound.h"
 #include "encryption.h"
 #include "BitStream.h"
+
+#include "python\PySAMPRPC.h"
 namespace SAMP {
 
 	Client::Client(int sd, const struct sockaddr_in *in_addr, SAMP::Server *server, uint16_t port) : Net::Client(in_addr, sd) {
@@ -93,20 +95,24 @@ namespace SAMP {
 
 		bs.WriteCompressed((uint32_t)rpc_data->GetNumberOfBitsUsed());
 		bs.Write(rpc_data);
-		
+
+		/*
+		const char *name = GetRPCNameByID(rpcid);
 		if(this->GetInbound()) {
-			printf("Send RPC %d inbound (%d|%d)\n",rpcid, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
+			printf("Send RPC %d(%s) inbound (%d|%d)\n",rpcid, name, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
 		} else {
-			printf("Send RPC %d outbound (%d|%d)\n",rpcid, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
+			printf("Send RPC %d(%s) outbound (%d|%d)\n",rpcid, name, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
 		}
+		*/
 		
-		mp_packet_handler->AddToOutputStream(&bs, RELIABLE, SAMP::MEDIUM_PRIORITY);
+		
+		mp_packet_handler->AddToOutputStream(&bs, UNRELIABLE_SEQUENCED, SAMP::MEDIUM_PRIORITY);
 	}
 	void Client::SendMessage(int msgid, RakNet::BitStream *rpc_data) {
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)msgid);
 		bs.Write(rpc_data);
-		mp_packet_handler->AddToOutputStream(&bs, UNRELIABLE, SAMP::MEDIUM_PRIORITY);
+		mp_packet_handler->AddToOutputStream(&bs, UNRELIABLE_SEQUENCED, SAMP::MEDIUM_PRIORITY);
 		
 	}
 }

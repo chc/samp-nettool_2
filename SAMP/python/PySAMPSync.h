@@ -15,6 +15,12 @@ namespace Py {
 	PyObject* SyncToPyDict_Bullet(SAMP::SAMPBulletSync *sync, bool client_to_server);
 	void PyDictToSync_Bullet(SAMP::SAMPBulletSync *out, PyObject* dict, bool client_to_server);
 
+	PyObject* SyncToPyDict_Passenger(SAMP::PASSENGER_SYNC_DATA *sync, bool client_to_server);
+	void PyDictToSync_Passenger(SAMP::PASSENGER_SYNC_DATA *out, PyObject* dict, bool client_to_server);
+
+	PyObject* SyncToPyDict_Spectator(SAMP::SPECTATOR_SYNC_DATA *sync, bool client_to_server);
+	void PyDictToSync_Spectator(SAMP::SPECTATOR_SYNC_DATA *out, PyObject* dict, bool client_to_server);
+
 	//PyObject* SyncToPyDict_Marker(SAMP::SAMPMarkerSync *sync, bool client_to_server);
 	//void PyDictToSync_Marker(SAMP::SAMPMarkerSync *out, PyObject* dict, bool client_to_server);
 	void PySAMP_AddPacketDefs(PyObject *module);

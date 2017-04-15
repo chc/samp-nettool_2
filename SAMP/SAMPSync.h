@@ -39,27 +39,53 @@ namespace SAMP {
 
 		uint8_t weapon;
 
+		bool landinggear_state;
 		bool siren;
-
-		bool landing_gear;
-
-		uint8_t landinggear_state;
-		uint8_t siren_on;
-		uint8_t trailerid_or_thurstangle;
 		float train_speed;
 
 		//todo: train stuff, thrust angles/trailerid
+		
+		bool hydra;
+		bool trailer;
+		uint32_t angle; //thrust/bike lean angle
+		bool train;
 	} VEHICLE_SYNC_INFO;
 
 	typedef struct {
 		uint8_t type;
-		uint16_t player_id;
+		uint16_t playerid;
 		uint16_t id;
 		float origin[3];
 		float target[3];
 		float center[3];
 		uint8_t weapon;
 	} SAMPBulletSync;
+
+	typedef struct _PASSENGER_SYNC_DATA
+	{
+		uint16_t playerid;
+		uint16_t vehicleid;
+		uint8_t seat_flags;
+		uint8_t driveby;
+		uint8_t currentweapon;
+		uint8_t health;
+		uint8_t armour;
+		uint16_t leftright_keys;
+		uint16_t updown_keys;
+		uint16_t keys;
+		float position[3];
+	} PASSENGER_SYNC_DATA;
+
+
+	typedef struct _SPECTATOR_SYNC_DATA
+	{
+		uint16_t playerid;
+		uint16_t leftright_keys;
+		uint16_t updown_keys;
+		uint16_t keys;
+		float position[3];
+	} SPECTATOR_SYNC_DATA;
+
 
 	typedef struct {
 		uint16_t player_id;
@@ -94,6 +120,12 @@ namespace SAMP {
 
 	void ReadBulletSync(SAMPBulletSync *bullet_sync, RakNet::BitStream *in, bool client_to_server);
 	void WriteBulletSync(SAMPBulletSync *bullet_sync, RakNet::BitStream *out, bool client_to_server);
+
+	void ReadPassengerSync(SAMP::PASSENGER_SYNC_DATA *passenger_sync, RakNet::BitStream *in, bool client_to_server);
+	void WritePassengerSync(SAMP::PASSENGER_SYNC_DATA *passenger_sync, RakNet::BitStream *in, bool client_to_server);
+
+	void ReadSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server);
+	void WriteSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server);
 
 	//void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server);
 	//void WriteMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *out, bool client_to_server);

@@ -140,6 +140,8 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 	SAMP::VEHICLE_SYNC_INFO vehicle_sync;
 	SAMP::SAMPBulletSync bullet_sync;
 	SAMP::SAMPAimSync aim_sync;
+	SAMP::PASSENGER_SYNC_DATA passenger_sync;
+	SAMP::SPECTATOR_SYNC_DATA spectator_sync;
 
 	switch(msg_id) {
 		case SAMP::ID_PLAYER_SYNC:
@@ -157,6 +159,14 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 		case SAMP::ID_AIM_SYNC:
 			Py::PyDictToSync_Aim(&aim_sync, send_dict, send_to_server);
 			SAMP::WriteAimSync(&aim_sync,out_bs, send_to_server);
+			break;
+		case SAMP::ID_PASSENGER_SYNC:
+			Py::PyDictToSync_Passenger(&passenger_sync, send_dict, send_to_server);
+			SAMP::WritePassengerSync(&passenger_sync,out_bs, send_to_server);
+			break;
+		case SAMP::ID_SPECTATOR_SYNC:
+			Py::PyDictToSync_Spectator(&spectator_sync, send_dict, send_to_server);
+			SAMP::WriteSpectatorSync(&spectator_sync,out_bs, send_to_server);
 			break;
 	}
 	out_bs->ResetReadPointer();

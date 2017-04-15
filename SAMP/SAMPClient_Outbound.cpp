@@ -14,7 +14,11 @@ namespace SAMP {
 		{ID_PLAYER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_PASSENGER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_BULLET_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_disconnect},
+		{ID_RECEIVED_STATIC_DATA, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_recv_static_data},
 	};
 	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
 		m_raknet_mode = false;
@@ -34,6 +38,8 @@ namespace SAMP {
 		bs.Write((uint8_t)ID_OPEN_CONNECTION_REQUEST);
 		bs.Write((uint16_t)SAMP_COOKIE);
 
+		m_transtate_out.m_ordering_channel = 2;
+
 		mp_send_func(bs, mp_client, true);
 	}
 	SAMPOutboundClientHandler::~SAMPOutboundClientHandler() {
@@ -48,15 +54,21 @@ namespace SAMP {
 	void SAMPOutboundClientHandler::handle_raknet_packet(RakNet::BitStream *stream) {
 		RakNetPacketHead packet;
 		readRaknetPacket(packet, stream);
-
+		
 		std::vector<RakNetByteSeq>::iterator it = packet.byte_seqs.begin();
 		while(it != packet.byte_seqs.end()) {
 			RakNetByteSeq byte_seq = *it;
 			if(byte_seq.reliability == RELIABLE || byte_seq.reliability == RELIABLE_SEQUENCED || byte_seq.reliability == RELIABLE_ORDERED) {
 				m_transtate_out.m_send_acks.push_back(byte_seq.seqid);
 			}
+			if(byte_seq.has_split_packet) { it ++;continue; }
 			process_racket_sequence(byte_seq);
 			it++;
+		}
+		//printf("outbound Send queue size: %d\n", m_send_queue.size());
+		if(m_transtate_out.m_send_acks.size() > 0) {
+			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, true);
+			m_send_queue.clear();
 		}
 	}
 	void SAMPOutboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
@@ -105,10 +117,12 @@ namespace SAMP {
 		mp_mutex->lock();
 		if(m_send_queue.size() > 0 || m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, true);
+			/*
 			for(std::vector<RakNetByteSeq>::iterator it = m_send_queue.begin();it != m_send_queue.end();it++) {
 				RakNetByteSeq seq = *it;
 				delete seq.data;
 			}
+			*/
 			m_transtate_out.m_send_acks.clear();
 			m_send_queue.clear();
 		}
@@ -128,6 +142,8 @@ namespace SAMP {
 		uint8_t msgid;
 		RakNet::BitStream *data = byte_seq.data;
 		data->Read(msgid);
+		if(msgid < 200)
+			printf("S->C Got msg %d seq %d\n",msgid, byte_seq.seqid);
 		for(int i=0;i<sizeof(m_msg_handlers)/sizeof(_SAMPOutboundClientMsgHandlers);i++) {
 			if(m_msg_handlers[i].id == msgid) {
 				func = m_msg_handlers[i].mpHandler;
@@ -135,7 +151,7 @@ namespace SAMP {
 				return;
 			}
 		}
-		printf("S->C Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		//printf("S->C Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...) {
 		int offset = stream->GetReadOffset();
@@ -172,7 +188,7 @@ namespace SAMP {
 		bs.WriteBits(sync_data, unread_bits);
 
 		//printf("S->C got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
-		//dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
+		dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
 		bs.ResetReadPointer();
 		Py::OnGotRPC(mp_client, rpc_id, &bs, false);
 	}
@@ -250,5 +266,10 @@ namespace SAMP {
 		uint8_t type;
 		data->Read(type); //always uninitalized
 		printf("DC Type: %d\n", type);
+	}
+	void SAMPOutboundClientHandler::m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id) {
+		RakNet::BitStream bs;
+		bs.Write((uint8_t)ID_RECEIVED_STATIC_DATA);
+		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 }

@@ -9,9 +9,17 @@ namespace SAMP {
 		seq.seqid = m_transtate_out.m_out_seq++;
 		seq.reliability = reliability;
 		seq.has_split_packet = false;
+
+		if(seq.reliability == UNRELIABLE_SEQUENCED || seq.reliability == RELIABLE_SEQUENCED || seq.reliability == RELIABLE_ORDERED ) {
+			seq.orderingChannel = m_transtate_out.m_ordering_channel;
+			seq.orderingIndexType = m_transtate_out.m_ordering_index[seq.orderingChannel]++;
+		}
+
 		seq.data = new RakNet::BitStream();
+
 		bs->ResetReadPointer();
 		seq.data->Write(bs);
+
 		seq.data->ResetReadPointer();
 
 		mp_mutex->lock();
@@ -35,6 +43,8 @@ namespace SAMP {
 				while(it != split_packets.end()) {
 			
 					RakNetPacketHead *p = *it;
+					p->acknowlegements = packet.acknowlegements;
+					packet.acknowlegements.Clear();
 					sendPacket(*p, true, mp_send_func, extra, encrypt);
 					//NetDbgPrintf("Sending split packet : %d\n", send_to_server);
 					it++;
@@ -49,19 +59,21 @@ namespace SAMP {
 		RakNet::BitStream output(MTUSize);
 		bool has_acks = packet.acknowlegements.Size() > 0;
 		output.Write(has_acks);
-		if(has_acks) {
-			//NetDbgPrintf("*** %s Writing %d acks\n", direction,packet.acknowlegements.Size());
-			uint16_t messageNumber;
-			for (int i=0; i<packet.acknowlegements.ranges.Size();i++)
-			{
-				if (packet.acknowlegements.ranges[i].minIndex>packet.acknowlegements.ranges[i].maxIndex)
-				{
-					break;
-				}
 
-				for (messageNumber=packet.acknowlegements.ranges[i].minIndex; messageNumber >= packet.acknowlegements.ranges[i].minIndex && messageNumber <= packet.acknowlegements.ranges[i].maxIndex; messageNumber++)
+		if(has_acks) {
+			if(encrypt) {
+				uint16_t messageNumber;
+				for (int i=0; i<packet.acknowlegements.ranges.Size();i++)
 				{
-					//printf("\t======= ack msgid: %d\n", messageNumber);
+					if (packet.acknowlegements.ranges[i].minIndex>packet.acknowlegements.ranges[i].maxIndex)
+					{
+						break;
+					}
+
+					for (messageNumber=packet.acknowlegements.ranges[i].minIndex; messageNumber >= packet.acknowlegements.ranges[i].minIndex && messageNumber <= packet.acknowlegements.ranges[i].maxIndex; messageNumber++)
+					{
+						printf("\t ======= ack msgid: %d\n", messageNumber);
+					}
 				}
 			}
 			packet.acknowlegements.Serialize(&output, (MTUSize-UDP_HEADER_SIZE)*8-1, true);
@@ -78,7 +90,11 @@ namespace SAMP {
 			if(seq.reliability == UNRELIABLE_SEQUENCED || seq.reliability == RELIABLE_SEQUENCED || seq.reliability == RELIABLE_ORDERED ) {
 				output.WriteBits((unsigned char *)&seq.orderingChannel, 5, true);
 				output.Write(seq.orderingIndexType);
-				//NetDbgPrintf("Write Chan: %d Index: %d\n",seq.orderingChannel, seq.orderingIndexType);
+				//printf("Write Chan: %d Index: %d\n",seq.orderingChannel, seq.orderingIndexType);
+			}
+
+			if(seq.reliability == RELIABLE || seq.reliability == RELIABLE_SEQUENCED || seq.reliability == RELIABLE_ORDERED) {
+				m_transtate_out.m_send_acks.push_back(seq.seqid);
 			}
 
 			output.Write((bool)seq.has_split_packet); //split packet
@@ -149,10 +165,12 @@ namespace SAMP {
 	void SAMPPacketHandler::sendByteSeqs(RaknetStreamTransState &trans_state, const std::vector<RakNetByteSeq> seqs, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt) {
 		RakNetPacketHead head;
 		std::vector<int>::iterator it = trans_state.m_send_acks.begin();
+		bool has_acks = false;
 		while(it != trans_state.m_send_acks.end()) {
 			int seq = *it;
 			head.acknowlegements.Insert(seq);
 			it++;
+			has_acks = true;
 		}
 		trans_state.m_send_acks.clear();
 
@@ -162,6 +180,19 @@ namespace SAMP {
 			head.byte_seqs.push_back(seq);
 			it2++;
 		}
+
+		if(seqs.size() == 0 && !has_acks)
+			return;
+		
+		if(head.acknowlegements.Size() > 0) {
+			if(encrypt) {
+				printf("C->S Sending %d acks\n",head.acknowlegements.Size());
+			} else {
+				//printf("S->C Sending %d acks\n",head.acknowlegements.Size());
+			}
+		}
+		
+		
 
 		sendPacket(head, false, mp_send_func, extra, encrypt);
 	}
@@ -192,7 +223,7 @@ namespace SAMP {
 			if(packet.reliability == UNRELIABLE_SEQUENCED || packet.reliability == RELIABLE_SEQUENCED || packet.reliability == RELIABLE_ORDERED ) {
 				input->ReadBits((unsigned char *)&packet.orderingChannel, 5);
 				input->Read(packet.orderingIndexType);
-				//NetDbgPrintf("\t*** %s reliability: %d - (chan: %d  index: %d)\n",direction,packet.reliability,packet.orderingChannel, packet.orderingIndexType);
+				//printf("\t*** reliability: %d - (chan: %d  index: %d)\n",packet.reliability,packet.orderingChannel, packet.orderingIndexType);
 			} else {
 				packet.orderingChannel = 0;
 				packet.orderingIndexType = 0;
