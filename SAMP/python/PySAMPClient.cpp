@@ -1,7 +1,7 @@
 
 #include "main.h"
 #include "PySAMPClient.h"
-#include "SAMP\SAMPClient.h"
+#include "SAMP/SAMPClient.h"
 
 #include "SAMP/SAMPSync.h"
 #include "PySAMPRPC.h"
@@ -52,15 +52,15 @@ PyTypeObject gs_SAMPClientType = {
     "SAMP Client Object",       /* tp_doc */
 };
 
-static PyMemberDef SAMPClient_members[] = {
+static PyMemberDef SAMPClient_members[8] = {
     {"proxy_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_proxy_connection), 0,"proxy connection object"},
 	{"source_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_source_connection), 0,"source connection object"},
-	{"rpc_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_rpc_handler), 0,"rpc handler function"},
-	{"sync_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_sync_handler), 0,"rpc handler function"},
-	{"conn_accepted_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_conn_accepted_handler), 0,"connection accepted handler function"},
-	{"stats_update_handler", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_stats_update_handler), 0,"stats updatehandler function"},
-	{"context", T_OBJECT_EX, offsetof(gs_SAMPClient, mp_context), 0,"stats updatehandler function"},
-    {NULL}  /* Sentinel */
+	{"rpc_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_rpc_handler), 0,"rpc handler function"},
+	{"sync_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_sync_handler), 0,"rpc handler function"},
+	{"conn_accepted_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_conn_accepted_handler), 0,"connection accepted handler function"},
+	{"stats_update_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_stats_update_handler), 0,"stats updatehandler function"},
+	{"context", T_OBJECT, offsetof(gs_SAMPClient, mp_context), 0,"stats updatehandler function"},
+    {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
 extern std::vector<gs_SAMPClient *> m_py_clients;
@@ -71,8 +71,7 @@ PyObject * SAMPClient_New(PyTypeObject *type, PyObject *args, PyObject *kwd) {
 	obj->samp_server = NULL;
 	obj->mp_rpc_handler = NULL;
 	obj->mp_sync_handler = NULL;
-	obj->mp_proxy_connection = Py_None;
-	Py_INCREF(Py_None);
+	obj->mp_proxy_connection = NULL;
 
 	m_py_clients.push_back(obj);
 	return (PyObject *)obj;
@@ -83,6 +82,7 @@ bool PySAMP_ClientReady() {
 	gs_SAMPClientType.tp_new = SAMPClient_New;
 	gs_SAMPClientType.tp_alloc = PyType_GenericAlloc;
 	gs_SAMPClientType.tp_members = SAMPClient_members;
+
 	if (PyType_Ready(&gs_SAMPClientType) < 0)
 		return false;
 	return true;

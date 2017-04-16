@@ -1,6 +1,6 @@
 #include "SAMPServer.h"
 #include "SAMPClient.h"
-#include <legacy\buffwriter.h>
+#include <legacy/buffwriter.h>
 namespace SAMP {
 	Server::Server(const char *hostname) : Net::Server(hostname) {
 		uint16_t server_port;
@@ -29,7 +29,7 @@ namespace SAMP {
 		if(set) {
 			if(FD_ISSET(m_server_socket,set)) {
 				struct sockaddr_in from_addr;
-				int from_len = sizeof(from_addr);
+				socklen_t from_len = sizeof(from_addr);
 				int *magic = (int *)&buf;
 				int len = recvfrom(m_server_socket, (char *)&buf, sizeof(buf), 0, (struct sockaddr *)&from_addr, &from_len);
 				if(*magic == SAMP_MAGIC) {
@@ -176,7 +176,12 @@ namespace SAMP {
 		std::vector<SAMP::Client *>::iterator it = m_samp_clients.begin();
 		while(it != m_samp_clients.end()) {
 			client = *it;
-			if(client->GetSockAddr().sin_addr.S_un.S_addr == addr->sin_addr.S_un.S_addr && addr->sin_port == client->GetSockAddr().sin_port) {
+			#ifdef _WIN32
+			if(client->GetSockAddr().sin_addr.S_un.S_addr == addr->sin_addr.S_un.S_addr && addr->sin_port == client->GetSockAddr().sin_port)
+			#else
+			if(client->GetSockAddr().sin_addr.s_addr == addr->sin_addr.s_addr && addr->sin_port == client->GetSockAddr().sin_port)
+			#endif
+			{
 				return client;
 			}
 			it++;

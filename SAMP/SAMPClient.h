@@ -4,6 +4,8 @@
 #include <NetClient.h>
 #include <BitStream.h>
 
+#include <string>
+#include "python/Python.h"
 #include "SAMPPacket.h"
 namespace SAMP {
 	class Client : public Net::Client {

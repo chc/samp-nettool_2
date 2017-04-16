@@ -38,14 +38,14 @@ namespace SAMP {
 			//read sync data
 			in->Read(player_sync->playerid);
 
-			in->Read((bool)temp_bool);
+			in->Read(temp_bool);
 			if(temp_bool) {
 				in->Read(player_sync->leftright_keys);
 			} else {
 				player_sync->leftright_keys = 0;
 			}
 
-			in->Read((bool)temp_bool);
+			in->Read(temp_bool);
 
 			if(temp_bool) {
 				in->Read(player_sync->updown_keys);
@@ -82,7 +82,7 @@ namespace SAMP {
 
 			in->ReadVector(player_sync->move_speed[0], player_sync->move_speed[1], player_sync->move_speed[2]);;
 
-			in->Read((bool)temp_bool);
+			in->Read(temp_bool);
 			if(temp_bool) {
 				in->Read(player_sync->surf_flags);
 				in->Read(player_sync->surfoffset[0]);
@@ -92,7 +92,7 @@ namespace SAMP {
 				player_sync->surf_flags = 0;
 			}
 
-			in->Read((bool)temp_bool);
+			in->Read(temp_bool);
 			if(temp_bool) {
 				in->Read(player_sync->anim);
 			} else {

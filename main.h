@@ -6,9 +6,16 @@
 
 #ifdef _WIN32
 	#include <WinSock2.h>
+#else
+	#include <unistd.h>
+	#include <sys/socket.h>
+	#include <sys/types.h>
+	#include <arpa/inet.h>
+	#include <netinet/in.h>
+	#include <signal.h>
+	#include <netdb.h> 
+	#include <sys/time.h>
 #endif
-
-#include "SAMP/python/Python.h"
 
 namespace SAMP {
 	class Server;
@@ -18,5 +25,8 @@ void addSAMPServer(SAMP::Server *server);
 
 uint32_t resolv(const char *host);
 void get_server_address_port(const char *input, char *address, uint16_t &port);
-int gettimeofday(struct timeval * tp, struct timezone * tzp);
+#ifdef _WIN32
+	int gettimeofday(struct timeval * tp, struct timezone * tzp);
+#endif
+
 #endif //_MAIN_H

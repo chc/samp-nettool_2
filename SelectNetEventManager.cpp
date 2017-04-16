@@ -2,6 +2,7 @@
 #include "NetProxy.h"
 #include "SelectNetEventManager.h"
 #include <stdio.h>
+#include <string.h>
 namespace Net {
 	SelectNetEventManager::SelectNetEventManager() {
 

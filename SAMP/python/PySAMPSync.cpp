@@ -1,6 +1,8 @@
 #include "SAMP/SAMPPacket.h"
 #include "PySAMPSync.h"
 #include <Python.h>
+
+#include "Python.h"
 namespace Py {
 	PyObject* SyncToPyDict_Player(SAMP::PLAYER_SYNC_INFO *sync, bool client_to_server) {
 		PyObject *sync_dict = PyDict_New();

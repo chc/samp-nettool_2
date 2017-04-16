@@ -2,8 +2,9 @@
 #include "main.h"
 #include "PySAMPServer.h"
 #include "PySAMPClient.h"
-#include "SAMP\SAMPServer.h"
-#include "SAMP\SAMPClient.h"
+#include "SAMP/SAMPServer.h"
+#include "SAMP/SAMPClient.h"
+#include "SAMP/python/Python.h"
 
 #include "structmember.h"
 PyMethodDef SAMPServer_methods[] = {

@@ -5,11 +5,10 @@
 #include <BitStream.h>
 #include <string>
 #include "PySAMPClient.h"
-
+#include <SAMP/SAMPPacket.h>
 namespace SAMP {
 	class Server;
 	class Client;
-	enum PacketEnumeration;
 };
 
 enum EConnRejectReason {

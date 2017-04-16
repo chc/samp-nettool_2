@@ -219,7 +219,11 @@ namespace SAMP {
 
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)ID_NEW_INCOMING_CONNECTION);
-		bs.Write((uint32_t)m_client_addr.sin_addr.S_un.S_addr);
+		#ifdef _WIN32
+			bs.Write((uint32_t)m_client_addr.sin_addr.S_un.S_addr);
+		#else
+			bs.Write((uint32_t)m_client_addr.sin_addr.s_addr);
+		#endif
 		bs.Write((uint16_t)m_client_addr.sin_port);
 		AddToOutputStream(&bs, RELIABLE, SAMP::HIGH_PRIORITY);
 

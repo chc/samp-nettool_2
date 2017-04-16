@@ -1,5 +1,6 @@
 #include <main.h>
 #include "SAMPAuth.h"
+#include <string.h>
 
 SAMPAuthTable auth_key_table[] =
 {
@@ -541,19 +542,19 @@ void BIG_NUM_MUL(unsigned long in[5], unsigned long out[6], unsigned long factor
 
 	unsigned long long tmp = 0;
 
-	tmp = unsigned long long(src[0])*unsigned long long(factor);
+	tmp = (unsigned long long)(src[0])*(unsigned long long)(factor);
 	out[0] = tmp&0xFFFFFFFF;
 	out[1] = tmp>>32;
-	tmp = unsigned long long(src[1])*unsigned long long(factor) + unsigned long long(out[1]);
+	tmp = (unsigned long long)(src[1])*(unsigned long long)(factor) + (unsigned long long)(out[1]);
 	out[1] = tmp&0xFFFFFFFF;
 	out[2] = tmp>>32;
-	tmp = unsigned long long(src[2])*unsigned long long(factor) + unsigned long long(out[2]);
+	tmp = (unsigned long long)(src[2])*(unsigned long long)(factor) + (unsigned long long)(out[2]);
 	out[2] = tmp&0xFFFFFFFF;
 	out[3] = tmp>>32;
-	tmp = unsigned long long(src[3])*unsigned long long(factor) + unsigned long long(out[3]);
+	tmp = (unsigned long long)(src[3])*(unsigned long long)(factor) + (unsigned long long)(out[3]);
 	out[3] = tmp&0xFFFFFFFF;
 	out[4] = tmp>>32;
-	tmp = unsigned long long(src[4])*unsigned long long(factor) + unsigned long long(out[4]);
+	tmp = (unsigned long long)(src[4])*(unsigned long long)(factor) + (unsigned long long)(out[4]);
 	out[4] = tmp&0xFFFFFFFF;
 	out[5] = tmp>>32;
 

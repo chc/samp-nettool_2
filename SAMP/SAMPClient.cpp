@@ -5,7 +5,11 @@
 #include "encryption.h"
 #include "BitStream.h"
 
-#include "python\PySAMPRPC.h"
+#include "python/PySAMPRPC.h"
+
+#ifdef _WIN32
+	#define close closesocket
+#endif
 namespace SAMP {
 
 	Client::Client(int sd, const struct sockaddr_in *in_addr, SAMP::Server *server, uint16_t port) : Net::Client(in_addr, sd) {
@@ -34,7 +38,7 @@ namespace SAMP {
 	}
 	Client::~Client() {
 		if(!m_inbound) {
-			closesocket(m_sd);
+			close(m_sd);
 		}
 	}
 	void Client::think(fd_set *set) {
@@ -67,7 +71,7 @@ namespace SAMP {
 		Client *client = (Client *)extra;
 		char recvbuf[MTUSize];
 		const struct sockaddr_in addr = client->GetSockAddr();
-		int from_len = sizeof(struct sockaddr_in);
+		socklen_t from_len = sizeof(struct sockaddr_in);
 		int len = recvfrom(client->GetSocket(), (char *)&recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&addr, &from_len);
 		assert(len > 0);
 		if(decrypt) {

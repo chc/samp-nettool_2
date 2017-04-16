@@ -1,6 +1,6 @@
 #include "SAMPPacket.h"
 #include "SAMPClient.h"
-#include "python\Python.h"
+#include "python/Python.h"
 #include <algorithm>
 namespace SAMP {
 	void SAMPPacketHandler::AddToOutputStream(RakNet::BitStream *bs, PacketReliability reliability, PacketPriority priority) {

@@ -8,7 +8,7 @@
 
 #include <stack>
 
-#include "OS/Mutex.h"
+#include <OS/Mutex.h>
 
 namespace SAMP {
 
@@ -150,7 +150,7 @@ namespace SAMP {
 	} RaknetSplitData;
 
 
-	/*
+	/*_IN
 		Base SAMP Packet Handler for client to server messaging
 	*/
 	typedef void (*SAMPPacketHandlerSendFunc)(RakNet::BitStream &bs, void *extra, bool encrypt);

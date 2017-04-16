@@ -1,9 +1,11 @@
 #include "main.h"
 #include "SelectNetEventManager.h"
 #include "NetProxy.h"
-#include "SAMP\SAMPServer.h"
-
+#include "SAMP/SAMPServer.h"
+#include "SAMP/python/Python.h"
 #include "SAMP/python/PySAMPRPC.h"
+
+
 
 std::vector<SAMP::Server *> m_servers;
 Net::SelectNetEventManager* g_event_mgr = NULL;
@@ -74,6 +76,7 @@ void get_server_address_port(const char *input, char *address, uint16_t &port) {
 }
 
 
+#ifdef _WIN32
 int gettimeofday(struct timeval * tp, struct timezone * tzp)
 {
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
@@ -92,3 +95,4 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp)
     tp->tv_usec = (long) (system_time.wMilliseconds * 1000);
     return 0;
 }
+#endif

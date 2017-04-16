@@ -1,7 +1,7 @@
 #include "SAMPClient.h"
 #include "SAMPClient_Inbound.h"
 
-#include "rak_minimal\GetTime.h"
+#include "rak_minimal/GetTime.h"
 
 namespace SAMP {
 	SAMPClientMsgHandler SAMPInboundClientHandler::m_msg_handlers[] = {
@@ -197,7 +197,11 @@ namespace SAMP {
 		switch(response) {
 			case EConnRejectReason_Accepted:
 				bs.Write((uint8_t)ID_CONNECTION_REQUEST_ACCEPTED);
-				bs.Write((uint32_t)m_in_addr.sin_addr.S_un.S_addr);
+				#ifdef _WIN32
+					bs.Write((uint32_t)m_in_addr.sin_addr.S_un.S_addr);
+				#else
+					bs.Write((uint32_t)m_in_addr.sin_addr.s_addr);
+				#endif
 				bs.Write((uint16_t)m_in_addr.sin_port);
 				bs.Write((uint16_t)16);
 				bs.Write((uint32_t)0xFFFFFFFF);

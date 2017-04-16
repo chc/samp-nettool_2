@@ -1,6 +1,6 @@
 #ifndef _PYSAMP_SYNC_H
 #define _PYSAMP_SYNC_H
-#include "SAMP\SAMPSync.h"
+#include "SAMP/SAMPSync.h"
 #include <Python.h>
 namespace Py {
 	PyObject* SyncToPyDict_Player(SAMP::PLAYER_SYNC_INFO *sync, bool client_to_server);

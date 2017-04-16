@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <Python.h>
 
-#include "SAMP\SAMPClient.h"
+#include "SAMP/SAMPClient.h"
 
 #include "Python.h"
 #include "PySAMPServer.h"
 #include "PySAMPClient.h"
 #include "PySAMPRPC.h"
 #include "PySAMPSync.h"
-#include "SAMP\SAMPAuth.h"
-#include "SAMP\SAMPSync.h"
+#include "SAMP/SAMPAuth.h"
+#include "SAMP/SAMPSync.h"
 #include <vector>
 #include <algorithm>
 
@@ -58,17 +58,23 @@ namespace Py {
 
 		PyImport_AppendInittab("SAMP", PyInit_SAMP);
 	
-		Py_SetProgramName(L"NetTool");
-		Py_SetPythonHome(L"E:\\Code\\Python-3.5.0"); //temp windows fix
-		Py_SetPath(L"E:\\Code\\nettool_new\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\scripts");
+		//Py_SetProgramName(L"scripts");
 		
-		wprintf(L"PyPath: %s\n",Py_GetPath());
+		//Py_SetPythonHome(L"E:\\Code\\Python-3.5.0"); //temp windows fix
+		//Py_SetPath("E:\\Code\\nettool_new\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\scripts");
+
+		Py_SetPath(L"/usr/local/lib/python36.zip:/usr/local/lib/python3.6:/usr/local/lib/python3.6/lib-dynload:/usr/local/lib/python3.6/site-packages:/home/andy/nettool_2/scripts");
+		//Py_SetPath(L"scripts");
+		
+		
 		Py_Initialize();
+		
 
 		PyEval_InitThreads();
 
-		const char *path = "scripts\\__init__.py";
+		const char *path = "scripts/__init__.py";
 		FILE *fd = fopen(path, "r");
+		printf("FD is: %p\n", fd);
 		PyRun_AnyFile(fd, path);
 		fclose(fd);		
 	}
