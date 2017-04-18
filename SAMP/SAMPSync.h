@@ -99,6 +99,7 @@ namespace SAMP {
 	} SAMPAimSync;
 
 	typedef struct {
+		uint16_t playerid;
 		uint16_t vehicle_id;
 		uint16_t roll[3];
 		uint16_t direction[3];
@@ -126,6 +127,9 @@ namespace SAMP {
 
 	void ReadSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server);
 	void WriteSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server);
+
+	void ReadUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *in, bool client_to_server);
+	void WriteUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *in, bool client_to_server);
 
 	//void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server);
 	//void WriteMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *out, bool client_to_server);

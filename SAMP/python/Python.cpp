@@ -61,9 +61,9 @@ namespace Py {
 		//Py_SetProgramName(L"scripts");
 		
 		//Py_SetPythonHome(L"E:\\Code\\Python-3.5.0"); //temp windows fix
-		//Py_SetPath("E:\\Code\\nettool_new\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\scripts");
+		Py_SetPath(L"E:\\Code\\nettool_new\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\scripts");
 
-		Py_SetPath(L"/usr/local/lib/python36.zip:/usr/local/lib/python3.6:/usr/local/lib/python3.6/lib-dynload:/usr/local/lib/python3.6/site-packages:/home/andy/nettool_2/scripts");
+		//Py_SetPath(L"/usr/local/lib/python36.zip:/usr/local/lib/python3.6:/usr/local/lib/python3.6/lib-dynload:/usr/local/lib/python3.6/site-packages:/home/andy/nettool_2/scripts");
 		//Py_SetPath(L"scripts");
 		
 		
@@ -193,6 +193,7 @@ namespace Py {
 		SAMP::SAMPAimSync aim_sync;
 		SAMP::PASSENGER_SYNC_DATA passenger_sync;
 		SAMP::SPECTATOR_SYNC_DATA spectator_sync;
+		SAMP::SAMPUnoccupiedVehData unoccupied_sync;
 		PyObject *dict = NULL;
 		switch(type) {
 			case SAMP::ID_PLAYER_SYNC:
@@ -218,6 +219,10 @@ namespace Py {
 			case SAMP::ID_SPECTATOR_SYNC:
 				ReadSpectatorSync(&spectator_sync, data, client_to_server);
 				dict = SyncToPyDict_Spectator(&spectator_sync, client_to_server);
+				break;
+			case SAMP::ID_UNOCCUPIED_SYNC:
+				ReadUnoccupiedSync(&unoccupied_sync, data, client_to_server);
+				dict = SyncToPyDict_UnoccupiedVeh(&unoccupied_sync, client_to_server);
 				break;
 			default:
 				return;

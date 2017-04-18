@@ -497,5 +497,66 @@ namespace SAMP {
 		out->Write(spectator_sync->position[2]);
 		out->AlignWriteToDWORDBoundary();
 	}
+	void ReadUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *in, bool client_to_server) {
+		if(!client_to_server) {
+			in->Read(sync_data->playerid);
+		} else {
+			sync_data->playerid = -1;
+		}
+		in->Write(sync_data->vehicle_id);
+		in->Write(sync_data->roll[0]);
+		in->Write(sync_data->roll[1]);
+		in->Write(sync_data->roll[2]);
+
+		in->Write(sync_data->direction[0]);
+		in->Write(sync_data->direction[1]);
+		in->Write(sync_data->direction[2]);
+
+		in->Write((const char *)sync_data->unk,sizeof(uint8_t)*13);
+
+		in->Write(sync_data->pos[0]);
+		in->Write(sync_data->pos[1]);
+		in->Write(sync_data->pos[2]);
+
+		in->Write(sync_data->velocity[0]);
+		in->Write(sync_data->velocity[1]);
+		in->Write(sync_data->velocity[2]);
+
+		in->Write(sync_data->turning_speed[0]);
+		in->Write(sync_data->turning_speed[1]);
+		in->Write(sync_data->turning_speed[2]);
+
+		in->Write(sync_data->health);
+	}
+	void WriteUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *out, bool client_to_server) {
+		if(!client_to_server) {
+			out->Write(sync_data->playerid);
+		}
+		out->Write(sync_data->vehicle_id);
+		out->Write(sync_data->roll[0]);
+		out->Write(sync_data->roll[1]);
+		out->Write(sync_data->roll[2]);
+
+		out->Write(sync_data->direction[0]);
+		out->Write(sync_data->direction[1]);
+		out->Write(sync_data->direction[2]);
+
+		out->Write((const char *)sync_data->unk,sizeof(uint8_t)*13);
+
+		out->Write(sync_data->pos[0]);
+		out->Write(sync_data->pos[1]);
+		out->Write(sync_data->pos[2]);
+
+		out->Write(sync_data->velocity[0]);
+		out->Write(sync_data->velocity[1]);
+		out->Write(sync_data->velocity[2]);
+
+		out->Write(sync_data->turning_speed[0]);
+		out->Write(sync_data->turning_speed[1]);
+		out->Write(sync_data->turning_speed[2]);
+
+		out->Write(sync_data->health);
+		out->AlignWriteToDWORDBoundary();
+	}
 
 }

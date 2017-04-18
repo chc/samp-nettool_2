@@ -5,7 +5,10 @@ RPCNameMap mp_rpc_map[] = {
 												{"y", ERPCVariableType_Float,true, true}, 
 												{"z", ERPCVariableType_Float,true, true}, 
 												{NULL, ERPCVariableType_NoInit}}},
-
+	{"ScoreboardSelectPlayer", ESAMPRPC_ScoreboardSelectPlayer, {{"id", ERPCVariableType_Uint16,true, false}, 
+												{"unk", ERPCVariableType_Uint16,true, false}, 
+												{NULL, ERPCVariableType_NoInit}}},
+										
 	{"SetPlayerArmour", ESAMPRPC_SetPlayerArmour, {
 													{"Armour", ERPCVariableType_Float,true, true}, 
 													{NULL, ERPCVariableType_NoInit}}},
@@ -205,7 +208,13 @@ RPCNameMap mp_rpc_map[] = {
 														*/
 													{NULL, ERPCVariableType_NoInit}}
 													},
-														
+	{"SetVehiclePos", ESAMPRPC_SetVehiclePos, {
+													{"id", ERPCVariableType_Uint16,false, true}, 
+													{"x", ERPCVariableType_Float,false, true}, 
+													{"y", ERPCVariableType_Float,false, true}, 
+													{"z", ERPCVariableType_Float,false, true}, 
+													{NULL, ERPCVariableType_NoInit}},
+	},
 	{"VehicleCreate", ESAMPRPC_VehicleCreate, {
 												{"id", ERPCVariableType_Uint16,true, true}, 
 												{"modelid", ERPCVariableType_Uint32,true, true}, 
@@ -287,8 +296,11 @@ RPCNameMap mp_rpc_map[] = {
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"OnVehicleDamage", ESAMPRPC_OnVehicleDamage, {
-											{"vehicle", ERPCVariableType_Uint16,false, true}, 
-											{"Message", ERPCVariableType_LenStr,true, true}, 
+											{"vehicleid", ERPCVariableType_Uint16,true, true}, 
+											{"flags1", ERPCVariableType_Uint32,true, true}, 
+											{"flags2", ERPCVariableType_Uint32,true, true}, 
+											{"tire_flags", ERPCVariableType_Uint16,true, true}, 
+											{"pad", ERPCVariableType_Uint8,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"SetPlayerCheckpoint", ESAMPRPC_SetPlayerCheckpoint, {

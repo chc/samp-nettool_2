@@ -432,22 +432,17 @@ namespace Py {
 		PyObject *py_pos = PyList_New(3);
 		PyObject *dict_item;
 
+		if(sync->playerid != -1)
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid));
+
 		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->position[0]));
 		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->position[1]));
 		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->position[2]));
 		PyDict_SetItem(sync_dict, PyUnicode_FromString("position"), py_pos);
 		
-		if(sync->playerid != -1)
-			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid));
-
-		dict_item = PyDict_GetItemString(sync_dict, "leftright_keys");
-		sync->leftright_keys = PyLong_AsLong(dict_item);
-
-		dict_item = PyDict_GetItemString(sync_dict, "updown_keys");
-		sync->updown_keys = PyLong_AsLong(dict_item);
-
-		dict_item = PyDict_GetItemString(sync_dict, "keys");
-		sync->keys = PyLong_AsLong(dict_item);
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("leftright_keys"), PyLong_FromLong(sync->leftright_keys));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("updown_keys"), PyLong_FromLong(sync->updown_keys));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("keys"), PyLong_FromLong(sync->keys));
 
 		return sync_dict;
 	}
@@ -465,9 +460,95 @@ namespace Py {
 		out->position[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
 		out->position[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
 
-		PyDict_SetItem(dict, PyUnicode_FromString("leftright_keys"), PyLong_FromLong(out->leftright_keys));
-		PyDict_SetItem(dict, PyUnicode_FromString("updown_keys"), PyLong_FromLong(out->updown_keys));
-		PyDict_SetItem(dict, PyUnicode_FromString("keys"), PyLong_FromLong(out->keys));
+
+		dict_item = PyDict_GetItemString(dict, "leftright_keys");
+		out->leftright_keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "updown_keys");
+		out->updown_keys = PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "keys");
+		out->keys = PyLong_AsLong(dict_item);
+	}
+
+	PyObject* SyncToPyDict_UnoccupiedVeh(SAMP::SAMPUnoccupiedVehData *sync, bool client_to_server) {
+
+		PyObject *sync_dict = PyDict_New();
+		PyObject *py_pos = PyList_New(3);
+		PyObject *dict_item;
+
+		if(sync->playerid != -1)
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid));
+
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("vehicleid"), PyLong_FromLong(sync->vehicle_id));
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("position"), py_pos);
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->velocity[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->velocity[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->velocity[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("velocity"), py_pos);
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->roll[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->roll[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->roll[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("roll"), py_pos);
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->direction[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->direction[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->direction[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("direction"), py_pos);
+
+		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->turning_speed[0]));
+		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->turning_speed[1]));
+		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->turning_speed[2]));
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("turning_speed"), py_pos);
+
+		PyDict_SetItem(sync_dict, PyUnicode_FromString("health"), PyFloat_FromDouble(sync->health));
+
+		return sync_dict;
+	}
+	void PyDictToSync_UnoccupiedVeh(SAMP::SAMPUnoccupiedVehData *out, PyObject* dict, bool client_to_server) {
+		PyObject *dict_item;
+		if(!client_to_server) {
+			dict_item = PyDict_GetItemString(dict, "playerid");
+			out->playerid = (uint16_t)PyLong_AsLong(dict_item);
+		} else {
+			out->playerid = (uint16_t)-1;
+		}
+		dict_item = PyDict_GetItemString(dict, "vehicleid");
+		out->vehicle_id = (uint16_t)PyLong_AsLong(dict_item);
+
+		dict_item = PyDict_GetItemString(dict, "roll");
+		out->roll[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->roll[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->roll[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		dict_item = PyDict_GetItemString(dict, "direction");
+		out->direction[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->direction[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->direction[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		dict_item = PyDict_GetItemString(dict, "position");
+		out->pos[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->pos[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->pos[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		dict_item = PyDict_GetItemString(dict, "velocity");
+		out->velocity[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->velocity[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->velocity[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		dict_item = PyDict_GetItemString(dict, "turning_speed");
+		out->turning_speed[0] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 0));
+		out->turning_speed[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
+		out->turning_speed[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
+
+		dict_item = PyDict_GetItemString(dict, "health");
+		out->health = PyFloat_AsDouble(dict_item);
 	}
 
 	/*

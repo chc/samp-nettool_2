@@ -61,7 +61,7 @@ namespace SAMP {
 		output.Write(has_acks);
 
 		if(has_acks) {
-			if(encrypt) {
+			/*if(encrypt) {
 				uint16_t messageNumber;
 				for (int i=0; i<packet.acknowlegements.ranges.Size();i++)
 				{
@@ -76,6 +76,7 @@ namespace SAMP {
 					}
 				}
 			}
+			*/
 			packet.acknowlegements.Serialize(&output, (MTUSize-UDP_HEADER_SIZE)*8-1, true);
 		}
 		int count = 0;
@@ -186,7 +187,7 @@ namespace SAMP {
 		
 		if(head.acknowlegements.Size() > 0) {
 			if(encrypt) {
-				printf("C->S Sending %d acks\n",head.acknowlegements.Size());
+				//printf("C->S Sending %d acks\n",head.acknowlegements.Size());
 			} else {
 				//printf("S->C Sending %d acks\n",head.acknowlegements.Size());
 			}

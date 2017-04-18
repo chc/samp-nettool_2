@@ -24,13 +24,13 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 			case ERPCVariableType_Uint8:
 				uint8_t u8_val;
 				bs->Read(u8_val);
-				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromLong(u8_val));
+				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromUnsignedLong(u8_val));
 				break;
 
 			case ERPCVariableType_Uint16:
 				uint16_t u16_val;
 				bs->Read(u16_val);
-				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromLong(u16_val));
+				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromUnsignedLong(u16_val));
 				break;
 			case ERPCVariableType_Float:
 				float f_val;
@@ -101,10 +101,10 @@ void PyRPCDictToBitStream(RPCNameMap *map, RakNet::BitStream *out, PyObject* dic
 			out->Write((uint32_t)PyLong_AsUnsignedLong(obj));
 			break;
 			case ERPCVariableType_Uint8:
-			out->Write((uint8_t)PyLong_AsLong(obj));
+			out->Write((uint8_t)PyLong_AsUnsignedLong(obj));
 			break;
 			case ERPCVariableType_Uint16:
-			out->Write((uint16_t)PyLong_AsLong(obj));
+			out->Write((uint16_t)PyLong_AsUnsignedLong(obj));
 			break;
 			case ERPCVariableType_Float:
 			out->Write((float)PyFloat_AsDouble(obj));

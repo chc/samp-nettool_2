@@ -15,6 +15,7 @@
 		ESAMPRPC_ResetMoney = 20,	
 		ESAMPRPC_ResetPlayerWeapons = 21,
 		ESAMPRPC_GivePlayerWeapon = 22,
+		ESAMPRPC_ScoreboardSelectPlayer = 23,
 		ESAMPRPC_SetVehicleParams = 24,
 		ESAMPRPC_ClientJoin = 25,
 		ESAMPRPC_EnterVehicle = 26,
@@ -104,6 +105,7 @@
 		ESAMPRPC_ScrSetInterior = 156,
 		ESAMPRPC_SetCameraPos = 157,
 		ESAMPRPC_SetCameraLookAt = 158,
+		ESAMPRPC_SetVehiclePos = 159,
 		ESAMPRPC_SetVehicleParamsPacked = 161, //doesn't make logical sense... 
 		ESAMPRPC_SetCameraBehindPlayer = 162,
 		ESAMPRPC_VehicleCreate = 164,

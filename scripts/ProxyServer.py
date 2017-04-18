@@ -17,7 +17,7 @@ def sync_thread():
 		for client in clients:
 			for player in client.players:
 				if "incar" in player and player['incar'] > 0:
-					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 1000.0, 'player_armour': 50, 'player_health': 66, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0, 'vehicleid': player['incar']}
+					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 1000.0, 'player_armour': 50, 'player_health': 66, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0, 'vehicleid': player['incar'], "angle": 0, "hydra": False, "trailer": False, "train": False, "landinggear_state": True, "train_speed": 100.0}
 					client.connection.SendSync(SAMP.PACKET_VEHICLE_SYNC, rpc_details)
 				else:
 					rpc_details = {'playerid': player['id'], 'leftright_keys': 0, 'updown_keys': 0, 'keys': 0, 'pos': player['pos'], 'quat': [decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random())),decimal.Decimal(str(random.random()))], 'vel': [0.0,0.0,0.0], 'health': 100, 'armour': 50, 'weapon': 38, 'specialaction': 0, 'surf_flags': 0, 'surf_offset': [0.0,0.0,0.0], 'anim': 0}
@@ -30,9 +30,9 @@ def proxy_client_rpc_hndlr(connection, rpcid, rpc_data):
 	if not "proxy_delegator" in connection.context:
 		connection.context['proxy_delegator'] = connection.context['proxy_client'].getProxyDelegator()
 
-	print("Proxy got: {}\n".format(rpcid))
+	print("Proxy got: {} {}\n".format(rpcid, rpc_data))
 	if connection.source_connection != None:
-			connection.source_connection.SendRPC(rpcid, rpc_data)
+		connection.source_connection.SendRPC(rpcid, rpc_data)
 	
 proxy_last_anim_num = 0
 last_anim_num = 0
@@ -69,14 +69,9 @@ def proxy_client_accepted(connection, playerid, challenge):
 def server_conn_sync_hndlr(connection, type, sync_data):
 	global last_anim_num
 	if connection.proxy_connection != None:
-		print("Send sync: {} {}\n".format(type, sync_data))
-#		if "keys" in sync_data:
-#			sync_data["keys"] =  2
-		if "angle" in sync_data and not isinstance(sync_data["angle"], list):
-			if last_anim_num > 360:
-				last_anim_num = -260
-			last_anim_num = last_anim_num + 1
-			sync_data["angle"] = last_anim_num
+		#print("Send sync: {} {}\n".format(type, sync_data))
+		if "keys" in sync_data and sync_data["keys"] == 0:
+			sync_data["keys"] =  2
 			
 		connection.proxy_connection.SendSync(type, sync_data)
 		return None
@@ -87,7 +82,7 @@ def server_conn_stats_update_hndlr(connection, money, drunk):
 
 
 def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
-	print("We got RPC: {}\n".format(rpcid))
+	print("We got RPC: {} {}\n".format(rpcid, rpc_data))
 	if connection.proxy_connection != None:
 		connection.proxy_connection.SendRPC(rpcid, rpc_data)
 		return None
@@ -197,7 +192,11 @@ class ProxyClient():
 		ret[SAMP.RPC_SendChatMessage] = self.handle_sendchatmsg_rpc
 		ret[SAMP.RPC_RequestClass] = self.handle_requestclass_rpc
 		ret[SAMP.RPC_RequestSpawn] = self.handle_requestspawn_rpc
+		ret[SAMP.RPC_ScoreboardSelectPlayer] = self.handle_select_scoreboard_player_rpc
 		return ret
+		
+	def handle_select_scoreboard_player_rpc(self, connection, rpcid, rpc_data):
+		connection.SendRPC(SAMP.RPC_SendClientMessage, {'Colour': 0xFFFFFFFF, 'Message': 'You selected {}'.format(rpc_data["id"])})
 	def handle_clientjoin_rpc(self, connection, rpcid, rpc_data):
 		print("Got client join: - {}\n".format(rpc_data))
 
