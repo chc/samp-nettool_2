@@ -19,6 +19,8 @@
 		ESAMPRPC_SetVehicleParams = 24,
 		ESAMPRPC_ClientJoin = 25,
 		ESAMPRPC_EnterVehicle = 26,
+		ESAMPRPC_SelectObject = 27,
+		ESAMPRPC_CancelEdit = 28,
 		ESAMPRPC_SetPlayerTime = 29,
 		ESAMPRPC_ToggleClock = 30,
 		ESAMPRPC_AddPlayerToWorld = 32,
@@ -106,7 +108,7 @@
 		ESAMPRPC_SetCameraPos = 157,
 		ESAMPRPC_SetCameraLookAt = 158,
 		ESAMPRPC_SetVehiclePos = 159,
-		ESAMPRPC_SetVehicleParamsPacked = 161, //doesn't make logical sense... 
+		ESAMPRPC_SetVehicleParamsForPlayer = 161, //doesn't make logical sense... 
 		ESAMPRPC_SetCameraBehindPlayer = 162,
 		ESAMPRPC_VehicleCreate = 164,
 		ESAMPRPC_VehicleDelete = 165,
@@ -169,8 +171,9 @@
 	//custom rpc handlers
 	PyObject *GameInitRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
 	void GameInitPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
-	PyObject *GameInitRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
-	void GameInitPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
+
+	PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
+	void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
 	//
 
 	PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_server);

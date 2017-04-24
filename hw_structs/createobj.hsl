@@ -1,0 +1,65 @@
+#include "standard-types.hsl"
+
+#pragma displayname("samp createobj rpc")
+#pragma fileextensions(".bin")
+
+#pragma byteorder(little_endian)
+
+typedef struct material_text {
+	char materialindex;
+	char materialsize;
+	
+	struct font_data {
+		char fontname_size;
+		char font[fontname_size];
+	};
+	char font_size;
+	char bold;
+	DWORD fontcolor;
+	DWORD backcolor;
+	char textalignment;
+} MaterialText;
+
+typedef struct material {
+	char materialindex;
+	WORD modelid; //why is this word not dword??
+	struct txdname_data {
+		char txdname_size;
+		char txdname[txdname_size];
+	};
+	struct texturename_data {
+		char texturename_size;
+		char texturename[texturename_size];
+	};
+	DWORD material_colour;
+} Material;
+		
+struct FORMAT
+{
+    WORD  id ;
+	DWORD  modelid ;
+    float       x;
+	float       y;
+	float       z;
+    float       rx;
+	float       ry;
+	float       rz;
+	float       drawdist;
+    char unk;
+	DWORD unk2;
+	char tt;
+	char ta;
+	
+	if (tt == 0x01 && ta != 0x01)
+    {
+		MaterialText mat_text;
+	} else {
+		Material mat;
+	}
+	
+	
+	if(tt == 0x02) {
+		char identifier;
+		MaterialText mat_text;
+	}
+} ;

@@ -33,8 +33,30 @@ RPCNameMap mp_rpc_map[] = {
 	{"EnterVehicle", ESAMPRPC_EnterVehicle, {
 													{"vehicleid", ERPCVariableType_Uint16,true, true}, 
 													{"playerid", ERPCVariableType_Uint16,false, true}, 
-													{"seat", ERPCVariableType_Uint8,true, true}},
+													{"seat", ERPCVariableType_Uint8,true, true},
+													{NULL, ERPCVariableType_NoInit},
+											},
 	},
+	{"SelectObject", ESAMPRPC_SelectObject, {
+													
+
+													//client
+													{"unk", ERPCVariableType_Uint32,true, false}, 
+													{"id", ERPCVariableType_Uint16,true, false}, 
+													{"model", ERPCVariableType_Uint32,true, false}, 
+													{"x", ERPCVariableType_Float,true, false}, 
+													{"y", ERPCVariableType_Float,true, false}, 
+													{"z", ERPCVariableType_Float,true, false}, 
+
+													//both
+													{"unk", ERPCVariableType_Uint8,true, true}, 
+													{NULL, ERPCVariableType_NoInit}
+											},
+	},
+	
+	{"CancelEdit", ESAMPRPC_CancelEdit, {
+													{"unk", ERPCVariableType_Uint8,true, true},  //possibly padding
+													{NULL, ERPCVariableType_NoInit}}},
 	{"SetPlayerTime", ESAMPRPC_SetPlayerTime, {
 													{"hour", ERPCVariableType_Uint8,false, true}, 
 													{"minute", ERPCVariableType_Uint8,false, true}, 
@@ -409,7 +431,16 @@ RPCNameMap mp_rpc_map[] = {
 											{"radius", ERPCVariableType_Float,true, true}, 
 											{NULL, ERPCVariableType_NoInit}}
 										  },
-	{"CreateObject", ESAMPRPC_CreateObject, {
+
+	{
+		"InitGame",  ESAMPRPC_InitGame, {
+			{"callback", ERPCVariableType_Custom,true, true}
+		},
+		GameInitRPCToPyDict, GameInitPyDictToRPC
+	},
+
+
+	{"CreateObject", ESAMPRPC_CreateObject, /*{
 												{"id", ERPCVariableType_Uint16,true, true}, 
 												{"modelid", ERPCVariableType_Uint32,true, true}, 
 												{"x", ERPCVariableType_Float,true, true}, 
@@ -420,7 +451,12 @@ RPCNameMap mp_rpc_map[] = {
 												{"rz", ERPCVariableType_Float,true, true}, 
 												{"drawdist", ERPCVariableType_Float,true, true}, 
 												{NULL, ERPCVariableType_NoInit}
-													}},
+													}*/
+		 {
+			{"callback", ERPCVariableType_Custom,true, true}
+		},
+		CreateObjectRPCToPyDict, CreateObjectPyDictToRPC
+	},
 	{"SetObjectPos", ESAMPRPC_SetObjectPos, {
 		{"id", ERPCVariableType_Uint16,false, true},
 		{"x", ERPCVariableType_Float,false, true},
@@ -444,23 +480,30 @@ RPCNameMap mp_rpc_map[] = {
 	{"SetCameraPos", ESAMPRPC_SetCameraPos, {
 											{"x", ERPCVariableType_Float,true, true}, 
 											{"y", ERPCVariableType_Float,true, true}, 
-											{"z", ERPCVariableType_Float,true, true}
+											{"z", ERPCVariableType_Float,true, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 	{"SetCameraLookAt", ESAMPRPC_SetCameraLookAt, {
 											{"x", ERPCVariableType_Float,false, true}, 
 											{"y", ERPCVariableType_Float,false, true}, 
 											{"z", ERPCVariableType_Float,false, true},
-											{"cut", ERPCVariableType_Uint8,false, true}
+											{"cut", ERPCVariableType_Uint8,false, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 												
-	{"ResetMoney", ESAMPRPC_ResetMoney, {NULL, ERPCVariableType_NoInit}},
+	{"ResetMoney", ESAMPRPC_ResetMoney, {
+											{"flags", ERPCVariableType_Uint8,false, true},
+											{NULL, ERPCVariableType_NoInit}
+											}},
 	{"ResetPlayerWeapons", ESAMPRPC_ResetPlayerWeapons, {
-											{"flags", ERPCVariableType_Uint8,false, true}, 
+											{"flags", ERPCVariableType_Uint8,false, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 	{"GivePlayerWeapon", ESAMPRPC_GivePlayerWeapon, {
 											{"weapon", ERPCVariableType_Uint32,false, true}, 
 											{"ammo", ERPCVariableType_Uint32,false, true}, 
-											{"flags", ERPCVariableType_Uint8,false, true}, 
+											{"flags", ERPCVariableType_Uint8,false, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 	//
 	{"PlayAudioStream", ESAMPRPC_PlayAudioStream, {
@@ -469,10 +512,12 @@ RPCNameMap mp_rpc_map[] = {
 											{"y", ERPCVariableType_Float,false, true}, 
 											{"z", ERPCVariableType_Float,false, true}, 
 											{"distance", ERPCVariableType_Float,false, true}, 
-											{"usepos", ERPCVariableType_Uint16,false, true}, 
+											{"usepos", ERPCVariableType_Uint16,false, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 	{"StopAudioStream", ESAMPRPC_StopAudioStream, {
-											{"unknown", ERPCVariableType_Uint8,false, true}, 
+											{"unknown", ERPCVariableType_Uint8,false, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 	{"SetInterior", ESAMPRPC_SetInterior, {
 											{"id", ERPCVariableType_Uint8,true, true}, 
@@ -492,7 +537,10 @@ RPCNameMap mp_rpc_map[] = {
 											{"unknown5", ERPCVariableType_Uint8,false, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
-	{"GiveMoney", ESAMPRPC_GiveMoney, {NULL, ERPCVariableType_NoInit}},
+	{"GiveMoney", ESAMPRPC_GiveMoney, {
+											{"unk", ERPCVariableType_Uint8,true, false}, 
+											{NULL, ERPCVariableType_NoInit}
+											}},
 	{"UpdateScoreboardPingIPS", ESAMPRPC_UpdateScoresPingsIP, {
 											{"unk", ERPCVariableType_Uint8,true, false}, 
 											{NULL, ERPCVariableType_NoInit}
@@ -500,10 +548,12 @@ RPCNameMap mp_rpc_map[] = {
 	{"TogglePlayerControllable", ESAMPRPC_TogglePlayerControllable, {
 								{"enabled", ERPCVariableType_Uint8,true, true}, 
 								{NULL, ERPCVariableType_NoInit}}},
-	{"PlaySound", ESAMPRPC_PlaySound, {NULL, ERPCVariableType_NoInit}},
-	{"SetWorldBounds", ESAMPRPC_SetWorldBounds, {NULL, ERPCVariableType_NoInit}},
-	{"GiveMoney",ESAMPRPC_GiveMoney, {NULL, ERPCVariableType_NoInit}},
-	{"SetPlayerFacingAngle", ESAMPRPC_SetPlayerFacingAngle, {NULL, ERPCVariableType_NoInit}},
+	//{"PlaySound", ESAMPRPC_PlaySound, {NULL, ERPCVariableType_NoInit}},
+	//{"SetWorldBounds", ESAMPRPC_SetWorldBounds, {NULL, ERPCVariableType_NoInit}},
+	{"SetPlayerFacingAngle", ESAMPRPC_SetPlayerFacingAngle, {
+								{"angle", ERPCVariableType_Float,true, true}, 
+								{"pad", ERPCVariableType_Uint8,true, true}, 
+								{NULL, ERPCVariableType_NoInit}}},
 	{"PutPlayerInVehicle", ESAMPRPC_PutPlayerInVehicle, {
 				{"carid", ERPCVariableType_Uint16,true, true}, 
 				{"seat", ERPCVariableType_Uint8,true, true}, 
@@ -563,14 +613,20 @@ RPCNameMap mp_rpc_map[] = {
 		{"vehicleid", ERPCVariableType_Uint16,true, true}, 
 		{"engine", ERPCVariableType_Uint8,true, true}, 
 		{"lights", ERPCVariableType_Uint8,true, true}, 
-		{"unknown", ERPCVariableType_Uint8,true, true}, 
+		{"alarm", ERPCVariableType_Uint8,true, true}, 
 		{"locked", ERPCVariableType_Uint8,true, true}, 
-		{"unknown2", ERPCVariableType_Uint8,true, true}, 
-		{"unknown2", ERPCVariableType_Uint8,true, true}, 
-		{"unknown_flags", ERPCVariableType_Uint32,true, true}, 
-		{"unknown_flags2", ERPCVariableType_Uint32,true, true}, 
-		{"unknown_flags3", ERPCVariableType_Uint16,true, true}, 
-		{"unknown_flags4", ERPCVariableType_Uint32,true, true}, 
+		{"bonnet", ERPCVariableType_Uint8, true, true},
+		{"boot", ERPCVariableType_Uint8, true, true},
+		{"objective", ERPCVariableType_Uint8, true, true},
+		{"unk1", ERPCVariableType_Uint8,true, true},
+		{"driver_window", ERPCVariableType_Uint8,true, true}, 
+		{"passenger_window", ERPCVariableType_Uint8,true, true}, 
+		{"backleft_window", ERPCVariableType_Uint8,true, true}, 
+		{"backright_window", ERPCVariableType_Uint8,true, true}, 
+		{"driver_door_open", ERPCVariableType_Uint8,true, true}, 
+		{"passenger_door_open", ERPCVariableType_Uint8,true, true}, 
+		{"backleft_door_open", ERPCVariableType_Uint8,true, true},
+		{"backright_door_open", ERPCVariableType_Uint8,true, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"SetPlayerSpecialAction", ESAMPRPC_SetPlayerSpecialAction, {
@@ -605,9 +661,11 @@ RPCNameMap mp_rpc_map[] = {
 		{"unk2", ERPCVariableType_Uint8,true, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
+		/*
 	{"ClearAnimations", ESAMPRPC_ClearAnimations, {
 		{NULL, ERPCVariableType_NoInit}
 	}},
+	*/
 	{
 		"InitGame",  ESAMPRPC_InitGame, {
 			{"callback", ERPCVariableType_Custom,true, true}
@@ -628,10 +686,10 @@ RPCNameMap mp_rpc_map[] = {
 		{"id", ERPCVariableType_Uint8,true, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
-	{"SetVehicleParamsPacked", ESAMPRPC_SetVehicleParamsPacked, {
+	{"SetVehicleParamsForPlayer", ESAMPRPC_SetVehicleParamsForPlayer, {
 		{"vehicleid", ERPCVariableType_Uint16,true, true},
-		{"flags", ERPCVariableType_Uint16,true, true},
-		{"align", ERPCVariableType_Uint8,true, true}, //always u
+		{"objective", ERPCVariableType_Uint8,true, true},
+		{"locked", ERPCVariableType_Uint8,true, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"SetCameraBehindPlayer", ESAMPRPC_SetCameraBehindPlayer, {
@@ -758,9 +816,6 @@ RPCNameMap mp_rpc_map[] = {
 		{"pad", ERPCVariableType_Uint8,false, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
-
-	//unknowns
-	//RPC 159 setvehiclepos
 
 	
 };

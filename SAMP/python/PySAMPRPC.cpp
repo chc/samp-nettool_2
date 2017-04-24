@@ -385,4 +385,330 @@ void GameInitPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* dict
 		out->Write((uint8_t)val);
 	}
 }
+
+void AddMaterialTextToDict(PyObject *dict, RakNet::BitStream *bs) {
+	uint32_t temp_uint32;
+	uint16_t temp_uint16;
+	uint8_t temp_uint8;
+
+	char str[256];
+	wchar_t wstr[4096];
+
+	bs->Read(temp_uint8);
+	PyDict_SetItem(dict, PyUnicode_FromString("material_index"), PyLong_FromLong(temp_uint8));
+
+	bs->Read(temp_uint8);
+	PyDict_SetItem(dict, PyUnicode_FromString("material_size"), PyLong_FromLong(temp_uint8));
+
+	bs->Read(temp_uint8);
+	bs->Read(str, temp_uint8);
+	str[temp_uint8] = 0;	
+	mbstowcs (wstr, str, strlen(str)+1);
+	PyDict_SetItem(dict, PyUnicode_FromString("font"), PyUnicode_FromWideChar(wstr, -1));
+
+	bs->Read(temp_uint8);
+	PyDict_SetItem(dict, PyUnicode_FromString("font_size"), PyLong_FromLong(temp_uint8));
+
+	bs->Read(temp_uint8);
+	PyDict_SetItem(dict, PyUnicode_FromString("bold"), PyLong_FromLong(temp_uint8));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(dict, PyUnicode_FromString("font_colour"), PyLong_FromUnsignedLong(temp_uint32));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(dict, PyUnicode_FromString("back_colour"), PyLong_FromUnsignedLong(temp_uint32));
+
+	bs->Read(temp_uint8);
+	PyDict_SetItem(dict, PyUnicode_FromString("text_alignment"), PyLong_FromLong(temp_uint8));
+
+
+	//compressed content
+	StringCompressor::Instance()->DecodeString(str, sizeof(str), bs);
+	mbstowcs (wstr, str, strlen(str)+1);
+	PyDict_SetItem(dict, PyUnicode_FromString("text"), PyUnicode_FromWideChar(wstr, -1));
+}
+
+void AddMaterialToDict(PyObject *dict, RakNet::BitStream *bs) {
+	uint32_t temp_uint32;
+	uint16_t temp_uint16;
+	uint8_t temp_uint8;
+
+	char str[256];
+	wchar_t wstr[4096];
+
+	bs->Read(temp_uint8);
+	PyDict_SetItem(dict, PyUnicode_FromString("index"), PyLong_FromLong(temp_uint8));
+
+	bs->Read(temp_uint16);
+	PyDict_SetItem(dict, PyUnicode_FromString("model"), PyLong_FromLong(temp_uint16));
+
+	bs->Read(temp_uint8);
+	bs->Read(str, temp_uint8);
+	str[temp_uint8] = 0;	
+	mbstowcs (wstr, str, strlen(str)+1);
+	PyDict_SetItem(dict, PyUnicode_FromString("txdname"), PyUnicode_FromWideChar(wstr, -1));
+
+	bs->Read(temp_uint8);
+	bs->Read(str, temp_uint8);
+	str[temp_uint8] = 0;	
+	mbstowcs (wstr, str, strlen(str)+1);
+	PyDict_SetItem(dict, PyUnicode_FromString("texturename"), PyUnicode_FromWideChar(wstr, -1));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(dict, PyUnicode_FromString("material_colour"), PyLong_FromUnsignedLong(temp_uint32));
+}
+PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs, bool client_to_server) {
+	bool temp_bool;
+	float temp_float;
+	uint32_t temp_uint32;
+	uint16_t temp_uint16;
+	uint8_t temp_uint8;
+
+	char servername[256];
+	wchar_t wstr[4096];
+
+	PyObject *seq_dict = PyDict_New();
+	
+	bs->Read(temp_uint16);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromLong(temp_uint16));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("modelid"), PyLong_FromLong(temp_uint32));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("x"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("y"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("z"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("rx"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("ry"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("rz"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("drawdist"), PyFloat_FromDouble(temp_float));
+
+
+	//unknowns
+	bs->Read(temp_uint8);
+	bs->Read(temp_uint32);
+	//
+
+	char struct_types[2];
+	bs->Read(struct_types[0]);
+	bs->Read(struct_types[1]);
+
+	printf("**** STURCT TYPES: %d %d\n", struct_types[0], struct_types[1]);
+
+	if(struct_types[0] == 0) return seq_dict;
+	
+	PyObject *out_dict;
+	if(struct_types[0] == 0x01 && struct_types[1] != 0x01) {
+		out_dict = PyDict_New();
+		AddMaterialTextToDict(out_dict, bs);
+		PyDict_SetItem(seq_dict, PyUnicode_FromString("material_text"), out_dict);
+	} else {
+		out_dict = PyDict_New();
+		AddMaterialToDict(out_dict, bs);
+		PyDict_SetItem(seq_dict, PyUnicode_FromString("material"), out_dict);
+	}
+
+	bs->Read(temp_uint8);//struct identifier??
+
+	if(temp_uint8 == 2) {
+		out_dict = PyDict_New();
+		AddMaterialTextToDict(out_dict, bs);
+		PyDict_SetItem(seq_dict, PyUnicode_FromString("material_text"), out_dict);
+	}
+
+	return seq_dict;
+}
+
+/*
+	PyDict_SetItem(dict, PyUnicode_FromString("index"), PyLong_FromLong(temp_uint8));
+
+	bs->Read(temp_uint16);
+	PyDict_SetItem(dict, PyUnicode_FromString("model"), PyLong_FromLong(temp_uint16));
+
+	bs->Read(temp_uint8);
+	bs->Read(str, temp_uint8);
+	str[temp_uint8] = 0;	
+	mbstowcs (wstr, str, strlen(str)+1);
+	PyDict_SetItem(dict, PyUnicode_FromString("txdname"), PyUnicode_FromWideChar(wstr, -1));
+
+	bs->Read(temp_uint8);
+	bs->Read(str, temp_uint8);
+	str[temp_uint8] = 0;	
+	mbstowcs (wstr, str, strlen(str)+1);
+	PyDict_SetItem(dict, PyUnicode_FromString("texturename"), PyUnicode_FromWideChar(wstr, -1));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(dict, PyUnicode_FromString("material_colour"), PyLong_FromLong(temp_uint32));
+*/
+void WriteObjectMaterialInfo(PyObject *dict, RakNet::BitStream *out) {
+	char servername[256];
+	wchar_t *server_name_wide;
+	memset(&servername,0,sizeof(servername));
+
+	PyObject *dict_item;
+
+	dict_item = PyDict_GetItemString(dict, "index");
+	out->Write((uint8_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "model");
+	out->Write((uint16_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "txdname");
+	server_name_wide = Py::copyPythonString(dict_item);
+	wcstombs(servername, server_name_wide, wcslen(server_name_wide));
+	free((void *)server_name_wide);
+
+	out->Write((uint8_t)strlen(servername));
+	out->Write((char *)&servername, strlen(servername));
+
+	dict_item = PyDict_GetItemString(dict, "texturename");
+	server_name_wide = Py::copyPythonString(dict_item);
+	wcstombs(servername, server_name_wide, wcslen(server_name_wide));
+	free((void *)server_name_wide);
+
+	out->Write((uint8_t)strlen(servername));
+	out->Write((char *)&servername, strlen(servername));
+
+	dict_item = PyDict_GetItemString(dict, "material_colour");
+	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
+}
+
+/*
+	PyDict_SetItem(dict, PyUnicode_FromString("material_index"), PyLong_FromLong(temp_uint8));
+	PyDict_SetItem(dict, PyUnicode_FromString("material_size"), PyLong_FromLong(temp_uint8));
+	PyDict_SetItem(dict, PyUnicode_FromString("font"), PyUnicode_FromWideChar(wstr, -1));
+	PyDict_SetItem(dict, PyUnicode_FromString("font_size"), PyLong_FromLong(temp_uint8));
+	PyDict_SetItem(dict, PyUnicode_FromString("bold"), PyLong_FromLong(temp_uint8));
+	PyDict_SetItem(dict, PyUnicode_FromString("font_colour"), PyLong_FromLong(temp_uint32));
+	PyDict_SetItem(dict, PyUnicode_FromString("back_colour"), PyLong_FromLong(temp_uint32));
+	PyDict_SetItem(dict, PyUnicode_FromString("text_alignment"), PyLong_FromLong(temp_uint8));
+	PyDict_SetItem(dict, PyUnicode_FromString("text"), PyUnicode_FromWideChar(wstr, -1));
+*/
+void WriteObjectMaterialTextInfo(PyObject *dict, RakNet::BitStream *out) {
+	PyObject *dict_item;
+	wchar_t *server_name_wide;
+	char servername[256];
+	memset(&servername,0,sizeof(servername));
+
+	dict_item = PyDict_GetItemString(dict, "material_index");
+	out->Write((uint8_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "material_size");
+	out->Write((uint8_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "font");
+	server_name_wide = Py::copyPythonString(dict_item);
+	wcstombs(servername, server_name_wide, wcslen(server_name_wide));
+	free((void *)server_name_wide);
+	out->Write((uint8_t)strlen(servername));
+	out->Write((char *)&servername, strlen(servername));
+
+	dict_item = PyDict_GetItemString(dict, "font_size");
+	out->Write((uint8_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "bold");
+	out->Write((uint8_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "font_colour");
+	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "back_colour");
+	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "text_alignment");
+	out->Write((uint8_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "text");
+	server_name_wide = Py::copyPythonString(dict_item);
+	wcstombs(servername, server_name_wide, wcslen(server_name_wide));
+	free((void *)server_name_wide);
+	StringCompressor::Instance()->EncodeString(servername, strlen(servername)+1,out);
+
+}
+namespace SAMP {
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
+}
+void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server) {
+	PyObject *dict_item, *mat_dict = NULL, *mat_text_dict = NULL;
+	char servername[256];
+	memset(&servername,0,sizeof(servername));
+
+	dict_item = PyDict_GetItemString(dict, "id");
+	out->Write((uint16_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "modelid");
+	out->Write((uint32_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "x");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "y");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "z");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "rx");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "ry");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "rz");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "drawdist");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	mat_dict = PyDict_GetItemString(dict, "material");
+	mat_text_dict = PyDict_GetItemString(dict, "material_text");
+
+	char struct_types[2];
+	struct_types[0] = 0;
+	struct_types[1] = 0;
+	if(mat_dict) {
+		struct_types[0] = 1;
+	}
+
+	if(!mat_text_dict) {
+			struct_types[1] = 1;
+	} else {
+		struct_types[1] = 2;
+	}
+
+
+	//unknowns
+	out->Write((uint8_t)0);
+	out->Write((uint32_t)-1);
+	//
+
+	out->Write((char *)&struct_types,sizeof(struct_types));
+
+	if(mat_dict) {
+		//write mat dict
+		WriteObjectMaterialInfo(mat_dict, out);
+	}
+	
+	if(mat_text_dict) {
+		out->Write(struct_types[1]);
+		WriteObjectMaterialTextInfo(mat_text_dict, out);
+		out->Write((uint8_t)0); //terminator byte?? maybe alignment byte
+	}
+	SAMP::dump_raknet_bitstream(out, "file.bin");
+}
+
+
 //
