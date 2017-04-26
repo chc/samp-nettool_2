@@ -63,7 +63,7 @@
 		ESAMPRPC_ShowNameTag = 80,
 		ESAMPRPC_InterpolateCamera = 82,
 		ESAMPRPC_SelectTextDraw = 83,
-		ESAMPRPC_SetObjectMaterial = 84,
+		ESAMPRPC_SetObjectMaterialText = 84,
 		ESAMPRPC_ApplyAnimation = 86,
 		ESAMPRPC_ClearAnimations = 87,
 		ESAMPRPC_SetPlayerSpecialAction = 88,
@@ -82,6 +82,7 @@
 		ESAMPRPC_AddGangZone = 108,
 		ESAMPRPC_SetPlayerAttachedObject = 113,
 		ESAMPRPC_GiveTakeDamage = 115,
+		ESAMPRPC_EditAttachedObject = 116,
 		ESAMPRPC_SetInterior = 118,
 		ESAMPRPC_GangZoneFlash = 121,
 		ESAMPRPC_SetCarPlate = 123,
@@ -171,6 +172,11 @@
 	//custom rpc handlers
 	PyObject *GameInitRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
 	void GameInitPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
+
+	PyObject *SetObjectMaterialRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
+	void SetObjectMaterialPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
+
+	
 
 	PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
 	void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);

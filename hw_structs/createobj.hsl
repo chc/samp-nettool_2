@@ -34,7 +34,7 @@ typedef struct material {
 	DWORD material_colour;
 } Material;
 		
-struct FORMAT
+struct CreateObject
 {
     WORD  id ;
 	DWORD  modelid ;
@@ -62,4 +62,17 @@ struct FORMAT
 		char identifier;
 		MaterialText mat_text;
 	}
-} ;
+};
+
+struct SetMaterial
+{
+	WORD id;
+	char tt;
+
+	if (tt == 0x02)
+    {
+		MaterialText mat_text;
+	} else {
+		Material mat;
+	}
+};

@@ -366,16 +366,11 @@ RPCNameMap mp_rpc_map[] = {
 		{"unk2", ERPCVariableType_Uint16,false, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
-	{"SetObjectMaterial", ESAMPRPC_SetObjectMaterial, {
-											{"id", ERPCVariableType_Uint16,true, true}, 
-											{"index", ERPCVariableType_Uint16,true, true}, 
-											{"model", ERPCVariableType_Uint16,true, true}, 
-											{"txdname", ERPCVariableType_LenStr,true, true}, 
-											{"texturename", ERPCVariableType_LenStr,true, true}, 
-											{"materialcolour", ERPCVariableType_Uint32,true, true}, 
-											{"unknown", ERPCVariableType_Uint8,true, true},
-											{NULL, ERPCVariableType_NoInit}
-										}},
+	{"SetObjectMaterialText", ESAMPRPC_SetObjectMaterialText, {
+			{"callback", ERPCVariableType_Custom,true, true}
+		},
+		SetObjectMaterialRPCToPyDict, SetObjectMaterialPyDictToRPC
+	},
 	{"PlayerUpdate", ESAMPRPC_PlayerUpdate, {
 											{"unknown", ERPCVariableType_Uint32,true, true}, 
 											{"unknown2", ERPCVariableType_Uint32,true, true}, 
@@ -549,7 +544,13 @@ RPCNameMap mp_rpc_map[] = {
 								{"enabled", ERPCVariableType_Uint8,true, true}, 
 								{NULL, ERPCVariableType_NoInit}}},
 	//{"PlaySound", ESAMPRPC_PlaySound, {NULL, ERPCVariableType_NoInit}},
-	//{"SetWorldBounds", ESAMPRPC_SetWorldBounds, {NULL, ERPCVariableType_NoInit}},
+	{"SetWorldBounds", ESAMPRPC_SetWorldBounds, {
+											{"maxx", ERPCVariableType_Float,false, true}, 
+											{"minx", ERPCVariableType_Float,false, true}, 
+											{"maxy", ERPCVariableType_Float,false, true}, 
+											{"miny", ERPCVariableType_Float,false, true}, 
+											{NULL, ERPCVariableType_NoInit}
+											}},
 	{"SetPlayerFacingAngle", ESAMPRPC_SetPlayerFacingAngle, {
 								{"angle", ERPCVariableType_Float,true, true}, 
 								{"pad", ERPCVariableType_Uint8,true, true}, 
@@ -584,6 +585,12 @@ RPCNameMap mp_rpc_map[] = {
 								}},
 
 	{"GiveTakeDamage", ESAMPRPC_GiveTakeDamage, {{NULL, ERPCVariableType_NoInit}}},
+	{"EditAttachedObject", ESAMPRPC_EditAttachedObject, {
+									{"index", ERPCVariableType_Uint32,false, true}, 
+									{"pad", ERPCVariableType_Uint8,false, true}, 
+									{NULL, ERPCVariableType_NoInit}
+								}},
+	
 	{"SetPlayerTeam", ESAMPRPC_SetPlayerTeam, {
 									{"id", ERPCVariableType_Uint8,true, true}, 
 									{NULL, ERPCVariableType_NoInit}
@@ -785,7 +792,7 @@ RPCNameMap mp_rpc_map[] = {
 	}},
 	{"SetPlayerAttachedObject", ESAMPRPC_SetPlayerAttachedObject, { //probably not
 		{"playerid", ERPCVariableType_Uint16,false, true},
-		{"index", ERPCVariableType_Uint16,false, true},
+		{"index", ERPCVariableType_Uint32,false, true},
 		{"modelid", ERPCVariableType_Uint32,false, true},
 		{"bone", ERPCVariableType_Uint16,false, true},
 		{"offset_x", ERPCVariableType_Float,false, true},

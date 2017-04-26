@@ -506,8 +506,6 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 	bs->Read(struct_types[0]);
 	bs->Read(struct_types[1]);
 
-	printf("**** STURCT TYPES: %d %d\n", struct_types[0], struct_types[1]);
-
 	if(struct_types[0] == 0) return seq_dict;
 	
 	PyObject *out_dict;
@@ -532,27 +530,6 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 	return seq_dict;
 }
 
-/*
-	PyDict_SetItem(dict, PyUnicode_FromString("index"), PyLong_FromLong(temp_uint8));
-
-	bs->Read(temp_uint16);
-	PyDict_SetItem(dict, PyUnicode_FromString("model"), PyLong_FromLong(temp_uint16));
-
-	bs->Read(temp_uint8);
-	bs->Read(str, temp_uint8);
-	str[temp_uint8] = 0;	
-	mbstowcs (wstr, str, strlen(str)+1);
-	PyDict_SetItem(dict, PyUnicode_FromString("txdname"), PyUnicode_FromWideChar(wstr, -1));
-
-	bs->Read(temp_uint8);
-	bs->Read(str, temp_uint8);
-	str[temp_uint8] = 0;	
-	mbstowcs (wstr, str, strlen(str)+1);
-	PyDict_SetItem(dict, PyUnicode_FromString("texturename"), PyUnicode_FromWideChar(wstr, -1));
-
-	bs->Read(temp_uint32);
-	PyDict_SetItem(dict, PyUnicode_FromString("material_colour"), PyLong_FromLong(temp_uint32));
-*/
 void WriteObjectMaterialInfo(PyObject *dict, RakNet::BitStream *out) {
 	char servername[256];
 	wchar_t *server_name_wide;
@@ -586,17 +563,6 @@ void WriteObjectMaterialInfo(PyObject *dict, RakNet::BitStream *out) {
 	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
 }
 
-/*
-	PyDict_SetItem(dict, PyUnicode_FromString("material_index"), PyLong_FromLong(temp_uint8));
-	PyDict_SetItem(dict, PyUnicode_FromString("material_size"), PyLong_FromLong(temp_uint8));
-	PyDict_SetItem(dict, PyUnicode_FromString("font"), PyUnicode_FromWideChar(wstr, -1));
-	PyDict_SetItem(dict, PyUnicode_FromString("font_size"), PyLong_FromLong(temp_uint8));
-	PyDict_SetItem(dict, PyUnicode_FromString("bold"), PyLong_FromLong(temp_uint8));
-	PyDict_SetItem(dict, PyUnicode_FromString("font_colour"), PyLong_FromLong(temp_uint32));
-	PyDict_SetItem(dict, PyUnicode_FromString("back_colour"), PyLong_FromLong(temp_uint32));
-	PyDict_SetItem(dict, PyUnicode_FromString("text_alignment"), PyLong_FromLong(temp_uint8));
-	PyDict_SetItem(dict, PyUnicode_FromString("text"), PyUnicode_FromWideChar(wstr, -1));
-*/
 void WriteObjectMaterialTextInfo(PyObject *dict, RakNet::BitStream *out) {
 	PyObject *dict_item;
 	wchar_t *server_name_wide;
@@ -680,13 +646,13 @@ void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* 
 	struct_types[0] = 0;
 	struct_types[1] = 0;
 	if(mat_dict) {
-		struct_types[0] = 1;
+		struct_types[0] = 2;
 	}
 
 	if(!mat_text_dict) {
-			struct_types[1] = 1;
-	} else {
 		struct_types[1] = 2;
+	} else {
+		struct_types[1] = 1;
 	}
 
 
@@ -703,11 +669,54 @@ void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* 
 	}
 	
 	if(mat_text_dict) {
-		out->Write(struct_types[1]);
+		out->Write((uint8_t)0x02);
 		WriteObjectMaterialTextInfo(mat_text_dict, out);
-		out->Write((uint8_t)0); //terminator byte?? maybe alignment byte
+		//out->Write((uint8_t)0); //terminator byte?? maybe alignment byte
 	}
-	SAMP::dump_raknet_bitstream(out, "file.bin");
+	//SAMP::dump_raknet_bitstream(out, "file.bin");
+	out->ResetReadPointer();
+}
+
+PyObject *SetObjectMaterialRPCToPyDict(struct _RPCNameMap *map, RakNet::BitStream *bs, bool client_to_server) {
+	PyObject *seq_dict = PyDict_New();
+	PyObject *out_dict = PyDict_New();
+
+	uint8_t identifier; //should always be 0x02;
+	uint16_t objid;
+	bs->Read(objid);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromUnsignedLong(objid));
+
+	bs->Read(identifier);
+	switch(identifier) {
+		case 0x01:
+			AddMaterialToDict(out_dict, bs);
+			PyDict_SetItem(seq_dict, PyUnicode_FromString("material"), out_dict);
+			break;
+		case 0x02:
+			AddMaterialTextToDict(out_dict, bs);
+			PyDict_SetItem(seq_dict, PyUnicode_FromString("material_text"), out_dict);
+			break;
+	}
+
+
+	return seq_dict;
+}
+void SetObjectMaterialPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server) {
+	PyObject *item = PyDict_GetItemString(dict, "id");
+	PyObject *mat_text_dict = PyDict_GetItemString(dict, "material_text");
+	PyObject *mat_dict = PyDict_GetItemString(dict, "material");
+
+	out->Write((uint16_t)PyLong_AsUnsignedLong(item));
+
+	if(mat_text_dict) {
+		out->Write((uint8_t)0x02);		
+		WriteObjectMaterialTextInfo(mat_text_dict, out);
+	} else if(mat_dict) {
+		out->Write((uint8_t)0x01);		
+		WriteObjectMaterialInfo(mat_dict, out);
+	} else {
+		out->Write((uint8_t)0x00); //shouldn't happen
+	}
 }
 
 
