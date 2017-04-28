@@ -189,7 +189,7 @@ namespace SAMP {
 
 		//printf("S->C got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
 		static int i = 0;
-		dump_raknet_bitstream(&bs, "S_rpc_%d_%d.bin", rpc_id,i++);
+		dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
 		bs.ResetReadPointer();
 		Py::OnGotRPC(mp_client, rpc_id, &bs, false);
 	}

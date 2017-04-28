@@ -790,7 +790,11 @@ RPCNameMap mp_rpc_map[] = {
 		{"maxy", ERPCVariableType_Float,false, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
-	{"SetPlayerAttachedObject", ESAMPRPC_SetPlayerAttachedObject, { //probably not
+	{"SetPlayerAttachedObject", ESAMPRPC_SetPlayerAttachedObject, {
+			{"callback", ERPCVariableType_Custom,true, true}
+		},
+		SetPlayerAttachedObjectRPCToPyDict, SetPlayerAttachedObjectPyDictToRPC
+	/*, { //probably not
 		{"playerid", ERPCVariableType_Uint16,false, true},
 		{"index", ERPCVariableType_Uint32,false, true},
 		{"modelid", ERPCVariableType_Uint32,false, true},
@@ -807,8 +811,9 @@ RPCNameMap mp_rpc_map[] = {
 		{"scale_z", ERPCVariableType_Float,false, true},
 		{"mat_col1", ERPCVariableType_Uint32,false, true},
 		{"mat_col2", ERPCVariableType_Uint32,false, true},
+		
 		{NULL, ERPCVariableType_NoInit}
-	}},
+	}*/},
 	{"GangZoneFlash", ESAMPRPC_GangZoneFlash, {
 		{"id", ERPCVariableType_Uint16,false, true},
 		{"colour", ERPCVariableType_Uint32,false, true},

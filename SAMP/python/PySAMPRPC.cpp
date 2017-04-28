@@ -720,4 +720,121 @@ void SetObjectMaterialPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *ou
 }
 
 
+PyObject *SetPlayerAttachedObjectRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *bs, bool client_to_server) {
+	char tempbuf[2];
+	bool temp_bool;
+	float temp_float;
+	bool bval;
+	uint32_t temp_uint32;
+	uint16_t temp_uint16;
+	uint8_t temp_uint8;
+
+	PyObject *seq_dict = PyDict_New();
+	
+	bs->Read(temp_uint16);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromLong(temp_uint16));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("index"), PyLong_FromLong(temp_uint32));
+
+	tempbuf[0] = 0;
+	//bs->ReadBits((unsigned char *)&tempbuf, 1);
+	bs->ReadCompressed(bval);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("unk1"), bval == true ? Py_True : Py_False);//PyLong_FromLong(tempbuf[0]));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("modelid"), PyLong_FromLong(temp_uint32));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("bone"), PyLong_FromLong(temp_uint32));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("x"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("y"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("z"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("rx"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("ry"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("rz"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("sx"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("sy"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_float);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("sz"), PyFloat_FromDouble(temp_float));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("mat_1"), PyLong_FromUnsignedLong(temp_uint32));
+
+	bs->Read(temp_uint32);
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("mat_2"), PyLong_FromUnsignedLong(temp_uint32));
+
+	return seq_dict;
+
+}
+void SetPlayerAttachedObjectPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server) {
+	PyObject *dict_item;
+
+	dict_item = PyDict_GetItemString(dict, "id");
+	out->Write((uint16_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "index");
+	out->Write((uint32_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "unk1");
+	out->WriteCompressed((bool)(dict_item == Py_True));
+
+	dict_item = PyDict_GetItemString(dict, "modelid");
+	out->Write((uint32_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "bone");
+	out->Write((uint32_t)PyLong_AsLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "x");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "y");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "z");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "rx");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "ry");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "rz");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "sx");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "sy");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "sz");
+	out->Write((float)PyFloat_AsDouble(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "mat_1");
+	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
+
+	dict_item = PyDict_GetItemString(dict, "mat_2");
+	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
+}
+
+
 //
