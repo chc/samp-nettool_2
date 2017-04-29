@@ -76,3 +76,21 @@ struct SetMaterial
 		Material mat;
 	}
 };
+
+
+struct OnEditPlayerObj {
+	DWORD response;
+	DWORD unk;
+	DWORD modelid;
+	DWORD boneid;
+	float xoffset;
+	float yoffset;
+	float zoffset;
+	float xrot;
+	float yrot;
+	float zrot;
+	float xscale;
+	float yscale;
+	float zscale;
+	
+};

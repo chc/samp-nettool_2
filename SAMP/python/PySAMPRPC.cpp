@@ -74,6 +74,11 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 				mbstowcs (wstr, str, strlen(str)+1);
 				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, PyUnicode_FromWideChar(wstr, -1));
 			break;
+			case ERPCVariableType_CompressedBool:
+				bool bval;
+				bs->ReadCompressed(bval);
+				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, bval ? Py_True : Py_False);
+			break;
 			case ERPCVariableType_Custom:
 				Py_DECREF(rpc_dict);
 				return map->mp_cust_bitstream_to_py_dict(map, bs, true);
@@ -159,6 +164,9 @@ void PyRPCDictToBitStream(RPCNameMap *map, RakNet::BitStream *out, PyObject* dic
 				StringCompressor::Instance()->EncodeString(str, strlen(str)+1,out);
 				free((void *)str);
 				free((void *)wstr);
+			break;
+			case ERPCVariableType_CompressedBool:
+				out->WriteCompressed((bool)(obj == Py_True));
 			break;
 			case ERPCVariableType_Custom:
 				return map->py_rpcdict_to_bitsteam(map, out, dict, client_to_server);
@@ -459,6 +467,7 @@ void AddMaterialToDict(PyObject *dict, RakNet::BitStream *bs) {
 }
 PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs, bool client_to_server) {
 	bool temp_bool;
+	bool is_attached = false;
 	float temp_float;
 	uint32_t temp_uint32;
 	uint16_t temp_uint16;
@@ -469,6 +478,7 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 
 	PyObject *seq_dict = PyDict_New();
 	
+	printf("CreateObj In size: %d\n",bs->GetNumberOfBytesUsed());
 	bs->Read(temp_uint16);
 	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromLong(temp_uint16));
 
@@ -499,12 +509,44 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 
 	//unknowns
 	bs->Read(temp_uint8);
-	bs->Read(temp_uint32);
-	//
+
+
+	bs->Read(temp_uint16);
+	if(temp_uint16 != -1) is_attached = true;
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("attached_playerid"), PyLong_FromLong(temp_uint16));
+
+	bs->Read(temp_uint16);
+	if(temp_uint16 != -1) is_attached = true;
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("attached_vehicleid"), PyLong_FromLong(temp_uint16));
+
+	if(is_attached) {
+		PyObject *attach_dict = PyDict_New();
+		PyObject *py_list = PyList_New(3);
+		bs->Read(temp_float);
+		PyList_SET_ITEM(py_list, 0, PyFloat_FromDouble(temp_float));
+		bs->Read(temp_float);
+		PyList_SET_ITEM(py_list, 1, PyFloat_FromDouble(temp_float));
+		bs->Read(temp_float);
+		PyList_SET_ITEM(py_list, 2, PyFloat_FromDouble(temp_float));
+		PyDict_SetItem(attach_dict, PyUnicode_FromString("pos"), py_list);
+
+
+		py_list = PyList_New(3);
+		bs->Read(temp_float);
+		PyList_SET_ITEM(py_list, 0, PyFloat_FromDouble(temp_float));
+		bs->Read(temp_float);
+		PyList_SET_ITEM(py_list, 1, PyFloat_FromDouble(temp_float));
+		bs->Read(temp_float);
+		PyList_SET_ITEM(py_list, 2, PyFloat_FromDouble(temp_float));
+		PyDict_SetItem(attach_dict, PyUnicode_FromString("rot"), py_list);
+
+		PyDict_SetItem(seq_dict, PyUnicode_FromString("attach_offsets"), attach_dict);
+	}
 
 	char struct_types[2];
 	bs->Read(struct_types[0]);
 	bs->Read(struct_types[1]);
+
 
 	if(struct_types[0] == 0) return seq_dict;
 	
@@ -610,6 +652,9 @@ namespace SAMP {
 void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server) {
 	PyObject *dict_item, *mat_dict = NULL, *mat_text_dict = NULL;
 	char servername[256];
+	uint16_t temp_uint16;
+
+	bool is_attached = false;
 	memset(&servername,0,sizeof(servername));
 
 	dict_item = PyDict_GetItemString(dict, "id");
@@ -658,8 +703,49 @@ void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* 
 
 	//unknowns
 	out->Write((uint8_t)0);
-	out->Write((uint32_t)-1);
+
+
+	dict_item = PyDict_GetItemString(dict, "attached_playerid");
+	temp_uint16 = PyLong_AsLong(dict_item);
+	if(temp_uint16 != -1) is_attached = true;
+	out->Write(temp_uint16);
+
+	dict_item = PyDict_GetItemString(dict, "attached_vehicleid");
+	temp_uint16 = PyLong_AsLong(dict_item);
+	if(temp_uint16 != -1) is_attached = true;
+	out->Write(temp_uint16);
 	//
+
+	/*
+	int num_mdls = PyList_Size(dict_item);
+	for(int i=0;i<num_mdls;i++) {
+		uint8_t val = PyLong_AsLong(PyList_GetItem(dict_item, i));
+		out->Write((uint8_t)val);
+	}
+	*/
+
+	dict_item = PyDict_GetItemString(dict, "attach_offsets");
+	if(dict_item && dict_item != Py_None) {
+		PyObject *ao_item;
+
+		PyObject *ar_item = PyDict_GetItemString(dict_item, "pos");
+
+		ao_item = PyList_GetItem(ar_item, 0);
+		out->Write((float)PyFloat_AsDouble(ao_item));
+		ao_item = PyList_GetItem(ar_item, 1);
+		out->Write((float)PyFloat_AsDouble(ao_item));
+		ao_item = PyList_GetItem(ar_item, 2);
+		out->Write((float)PyFloat_AsDouble(ao_item));
+
+		ar_item = PyDict_GetItemString(dict_item, "rot");
+
+		ao_item = PyList_GetItem(ar_item, 0);
+		out->Write((float)PyFloat_AsDouble(ao_item));
+		ao_item = PyList_GetItem(ar_item, 1);
+		out->Write((float)PyFloat_AsDouble(ao_item));
+		ao_item = PyList_GetItem(ar_item, 2);
+		out->Write((float)PyFloat_AsDouble(ao_item));
+	}
 
 	out->Write((char *)&struct_types,sizeof(struct_types));
 
@@ -673,7 +759,8 @@ void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* 
 		WriteObjectMaterialTextInfo(mat_text_dict, out);
 		//out->Write((uint8_t)0); //terminator byte?? maybe alignment byte
 	}
-	//SAMP::dump_raknet_bitstream(out, "file.bin");
+	printf("CreateObj Out size: %d\n",out->GetNumberOfBytesUsed());
+	SAMP::dump_raknet_bitstream(out, "file.bin");
 	out->ResetReadPointer();
 }
 

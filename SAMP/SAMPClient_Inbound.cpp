@@ -162,7 +162,9 @@ namespace SAMP {
 		data->ReadBits((unsigned char *)&sync_data, unread_bits);
 		bs.WriteBits(sync_data, unread_bits);
 
-		dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
+		//dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
+		static int i = 0;
+		dump_raknet_bitstream(&bs, "C_rpc_%d_%d.bin", rpc_id,i++);
 		bs.ResetReadPointer();
 		//printf("C->S got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
 		Py::OnGotRPC(mp_client, rpc_id, &bs, true);

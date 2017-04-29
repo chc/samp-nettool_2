@@ -147,7 +147,8 @@ RPCNameMap mp_rpc_map[] = {
 													{NULL, ERPCVariableType_NoInit}}
 													},
 	{"DestroyPickup", ESAMPRPC_DestroyPickup, {
-													{"id", ERPCVariableType_Uint16,false, true}, 
+													{"id", ERPCVariableType_Uint32,false, true}, 
+													{"unk", ERPCVariableType_Uint8,false, true}, 
 													{NULL, ERPCVariableType_NoInit}}
 													},
 
@@ -314,7 +315,8 @@ RPCNameMap mp_rpc_map[] = {
 										}},
 	{"EditTextDraw", ESAMPRPC_EditTextDraw, {
 											{"id", ERPCVariableType_Uint16,false, true}, 
-											{"message", ERPCVariableType_LenStr,false, true}, 
+											{"message", ERPCVariableType_LenU16Str,false, true}, 
+											{"pad", ERPCVariableType_Uint8,false, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"OnVehicleDamage", ESAMPRPC_OnVehicleDamage, {
@@ -383,7 +385,8 @@ RPCNameMap mp_rpc_map[] = {
 											{"z", ERPCVariableType_Float,true, true},
 											{"markertype", ERPCVariableType_Uint8,true, true}, 
 											{"colour", ERPCVariableType_Uint32,true, true}, 
-											{"style", ERPCVariableType_Uint8,true, true}, 
+											{"style", ERPCVariableType_Uint8,true, true},
+											{NULL, ERPCVariableType_NoInit}
 											}},
 	{"ServerJoin", ESAMPRPC_ServerJoin, {
 											{"id", ERPCVariableType_Uint16,true, true}, 
@@ -429,7 +432,8 @@ RPCNameMap mp_rpc_map[] = {
 
 	{
 		"InitGame",  ESAMPRPC_InitGame, {
-			{"callback", ERPCVariableType_Custom,true, true}
+			{"callback", ERPCVariableType_Custom,true, true},
+			{NULL, ERPCVariableType_NoInit}
 		},
 		GameInitRPCToPyDict, GameInitPyDictToRPC
 	},
@@ -448,7 +452,8 @@ RPCNameMap mp_rpc_map[] = {
 												{NULL, ERPCVariableType_NoInit}
 													}*/
 		 {
-			{"callback", ERPCVariableType_Custom,true, true}
+			{"callback", ERPCVariableType_Custom,true, true},
+			{NULL, ERPCVariableType_NoInit}
 		},
 		CreateObjectRPCToPyDict, CreateObjectPyDictToRPC
 	},
@@ -543,7 +548,13 @@ RPCNameMap mp_rpc_map[] = {
 	{"TogglePlayerControllable", ESAMPRPC_TogglePlayerControllable, {
 								{"enabled", ERPCVariableType_Uint8,true, true}, 
 								{NULL, ERPCVariableType_NoInit}}},
-	//{"PlaySound", ESAMPRPC_PlaySound, {NULL, ERPCVariableType_NoInit}},
+	{"PlaySound", ESAMPRPC_PlaySound, {
+								{"sound", ERPCVariableType_Uint32,false, true}, 
+								{"x", ERPCVariableType_Float,false, true}, 
+								{"y", ERPCVariableType_Float,false, true}, 
+								{"z", ERPCVariableType_Float,false, true}, 
+								{"pad", ERPCVariableType_Uint8,false, true}, 
+								{NULL, ERPCVariableType_NoInit}}},
 	{"SetWorldBounds", ESAMPRPC_SetWorldBounds, {
 											{"maxx", ERPCVariableType_Float,false, true}, 
 											{"minx", ERPCVariableType_Float,false, true}, 
@@ -588,6 +599,42 @@ RPCNameMap mp_rpc_map[] = {
 	{"EditAttachedObject", ESAMPRPC_EditAttachedObject, {
 									{"index", ERPCVariableType_Uint32,false, true}, 
 									{"pad", ERPCVariableType_Uint8,false, true}, 
+
+									//{"playerobject", ERPCVariableType_CompressedBool,true, false}, 
+									{"response", ERPCVariableType_Uint32,true, false},
+									{"unk", ERPCVariableType_Uint32,true, false},
+									{"model", ERPCVariableType_Uint32,true, false},
+									{"bone", ERPCVariableType_Uint32,true, false},
+									//{"unk2", ERPCVariableType_Uint8,true, false}, 
+									{"x", ERPCVariableType_Float,true, false}, 
+									{"y", ERPCVariableType_Float,true, false}, 
+									{"z", ERPCVariableType_Float,true, false}, 
+									{"rx", ERPCVariableType_Float,true, false}, 
+									{"ry", ERPCVariableType_Float,true, false}, 
+									{"rz", ERPCVariableType_Float,true, false}, 
+									{"sx", ERPCVariableType_Float,true, false}, 
+									{"sy", ERPCVariableType_Float,true, false}, 
+									{"sz", ERPCVariableType_Float,true, false}, 
+									{"unk1", ERPCVariableType_Uint32,true, false}, 
+									{"unk2", ERPCVariableType_Uint32,true, false}, 
+									{"unk3", ERPCVariableType_Uint8,true, false}, 
+									{NULL, ERPCVariableType_NoInit}
+								}},
+	{"EditObject", ESAMPRPC_EditObject, {
+									{"unk", ERPCVariableType_CompressedBool,false, true}, 
+									{"objectid", ERPCVariableType_Uint16,false, true}, 
+									{"pad", ERPCVariableType_Uint8,false, true}, 
+
+									{"playerobject", ERPCVariableType_CompressedBool,true, false}, 
+									{"objectid", ERPCVariableType_Uint16,true, false}, 
+									{"response", ERPCVariableType_Uint32,true, false}, 
+									//{"unk2", ERPCVariableType_Uint8,true, false}, 
+									{"x", ERPCVariableType_Float,true, false}, 
+									{"y", ERPCVariableType_Float,true, false}, 
+									{"z", ERPCVariableType_Float,true, false}, 
+									{"rx", ERPCVariableType_Float,true, false}, 
+									{"ry", ERPCVariableType_Float,true, false}, 
+									{"rz", ERPCVariableType_Float,true, false}, 
 									{NULL, ERPCVariableType_NoInit}
 								}},
 	
@@ -675,7 +722,8 @@ RPCNameMap mp_rpc_map[] = {
 	*/
 	{
 		"InitGame",  ESAMPRPC_InitGame, {
-			{"callback", ERPCVariableType_Custom,true, true}
+			{"callback", ERPCVariableType_Custom,true, true},
+		{NULL, ERPCVariableType_NoInit}
 		},
 		GameInitRPCToPyDict, GameInitPyDictToRPC
 	},
@@ -691,6 +739,11 @@ RPCNameMap mp_rpc_map[] = {
 	}},
 	{"RemovePlayerMapIcon", ESAMPRPC_RemoveMapIcon, {
 		{"id", ERPCVariableType_Uint8,true, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
+	{"SetGravity", ESAMPRPC_SetGravity, {
+		{"gravity", ERPCVariableType_Float,true, true},
+		{"pad", ERPCVariableType_Uint8,true, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"SetVehicleParamsForPlayer", ESAMPRPC_SetVehicleParamsForPlayer, {
@@ -733,6 +786,7 @@ RPCNameMap mp_rpc_map[] = {
 	{"SetActorVulnerability", ESAMPRPC_SetActorVulnerability, {
 		{"actorid", ERPCVariableType_Uint16,false, true},
 		{"vulnerable", ERPCVariableType_Uint8,false, true},
+		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"SetActorPos", ESAMPRPC_SetActorPos, {
 		{"actorid", ERPCVariableType_Uint16,false, true},
@@ -791,7 +845,8 @@ RPCNameMap mp_rpc_map[] = {
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"SetPlayerAttachedObject", ESAMPRPC_SetPlayerAttachedObject, {
-			{"callback", ERPCVariableType_Custom,true, true}
+			{"callback", ERPCVariableType_Custom,true, true},
+			{NULL, ERPCVariableType_NoInit}
 		},
 		SetPlayerAttachedObjectRPCToPyDict, SetPlayerAttachedObjectPyDictToRPC
 	/*, { //probably not

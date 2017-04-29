@@ -83,6 +83,7 @@
 		ESAMPRPC_SetPlayerAttachedObject = 113,
 		ESAMPRPC_GiveTakeDamage = 115,
 		ESAMPRPC_EditAttachedObject = 116,
+		ESAMPRPC_EditObject = 117,
 		ESAMPRPC_SetInterior = 118,
 		ESAMPRPC_GangZoneFlash = 121,
 		ESAMPRPC_SetCarPlate = 123,
@@ -100,6 +101,7 @@
 		ESAMPRPC_ServerQuit = 138,
 		ESAMPRPC_InitGame = 139,
 		ESAMPRPC_RemoveMapIcon = 144,
+		ESAMPRPC_SetGravity = 146,
 		ESAMPRPC_SetVehicleHealth = 147,
 		ESAMPRPC_SetPlayerWeather = 152,
 		ESAMPRPC_SetPlayerSkin = 153,
@@ -141,6 +143,7 @@
 		ERPCVariableType_LenU16Str,
 		ERPCVariableType_LenU32Str,
 		ERPCVariableType_LenStr_Compressed,
+		ERPCVariableType_CompressedBool,
 		ERPCVariableType_Custom, //must be the first variable in the RPCVariableDesc to work
 	};
 	struct _RPCNameMap;
