@@ -401,7 +401,7 @@ RPCNameMap mp_rpc_map[] = {
 											{"reason", ERPCVariableType_Uint8,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
-	{"PlayerDeath", ESAMPRPC_PlayerDeath, {{"id", ERPCVariableType_Uint16,true, true},  {NULL, ERPCVariableType_NoInit}}},
+	{"PlayerDeath", ESAMPRPC_PlayerDeath, {{"id", ERPCVariableType_Uint16,true, true},{"reason", ERPCVariableType_Uint8,true, true},  {NULL, ERPCVariableType_NoInit}}},
 	{"ShowTextDraw", ESAMPRPC_ShowTextDraw, {{"id", ERPCVariableType_Uint16,false, true},  {NULL, ERPCVariableType_NoInit}}},
 	{"HideTextDraw", ESAMPRPC_HideTextDraw, {{"id", ERPCVariableType_Uint16,false, true},  {NULL, ERPCVariableType_NoInit}}},
 	{"CreatePickup", ESAMPRPC_CreatePickup, {
@@ -718,11 +718,11 @@ RPCNameMap mp_rpc_map[] = {
 		{"unk2", ERPCVariableType_Uint8,true, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
-		/*
 	{"ClearAnimations", ESAMPRPC_ClearAnimations, {
+		{"force_sync", ERPCVariableType_Uint32,true, true}, 
+		{"pad", ERPCVariableType_Uint8,true, true}, 
 		{NULL, ERPCVariableType_NoInit}
 	}},
-	*/
 	{
 		"InitGame",  ESAMPRPC_InitGame, {
 			{"callback", ERPCVariableType_Custom,true, true},

@@ -17,6 +17,7 @@ namespace SAMP {
 		{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		//{ID_TRAILER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
+		{ID_WEAPONS_UPDATE, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_weapons_update},
 		{ID_BULLET_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_STATS_UPDATE, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_stats_update},
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_detect_lost_connections},
@@ -161,7 +162,7 @@ namespace SAMP {
 		data->ReadBits((unsigned char *)&sync_data, unread_bits);
 		bs.WriteBits(sync_data, unread_bits);
 
-		//dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
+		dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
 		static int i = 0;
 		//dump_raknet_bitstream(&bs, "C_rpc_%d_%d.bin", rpc_id,i++);
 		bs.ResetReadPointer();
@@ -272,6 +273,10 @@ namespace SAMP {
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)ID_RECEIVED_STATIC_DATA);
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
+	}
+	void SAMPInboundClientHandler::m_handle_weapons_update(RakNet::BitStream *data, PacketEnumeration id) {
+		dump_raknet_bitstream(data, "file.bin");
+		Py::OnGotWeaponsUpdate(mp_client, data, true);
 	}
 	
 

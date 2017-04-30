@@ -33,6 +33,7 @@ namespace Py {
 	void OnConnectionAccepted(SAMP::Client *client, int playerid, uint32_t challenge);
 	void OnGotSync(SAMP::Client *client, SAMP::PacketEnumeration type, RakNet::BitStream *data, bool client_to_server);
 	void OnGotStatsUpdate(SAMP::Client *client, int32_t money, int32_t drunk);
+	void OnGotWeaponsUpdate(SAMP::Client *client, RakNet::BitStream *data, bool client_to_server);
 	gs_SAMPClient *GetPyClient(SAMP::Client *client);
 	wchar_t *copyPythonString(PyObject *string);
 }

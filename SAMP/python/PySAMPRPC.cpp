@@ -716,14 +716,6 @@ void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* 
 	out->Write(temp_uint16);
 	//
 
-	/*
-	int num_mdls = PyList_Size(dict_item);
-	for(int i=0;i<num_mdls;i++) {
-		uint8_t val = PyLong_AsLong(PyList_GetItem(dict_item, i));
-		out->Write((uint8_t)val);
-	}
-	*/
-
 	dict_item = PyDict_GetItemString(dict, "attach_offsets");
 	if(dict_item && dict_item != Py_None) {
 		PyObject *ao_item;

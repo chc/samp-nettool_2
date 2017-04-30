@@ -13,6 +13,7 @@ typedef struct {
 	PyObject *mp_sync_handler;//S->C sync hndlr
 	PyObject *mp_conn_accepted_handler;//S->C sync hndlr
 	PyObject *mp_stats_update_handler; //C->S stats hndlr
+	PyObject *mp_weapons_update_handler; //C->S weapon update hndlr
 	PyObject *mp_proxy_connection;
 	PyObject *mp_source_connection;
 	PyObject *mp_context; //just a custom object you can add anything to
@@ -34,5 +35,6 @@ PyObject *pyi_sampclient_sendreject(gs_SAMPClient *self, PyObject *args);
 PyObject *pyi_sampclient_connect(gs_SAMPClient *self, PyObject *args);
 PyObject *pyi_sampclient_disconnect(gs_SAMPClient *self, PyObject *args);
 PyObject *pyi_sampclient_send_stats_update(gs_SAMPClient *self, PyObject *args);
+PyObject *pyi_sampclient_send_weapons_update(gs_SAMPClient *self, PyObject *args);
 
 #endif //_PYSAMPSERVER_H

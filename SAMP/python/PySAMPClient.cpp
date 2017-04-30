@@ -20,6 +20,8 @@ PyMethodDef SAMPClient_methods[] = {
  								    "Sends a Sync packet"},
     								{"SendStatsUpdate",  (PyCFunction)pyi_sampclient_send_stats_update, METH_VARARGS,
  								    "Sends a stats update"},
+    								{"SendWeaponData",  (PyCFunction)pyi_sampclient_send_weapons_update, METH_VARARGS,
+ 								    "Sends a stats update"},
 									{"Disconnect", (PyCFunction)pyi_sampclient_disconnect, METH_VARARGS,
  								    "Disconnects and cleans up the client"},
 									{"Connect", (PyCFunction)pyi_sampclient_connect, METH_VARARGS,
@@ -52,13 +54,14 @@ PyTypeObject gs_SAMPClientType = {
     "SAMP Client Object",       /* tp_doc */
 };
 
-static PyMemberDef SAMPClient_members[8] = {
+static PyMemberDef SAMPClient_members[9] = {
     {"proxy_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_proxy_connection), 0,"proxy connection object"},
 	{"source_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_source_connection), 0,"source connection object"},
 	{"rpc_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_rpc_handler), 0,"rpc handler function"},
 	{"sync_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_sync_handler), 0,"rpc handler function"},
 	{"conn_accepted_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_conn_accepted_handler), 0,"connection accepted handler function"},
 	{"stats_update_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_stats_update_handler), 0,"stats updatehandler function"},
+	{"weapons_update_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_weapons_update_handler), 0,"weapon update handler callback function"},
 	{"context", T_OBJECT, offsetof(gs_SAMPClient, mp_context), 0,"stats updatehandler function"},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
@@ -192,6 +195,41 @@ PyObject *pyi_sampclient_send_stats_update(gs_SAMPClient *self, PyObject *args) 
 	out_bs->ResetReadPointer();
 
 	self->samp_client->SendMessage(SAMP::ID_STATS_UPDATE, out_bs);
+
+	delete out_bs;
+	Py_RETURN_NONE;
+}
+
+
+PyObject *pyi_sampclient_send_weapons_update(gs_SAMPClient *self, PyObject *args) {
+	PyObject *send_dict, *dict_item, *list;
+	if (!PyArg_ParseTuple(args, "O",&send_dict))
+        Py_RETURN_NONE;
+
+
+	RakNet::BitStream *out_bs = new RakNet::BitStream;
+	
+	dict_item = PyDict_GetItemString(send_dict, "unk");
+	out_bs->Write((uint32_t)dict_item ? PyLong_AsUnsignedLong(dict_item) : 0xFFFFFFFF);
+
+	list = PyDict_GetItemString(send_dict, "weapons");
+
+	int size = PyList_Size(list);
+
+	for(int i=0;i<size;i++) {
+		PyObject *list_item = PyList_GET_ITEM(list, i);
+
+		dict_item = PyDict_GetItemString(list_item, "weapon");
+		out_bs->Write((uint8_t)PyLong_AsUnsignedLong(dict_item));
+
+		dict_item = PyDict_GetItemString(list_item, "ammo");
+		out_bs->Write((uint16_t)PyLong_AsUnsignedLong(dict_item));
+
+		dict_item = PyDict_GetItemString(list_item, "unk");
+		out_bs->Write((uint8_t)PyLong_AsUnsignedLong(dict_item));
+	}
+	out_bs->ResetReadPointer();
+	self->samp_client->SendMessage(SAMP::ID_WEAPONS_UPDATE, out_bs);
 
 	delete out_bs;
 	Py_RETURN_NONE;

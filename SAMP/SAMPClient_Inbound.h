@@ -53,7 +53,7 @@ namespace SAMP {
 		void m_connected_pong(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id);
 		void m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id);
-		
+		void m_handle_weapons_update(RakNet::BitStream *data, PacketEnumeration id);
 	};
 }
 #endif //SAMPCLIENT_INBOUND_H
