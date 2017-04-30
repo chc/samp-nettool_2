@@ -24,8 +24,9 @@ namespace Py {
 	PyObject* SyncToPyDict_UnoccupiedVeh(SAMP::SAMPUnoccupiedVehData *sync, bool client_to_server);
 	void PyDictToSync_UnoccupiedVeh(SAMP::SAMPUnoccupiedVehData *out, PyObject* dict, bool client_to_server);
 
-	//PyObject* SyncToPyDict_Marker(SAMP::SAMPMarkerSync *sync, bool client_to_server);
-	//void PyDictToSync_Marker(SAMP::SAMPMarkerSync *out, PyObject* dict, bool client_to_server);
+	PyObject* SyncToPyDict_Marker(SAMP::SAMPMarkerSync *sync, bool client_to_server);
+	void PyDictToSync_Marker(SAMP::SAMPMarkerSync *out, PyObject* dict, bool client_to_server);
+
 	void PySAMP_AddPacketDefs(PyObject *module);
 }
 #endif //_PYSAMP_SYNC_H

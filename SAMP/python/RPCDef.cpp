@@ -417,6 +417,7 @@ RPCNameMap mp_rpc_map[] = {
 	{"PlayerDeath", ESAMPRPC_PlayerDeath, {{"id", ERPCVariableType_Uint16,true, true},{"reason", ERPCVariableType_Uint8,true, true},  {NULL, ERPCVariableType_NoInit}}},
 	{"ShowTextDraw", ESAMPRPC_ShowTextDraw, {{"id", ERPCVariableType_Uint16,false, true}, {"pad", ERPCVariableType_Uint8,false, true},  {NULL, ERPCVariableType_NoInit}}},
 	{"HideTextDraw", ESAMPRPC_HideTextDraw, {{"id", ERPCVariableType_Uint16,false, true}, {"pad", ERPCVariableType_Uint8,false, true},  {NULL, ERPCVariableType_NoInit}}},
+	{"VehicleDestroyed", ESAMPRPC_VehicleDestroyed, {{"id", ERPCVariableType_Uint16,false, true}, {"pad", ERPCVariableType_Uint8,false, true},  {NULL, ERPCVariableType_NoInit}}},	
 	{"CreatePickup", ESAMPRPC_CreatePickup, {
 											{"id", ERPCVariableType_Uint32,true, true}, 
 											{"model", ERPCVariableType_Uint32,true, true}, 

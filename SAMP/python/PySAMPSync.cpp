@@ -551,55 +551,62 @@ namespace Py {
 		out->health = PyFloat_AsDouble(dict_item);
 	}
 
-	/*
+	
 	PyObject* SyncToPyDict_Marker(SAMP::SAMPMarkerSync *sync, bool client_to_server) {
 		if(client_to_server) {
 			return NULL;
 		}
+
+		PyObject *dict = PyDict_New();
 	
 
-		PyObject *py_list = PyList_New(sync->count);
-		for(int i=0;i<sync->count;i++) {
+		PyObject *py_list = PyList_New(sync->entries.size());
+		for(int i=0;i<sync->entries.size();i++) {
 			PyObject *sync_dict = PyDict_New();
 			PyObject *py_pos = PyList_New(3);
 
-			PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->pos[i][0]));
-			PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->pos[i][1]));
-			//PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[i][2]));
+			PyList_SET_ITEM(py_pos,0, PyLong_FromLong(sync->entries[i].x));
+			PyList_SET_ITEM(py_pos,1, PyLong_FromLong(sync->entries[i].y));
+			PyList_SET_ITEM(py_pos,2, PyLong_FromLong(sync->entries[i].z));
+
 			PyDict_SetItem(sync_dict, PyUnicode_FromString("pos"), py_pos);
-			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->playerid[i]));
-			PyDict_SetItem(sync_dict, PyUnicode_FromString("unk"), PyLong_FromLong(sync->unk));
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("playerid"), PyLong_FromLong(sync->entries[i].playerid));
+			PyDict_SetItem(sync_dict, PyUnicode_FromString("active"), sync->entries[i].active ? Py_True : Py_False);
 
 			PyList_SET_ITEM(py_list, i, sync_dict);
 		}
 
+		PyDict_SetItem(dict, PyUnicode_FromString("entries"), py_list);
 
-
-		return py_list;
+		return dict;
 	}
 
 	void PyDictToSync_Marker(SAMP::SAMPMarkerSync *out, PyObject* dict, bool client_to_server) {
 	
-		out->count = PyList_Size(dict);
-		for(int i=0;i<out->count;i++) {
-			PyObject* dict_item = PyList_GetItem(dict, i);
-			PyObject *item = PyDict_GetItemString(dict_item, "playerid");
-			out->playerid[i] = PyLong_AsLong(item);
+		SAMP::SAMPMarkerEntry entry;
 
-			item = PyDict_GetItemString(dict_item, "unk");
-			out->unk = PyLong_AsLong(item);
+		PyObject *entries_dict = PyDict_GetItemString(dict, "entries");
+		int count = PyList_Size(entries_dict);
+		for(int i=0;i<count;i++) {
+			PyObject* dict_item = PyList_GetItem(entries_dict, i);
+			PyObject *item = PyDict_GetItemString(dict_item, "playerid");
+			entry.playerid = PyLong_AsLong(item);
+
+			item = PyDict_GetItemString(dict_item, "active");
+			entry.active = item == Py_True;
 
 			item = PyDict_GetItemString(dict_item, "pos");
-			out->pos[i][0] = PyFloat_AsDouble(PyList_GetItem(item, 0));
-			out->pos[i][1] = PyFloat_AsDouble(PyList_GetItem(item, 1));
-			//out->pos[i][2] = PyFloat_AsDouble(PyList_GetItem(item, 2));
+			entry.x = PyLong_AsLong(PyList_GetItem(item, 0));
+			entry.y = PyLong_AsLong(PyList_GetItem(item, 1));
+			entry.z = PyLong_AsLong(PyList_GetItem(item, 2));
 		}
-	}*/
+	}
 
 	void PySAMP_AddPacketDefs(PyObject *module) {
 		PyModule_AddIntConstant(module, "PACKET_PLAYER_SYNC", SAMP::ID_PLAYER_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_VEHICLE_SYNC", SAMP::ID_VEHICLE_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_PASSENGER_SYNC", SAMP::ID_PASSENGER_SYNC);
+		PyModule_AddIntConstant(module, "PACKET_MARKERS_SYNC", SAMP::ID_MARKERS_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_UNOCCUPIED_SYNC", SAMP::ID_UNOCCUPIED_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_BULLET_SYNC", SAMP::ID_BULLET_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_AIM_SYNC", SAMP::ID_AIM_SYNC);

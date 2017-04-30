@@ -100,6 +100,7 @@
 		ESAMPRPC_PickupPickup = 131,
 		ESAMPRPC_SetPlayerWantedLevel = 133,
 		ESAMPRPC_HideTextDraw = 135,
+		ESAMPRPC_VehicleDestroyed = 136,
 		ESAMPRPC_ServerJoin = 137,
 		ESAMPRPC_ServerQuit = 138,
 		ESAMPRPC_InitGame = 139,

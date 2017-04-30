@@ -147,6 +147,8 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 	SAMP::PASSENGER_SYNC_DATA passenger_sync;
 	SAMP::SPECTATOR_SYNC_DATA spectator_sync;
 	SAMP::SAMPUnoccupiedVehData unoccupied_data;
+	SAMP::SAMPMarkerSync markers_sync;
+
 	switch(msg_id) {
 		case SAMP::ID_PLAYER_SYNC:
 			Py::PyDictToSync_Player(&player_sync, send_dict, send_to_server);
@@ -175,6 +177,10 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 		case SAMP::ID_UNOCCUPIED_SYNC:
 			Py::PyDictToSync_UnoccupiedVeh(&unoccupied_data, send_dict, send_to_server);
 			SAMP::WriteUnoccupiedSync(&unoccupied_data, out_bs, send_to_server);
+			break;
+		case SAMP::ID_MARKERS_SYNC:
+			Py::PyDictToSync_Marker(&markers_sync, send_dict, send_to_server);
+			SAMP::WriteMarkerSync(&markers_sync, out_bs, send_to_server);
 			break;
 	}
 	out_bs->ResetReadPointer();

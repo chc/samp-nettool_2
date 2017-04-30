@@ -14,7 +14,7 @@ namespace SAMP {
 		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_PASSENGER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_SPECTATOR_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
-		//{ID_MARKERS_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
+		{ID_MARKERS_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		//{ID_TRAILER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
@@ -175,8 +175,7 @@ namespace SAMP {
 		data->ReadBits((unsigned char *)&sync_data, unread_bits);
 		bs.WriteBits(sync_data, unread_bits);
 
-		dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
-		static int i = 0;
+		//static int i = 0;
 		//dump_raknet_bitstream(&bs, "C_rpc_%d_%d.bin", rpc_id,i++);
 		bs.ResetReadPointer();
 		//printf("C->S got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));

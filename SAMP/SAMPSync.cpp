@@ -557,5 +557,39 @@ namespace SAMP {
 		out->Write(sync_data->health);
 		out->AlignWriteToDWORDBoundary();
 	}
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
+	void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server) {
+		int32_t num_players;
+		in->Read(num_players);
 
+		SAMPMarkerEntry entry;
+		while(in->GetNumberOfBitsUsed() > 0 && num_players > 0) {
+			in->Read(entry.playerid);
+			in->ReadCompressed(entry.active);
+			if(entry.active) {
+				in->Read(entry.x);
+				in->Read(entry.y);
+				in->Read(entry.z);
+			} else {
+				entry.x = 0;
+				entry.y = 0;
+				entry.z = 0;
+			}
+			num_players--;
+			map_sync->entries.push_back(entry);
+		}
+	}
+	void WriteMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *out, bool client_to_server) {
+		out->Write((int32_t)map_sync->entries.size());
+		for(int i=0;i<map_sync->entries.size();i++) {
+			out->Write(map_sync->entries[i].playerid);
+			out->WriteCompressed(map_sync->entries[i].active);
+			if(map_sync->entries[i].active) {
+				out->Write(map_sync->entries[i].x);
+				out->Write(map_sync->entries[i].y);
+				out->Write(map_sync->entries[i].z);
+			}
+		}
+		out->AlignWriteToDWORDBoundary();
+	}
 }

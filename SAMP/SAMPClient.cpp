@@ -100,13 +100,14 @@ namespace SAMP {
 		bs.WriteCompressed((uint32_t)rpc_data->GetNumberOfBitsUsed());
 		bs.Write(rpc_data);
 
-		
+		/*
 		const char *name = GetRPCNameByID(rpcid);
 		if(this->GetInbound()) {
 			printf("Send RPC %d(%s) inbound (%d|%d)\n",rpcid, name, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
 		} else {
 			printf("Send RPC %d(%s) outbound (%d|%d)\n",rpcid, name, rpc_data->GetNumberOfBitsUsed(),rpc_data->GetNumberOfBytesUsed());
 		}
+		*/
 		
 		
 		

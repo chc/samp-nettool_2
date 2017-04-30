@@ -1,6 +1,7 @@
 #ifndef _SAMPSYNC_H
 #define _SAMPSYNC_H
 #include <stdint.h>
+#include <vector>
 #include <BitStream.h>
 #include <Python.h>
 namespace SAMP {
@@ -110,6 +111,17 @@ namespace SAMP {
 		float health;
 	} SAMPUnoccupiedVehData;
 
+	typedef struct _SAMPMarkerEntry {
+		uint16_t playerid;
+		bool active;
+		int16_t x;
+		int16_t y;
+		int16_t z;
+	} SAMPMarkerEntry;
+	typedef struct {
+		std::vector<SAMPMarkerEntry> entries;
+	} SAMPMarkerSync;
+
 	void ReadPlayerSync(PLAYER_SYNC_INFO *player_sync, RakNet::BitStream *in, bool client_to_server);
 	void WritePlayerSync(PLAYER_SYNC_INFO *player_sync, RakNet::BitStream *out, bool client_to_server);
 
@@ -131,8 +143,8 @@ namespace SAMP {
 	void ReadUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *in, bool client_to_server);
 	void WriteUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *in, bool client_to_server);
 
-	//void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server);
-	//void WriteMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *out, bool client_to_server);
+	void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server);
+	void WriteMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *out, bool client_to_server);
 
 	/*
 	PyObject* SyncToPyDict_Player(PLAYER_SYNC_INFO *sync, bool client_to_server);

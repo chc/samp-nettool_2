@@ -194,6 +194,7 @@ namespace Py {
 		SAMP::PASSENGER_SYNC_DATA passenger_sync;
 		SAMP::SPECTATOR_SYNC_DATA spectator_sync;
 		SAMP::SAMPUnoccupiedVehData unoccupied_sync;
+		SAMP::SAMPMarkerSync markers_sync;
 		PyObject *dict = NULL;
 		switch(type) {
 			case SAMP::ID_PLAYER_SYNC:
@@ -223,6 +224,10 @@ namespace Py {
 			case SAMP::ID_UNOCCUPIED_SYNC:
 				ReadUnoccupiedSync(&unoccupied_sync, data, client_to_server);
 				dict = SyncToPyDict_UnoccupiedVeh(&unoccupied_sync, client_to_server);
+				break;
+			case SAMP::ID_MARKERS_SYNC:
+				ReadMarkerSync(&markers_sync, data, client_to_server);
+				dict = SyncToPyDict_Marker(&markers_sync, client_to_server);
 				break;
 			default:
 				return;
