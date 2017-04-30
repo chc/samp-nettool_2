@@ -52,6 +52,7 @@ namespace SAMP {
 			handle_raknet_packet(stream);
 		}
 	}
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPOutboundClientHandler::handle_raknet_packet(RakNet::BitStream *stream) {
 		RakNetPacketHead packet;
 		readRaknetPacket(packet, stream);
@@ -62,14 +63,21 @@ namespace SAMP {
 			if(byte_seq.reliability == RELIABLE || byte_seq.reliability == RELIABLE_SEQUENCED || byte_seq.reliability == RELIABLE_ORDERED) {
 				m_transtate_out.m_send_acks.push_back(byte_seq.seqid);
 			}
-			if(byte_seq.has_split_packet) { it ++;continue; }
-			process_racket_sequence(byte_seq);
+			//handle non-split packets instantly, split packets are processed later
+			if(!byte_seq.has_split_packet) {
+				process_racket_sequence(byte_seq);
+			} else {
+				//store split packet for later
+				m_split_data[byte_seq.split_packet_id].m_sequences[byte_seq.split_packet_index] = byte_seq;
+				m_split_data[byte_seq.split_packet_id].m_count = byte_seq.split_packet_count;
+			}
 			it++;
 		}
 		if(m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, true);
 			m_send_queue.clear();
 		}
+		tryProcessSplitPackets();
 	}
 	void SAMPOutboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
 		RakNet::BitStream bs;
@@ -179,16 +187,17 @@ namespace SAMP {
 		data->ReadCompressed(bits);
 
 		RakNet::BitStream bs;
-		#define MAX_SYNC_SIZE 1024
-		unsigned char sync_data[MAX_SYNC_SIZE];
-		int unread_bits = data->GetNumberOfUnreadBits();
-		data->ReadBits((unsigned char *)&sync_data, unread_bits);
-		bs.WriteBits(sync_data, unread_bits);
+		//#define MAX_SYNC_SIZE 1024
+		//unsigned char sync_data[MAX_SYNC_SIZE];
+		//int unread_bits = data->GetNumberOfUnreadBits();
+		//data->ReadBits((unsigned char *)&sync_data, unread_bits);
+		//bs.WriteBits(sync_data, unread_bits);
+		bs.Write(data);
 
 		//printf("S->C got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
-		static int i = 0;
+		//static int i = 0;
 		//dump_raknet_bitstream(&bs, "S_rpc_%d_%d.bin", rpc_id,i++);
-		dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
+		//dump_raknet_bitstream(&bs, "S_rpc_%d.bin", rpc_id);
 		bs.ResetReadPointer();
 		Py::OnGotRPC(mp_client, rpc_id, &bs, false);
 	}

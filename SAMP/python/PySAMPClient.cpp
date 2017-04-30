@@ -72,6 +72,7 @@ extern std::vector<gs_SAMPClient *> m_py_clients;
 PyObject * SAMPClient_New(PyTypeObject *type, PyObject *args, PyObject *kwd) {
 	gs_SAMPClient *obj = (gs_SAMPClient *)PyType_GenericNew(type, args, kwd);
 	obj->samp_server = NULL;
+	obj->samp_client = NULL;
 	obj->mp_rpc_handler = NULL;
 	obj->mp_sync_handler = NULL;
 	obj->mp_proxy_connection = NULL;

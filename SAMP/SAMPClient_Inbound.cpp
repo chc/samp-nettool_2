@@ -63,11 +63,23 @@ namespace SAMP {
 			if(byte_seq.reliability == RELIABLE || byte_seq.reliability == RELIABLE_SEQUENCED || byte_seq.reliability == RELIABLE_ORDERED) {
 				m_transtate_out.m_send_acks.push_back(byte_seq.seqid);
 			}
-			process_racket_sequence(byte_seq);
+
+			//handle non-split packets instantly, split packets are processed later
+			if(!byte_seq.has_split_packet) {
+				process_racket_sequence(byte_seq);
+			} else {
+				//store split packet for later
+				m_split_data[byte_seq.split_packet_id].m_sequences[byte_seq.split_packet_index] = byte_seq;
+				m_split_data[byte_seq.split_packet_id].m_count = byte_seq.split_packet_count;
+			}
 			it++;
 		}
-		if(m_transtate_out.m_send_acks.size() > 0)
+		if(m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
+			m_send_queue.clear();
+		}
+
+		tryProcessSplitPackets();
 		//freeRaknetPacket(&packet);
 	}
 	void SAMPInboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
@@ -276,7 +288,6 @@ namespace SAMP {
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 	void SAMPInboundClientHandler::m_handle_weapons_update(RakNet::BitStream *data, PacketEnumeration id) {
-		dump_raknet_bitstream(data, "file.bin");
 		Py::OnGotWeaponsUpdate(mp_client, data, true);
 	}
 	

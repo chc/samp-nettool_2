@@ -404,19 +404,53 @@ namespace SAMP {
 		while(it != split_packets.end()) {
 			RakNetPacketHead *p = *it;		
 			std::vector<RakNetByteSeq>::iterator seq_it = p->byte_seqs.begin();
-			/*
-			while(seq_it != p->byte_seqs.end()) {
-				RakNetByteSeq seq = *seq_it;
-				deleted[seq.data]++;
-				if(deleted[seq.data] > 1) {
-					printf("** Double delete %p %d\n",seq.data, deleted[seq.data]);
-				}
-				delete seq.data; //deleted by free packet
-				seq_it++;
-			}
-			*/
 			delete p;
 			it++;
 		}
+	}
+	void SAMPPacketHandler::tryProcessSplitPackets() {
+		std::map<int, RaknetSplitData>::iterator it, beg, end;
+		beg = m_split_data.begin();
+		end = m_split_data.end();
+		it = beg;
+		while(it != end) {
+			std::pair<int, RaknetSplitData> map_data = *it;
+			RaknetSplitData data = map_data.second;
+			if(data.m_sequences.size() == data.m_count) {
+				processSplitPacket(&data);
+				it = m_split_data.erase(it);
+				continue;
+			}
+			it++;
+		}
+	}
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
+	void SAMPPacketHandler::processSplitPacket(RaknetSplitData *data) {
+		std::map<int, RakNetByteSeq>::iterator it = data->m_sequences.begin();
+		RakNet::BitStream *seq_data = new RakNet::BitStream();
+
+		RakNetByteSeq send_seq;
+		bool send = false;
+		while(it != data->m_sequences.end()) {
+			send = true;
+			std::pair<int, RakNetByteSeq> map_data = *it;
+			send_seq = map_data.second;
+			RakNetByteSeq seq = map_data.second;
+			seq.data->ResetReadPointer();
+			seq_data->Write(seq.data);
+
+			send_seq.reliability = seq.reliability;
+			send_seq.orderingChannel = seq.orderingChannel;
+			send_seq.orderingIndexType = seq.orderingIndexType;
+			it++;
+		}
+		
+		seq_data->ResetReadPointer();
+		
+		if(send) {
+			send_seq.data = seq_data;
+			process_racket_sequence(send_seq);
+		}
+		delete seq_data;
 	}
 }

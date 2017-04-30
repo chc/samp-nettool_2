@@ -166,6 +166,7 @@ namespace SAMP {
 		~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
 		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
+		virtual void process_racket_sequence(RakNetByteSeq &byte_seq) = 0;
 		void AddToOutputStream(RakNet::BitStream *bs, 
 			PacketReliability reliability, 
 			PacketPriority priority = HIGH_PRIORITY);
