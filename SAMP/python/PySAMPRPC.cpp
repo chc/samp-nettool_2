@@ -923,5 +923,58 @@ void SetPlayerAttachedObjectPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStre
 	out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
 }
 
+PyObject *UpdateScoreBoardPingsIPRPCToPyDict(struct _RPCNameMap *nap, RakNet::BitStream *bs, bool) {
+	PyObject *seq_dict = PyDict_New();
+	std::vector<PyObject *> dicts;
+	while(bs->GetNumberOfUnreadBits() > 0) {
+		uint16_t playerid;
+		int32_t score;
+		uint32_t ping;
+		if(!bs->Read(playerid))
+			break;
+		if(!bs->Read(score))
+			break;
+		if(!bs->Read(ping))
+			break;
+
+		PyObject *dict = PyDict_New();
+		PyDict_SetItem(dict, PyUnicode_FromString("id"), PyLong_FromUnsignedLong(playerid));
+		PyDict_SetItem(dict, PyUnicode_FromString("score"), PyLong_FromLong(score));
+		PyDict_SetItem(dict, PyUnicode_FromString("ping"), PyLong_FromUnsignedLong(ping));
+
+		dicts.push_back(dict);
+	}
+
+
+	PyObject *py_list = PyList_New(dicts.size());
+	for(int i=0;i<dicts.size();i++) {
+		PyList_SET_ITEM(py_list, i, dicts[i]);
+	}
+	PyDict_SetItem(seq_dict, PyUnicode_FromString("players"), py_list);
+
+	return seq_dict;
+}
+
+
+void UpdateScoreBoardPingsIPPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server) {
+	PyObject *player_list = PyDict_GetItemString(dict, "players");
+	if(player_list) {
+		int num_players = PyList_Size(player_list);
+		for(int i=0;i<num_players;i++) {
+			PyObject *item = PyList_GetItem(player_list,i);
+
+			PyObject *dict_item = PyDict_GetItemString(item, "id");
+			out->Write((uint16_t)PyLong_AsUnsignedLong(dict_item));
+
+			dict_item = PyDict_GetItemString(item, "score");
+			out->Write((int32_t)PyLong_AsLong(dict_item));
+
+			dict_item = PyDict_GetItemString(item, "ping");
+			out->Write((uint32_t)PyLong_AsUnsignedLong(dict_item));
+
+		}
+	}
+}
+
 
 //

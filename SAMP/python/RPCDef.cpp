@@ -376,6 +376,7 @@ RPCNameMap mp_rpc_map[] = {
 	{"PlayerUpdate", ESAMPRPC_PlayerUpdate, {
 											{"unknown", ERPCVariableType_Uint32,true, true}, 
 											{"unknown2", ERPCVariableType_Uint32,true, true}, 
+											{"pad", ERPCVariableType_Uint8,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"SetMapIcon", ESAMPRPC_SetMapIcon, {
@@ -542,9 +543,11 @@ RPCNameMap mp_rpc_map[] = {
 											{NULL, ERPCVariableType_NoInit}
 											}},
 	{"UpdateScoreboardPingIPS", ESAMPRPC_UpdateScoresPingsIP, {
-											{"unk", ERPCVariableType_Uint8,true, false}, 
-											{NULL, ERPCVariableType_NoInit}
-											}},
+			{"unk", ERPCVariableType_Uint8,true, false}, 
+			{"callback", ERPCVariableType_Custom,false, true},
+			{NULL, ERPCVariableType_NoInit}
+		},
+			UpdateScoreBoardPingsIPRPCToPyDict, UpdateScoreBoardPingsIPPyDictToRPC},
 	{"TogglePlayerControllable", ESAMPRPC_TogglePlayerControllable, {
 								{"enabled", ERPCVariableType_Uint8,true, true}, 
 								{NULL, ERPCVariableType_NoInit}}},
@@ -595,7 +598,7 @@ RPCNameMap mp_rpc_map[] = {
 									{NULL, ERPCVariableType_NoInit}
 								}},
 
-	{"GiveTakeDamage", ESAMPRPC_GiveTakeDamage, {{NULL, ERPCVariableType_NoInit}}},
+	//{"GiveTakeDamage", ESAMPRPC_GiveTakeDamage, {{NULL, ERPCVariableType_NoInit}}},
 	{"EditAttachedObject", ESAMPRPC_EditAttachedObject, {
 									{"index", ERPCVariableType_Uint32,false, true}, 
 									{"pad", ERPCVariableType_Uint8,false, true}, 

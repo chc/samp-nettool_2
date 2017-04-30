@@ -65,7 +65,6 @@ namespace SAMP {
 			process_racket_sequence(byte_seq);
 			it++;
 		}
-		//printf("outbound Send queue size: %d\n", m_send_queue.size());
 		if(m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, true);
 			m_send_queue.clear();
@@ -142,8 +141,6 @@ namespace SAMP {
 		uint8_t msgid;
 		RakNet::BitStream *data = byte_seq.data;
 		data->Read(msgid);
-		if(msgid < 200)
-			printf("S->C Got msg %d seq %d\n",msgid, byte_seq.seqid);
 		for(int i=0;i<sizeof(m_msg_handlers)/sizeof(_SAMPOutboundClientMsgHandlers);i++) {
 			if(m_msg_handlers[i].id == msgid) {
 				func = m_msg_handlers[i].mpHandler;
@@ -151,7 +148,7 @@ namespace SAMP {
 				return;
 			}
 		}
-		//printf("S->C Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		printf("S->C Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...) {
 		int offset = stream->GetReadOffset();

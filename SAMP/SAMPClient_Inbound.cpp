@@ -17,7 +17,6 @@ namespace SAMP {
 		{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		//{ID_TRAILER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
-		//{ID_PASSENGER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_BULLET_SYNC, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_sync},
 		{ID_STATS_UPDATE, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_stats_update},
 		{ID_DETECT_LOST_CONNECTIONS, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_detect_lost_connections},
@@ -145,7 +144,7 @@ namespace SAMP {
 				return;
 			}
 		}
-		//printf("C->S Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
+		printf("C->S Couldn't find msg handler for 0x%02X - %d\n",msgid,msgid);
 	}
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPInboundClientHandler::m_handle_rpc(RakNet::BitStream *data, PacketEnumeration id) {
@@ -164,7 +163,7 @@ namespace SAMP {
 
 		//dump_raknet_bitstream(&bs, "C_rpc_%d.bin", rpc_id);
 		static int i = 0;
-		dump_raknet_bitstream(&bs, "C_rpc_%d_%d.bin", rpc_id,i++);
+		//dump_raknet_bitstream(&bs, "C_rpc_%d_%d.bin", rpc_id,i++);
 		bs.ResetReadPointer();
 		//printf("C->S got rpc %d - %d(%d)\n",rpc_id,bits,BITS_TO_BYTES(bits));
 		Py::OnGotRPC(mp_client, rpc_id, &bs, true);

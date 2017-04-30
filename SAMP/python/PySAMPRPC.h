@@ -184,6 +184,9 @@
 
 	PyObject *SetPlayerAttachedObjectRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
 	void SetPlayerAttachedObjectPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
+
+	PyObject *UpdateScoreBoardPingsIPRPCToPyDict(struct _RPCNameMap *, RakNet::BitStream *, bool);
+	void UpdateScoreBoardPingsIPPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server);
 	//
 
 	PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_server);
