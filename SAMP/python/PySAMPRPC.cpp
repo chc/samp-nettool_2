@@ -751,8 +751,8 @@ void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* 
 		WriteObjectMaterialTextInfo(mat_text_dict, out);
 		//out->Write((uint8_t)0); //terminator byte?? maybe alignment byte
 	}
-	printf("CreateObj Out size: %d\n",out->GetNumberOfBytesUsed());
-	SAMP::dump_raknet_bitstream(out, "file.bin");
+	//printf("CreateObj Out size: %d\n",out->GetNumberOfBytesUsed());
+	//SAMP::dump_raknet_bitstream(out, "file.bin");
 	out->ResetReadPointer();
 }
 

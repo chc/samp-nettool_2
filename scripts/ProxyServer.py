@@ -80,7 +80,10 @@ def server_conn_stats_update_hndlr(connection, money, drunk):
 	if connection.proxy_connection != None:
 		connection.proxy_connection.SendStatsUpdate(money, drunk)
 
-
+def server_weapons_update_hndlr(connection, data):
+	print("Wep Data: {}\n".format(data))
+	if connection.proxy_connection != None:
+		connection.proxy_connection.SendWeaponData(data)
 def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
 	print("We got RPC: {} {}\n".format(rpcid, rpc_data))
 	if connection.proxy_connection != None:
@@ -112,6 +115,7 @@ class ProxyClient():
 		connection.rpc_handler = (server_conn_rpc_hndlr)
 		connection.sync_handler = (server_conn_sync_hndlr)
 		connection.stats_update_handler = (server_conn_stats_update_hndlr)
+		connection.weapons_update_handler = (server_weapons_update_hndlr)
 		self.connection = connection
 		self.players = []
 		clients.append(self)

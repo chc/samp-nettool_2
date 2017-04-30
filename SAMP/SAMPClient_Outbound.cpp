@@ -14,6 +14,7 @@ namespace SAMP {
 		{ID_PLAYER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_VEHICLE_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_AIM_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
+		{ID_SPECTATOR_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_PASSENGER_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_UNOCCUPIED_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},
 		{ID_BULLET_SYNC, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_sync},

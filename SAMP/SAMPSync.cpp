@@ -470,7 +470,6 @@ namespace SAMP {
 		out->Write(passenger_sync->position[2]);
 		out->AlignWriteToDWORDBoundary();
 	}
-
 	void ReadSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server) {
 		if(!client_to_server) {
 			in->Read(spectator_sync->playerid);
