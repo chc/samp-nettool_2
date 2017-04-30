@@ -59,6 +59,7 @@
 		ESAMPRPC_RemovePlayerFromVehicle = 71,
 		ESAMPRPC_SetPlayerColor = 72,
 		ESAMPRPC_ShowGameText = 73,
+		ESAMPRPC_ShowMenu = 76,
 		ESAMPRPC_CreateExplosion = 79,
 		ESAMPRPC_ShowNameTag = 80,
 		ESAMPRPC_InterpolateCamera = 82,
@@ -127,7 +128,7 @@
 		ESAMPRPC_DestroyActor = 172,
 		ESAMPRPC_ApplyActorAnim = 173,
 		ESAMPRPC_SetActorVulnerability = 174,
-		ESAMPRPC_SetActorPos = 176, //unconfirmed
+		ESAMPRPC_SetActorPos = 176,
 		ESAMPRPC_OnDamageActor = 177,
 	};
 

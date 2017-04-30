@@ -389,7 +389,6 @@ RPCNameMap mp_rpc_map[] = {
 	},
 	{"PlayerUpdate", ESAMPRPC_PlayerUpdate, {
 											{"unknown", ERPCVariableType_Uint32,true, true}, 
-											{"unknown2", ERPCVariableType_Uint32,true, true}, 
 											{"pad", ERPCVariableType_Uint8,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
@@ -902,6 +901,16 @@ RPCNameMap mp_rpc_map[] = {
 		{"drawdist", ERPCVariableType_Float,false, true},
 		{"expiretime", ERPCVariableType_Uint32,false, true},
 		{"pad", ERPCVariableType_Uint8,false, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
+	{"OnDamageActor",ESAMPRPC_OnDamageActor, {
+		{"id", ERPCVariableType_Uint16,true, false}, 
+		{"unk", ERPCVariableType_CompressedBool,true, false}, 
+		{"amount", ERPCVariableType_Float,true, false}, 
+		{"weapon", ERPCVariableType_Uint32,true, false}, 
+		{"bodypart", ERPCVariableType_Uint8,true, false}, 
+		{"unk1", ERPCVariableType_Uint16,true, false},
+		{"pad", ERPCVariableType_Uint8,true, false},
 		{NULL, ERPCVariableType_NoInit}
 	}},
 
