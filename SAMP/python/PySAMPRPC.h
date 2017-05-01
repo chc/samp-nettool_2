@@ -77,6 +77,7 @@
 		ESAMPRPC_MoveObject = 99,
 		ESAMPRPC_SendClientMessage = 93,
 		ESAMPRPC_ChatMessage = 101,
+		ESAMPRPC_ClientCheck = 103,
 		ESAMPRPC_EditTextDraw = 105,
 		ESAMPRPC_OnVehicleDamage = 106,
 		ESAMPRPC_SetPlayerCheckpoint = 107,

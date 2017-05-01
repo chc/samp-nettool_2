@@ -354,6 +354,18 @@ RPCNameMap mp_rpc_map[] = {
 											{"Message", ERPCVariableType_LenStr,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
+	{"ClientCheck", ESAMPRPC_ClientCheck, {
+											{"type", ERPCVariableType_Uint8,true, true}, 
+											{"action", ERPCVariableType_Uint32,false, true}, 
+											{"offset", ERPCVariableType_Uint16,false, true}, 
+											{"bytes", ERPCVariableType_Uint16,false, true}, 
+
+											{"flags", ERPCVariableType_Uint16,true, false}, 
+											{"response", ERPCVariableType_Uint8,true, false}, 
+											{"unk", ERPCVariableType_Uint32,true, false}, 
+
+											{NULL, ERPCVariableType_NoInit}
+										}},
 	{"RemovePlayerFromVehicle", ESAMPRPC_RemovePlayerFromVehicle, {NULL, ERPCVariableType_NoInit}},
 	{"SetPlayerColour", ESAMPRPC_SetPlayerColor, {
 											{"id", ERPCVariableType_Uint16,true, true}, 

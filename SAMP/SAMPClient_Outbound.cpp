@@ -53,7 +53,6 @@ namespace SAMP {
 			handle_raknet_packet(stream);
 		}
 	}
-	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPOutboundClientHandler::handle_raknet_packet(RakNet::BitStream *stream) {
 		RakNetPacketHead packet;
 		readRaknetPacket(packet, stream);

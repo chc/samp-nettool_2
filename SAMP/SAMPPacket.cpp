@@ -117,36 +117,9 @@ namespace SAMP {
 			seq.data->ResetReadPointer();
 			seq.data->ReadBits((unsigned char *)&data, bits);
 
-			#if NETCODE_DEBUG_CHECKSTREAM
-				CheckStreams(seq.original_data, seq.data, send_to_server);
-			#endif
-
-			#if NETCODE_DEBUG_FILE
-			if(seq.has_split_packet) {
-				static int cnt = 0;
-				FILE *fd;
-				char name[256];
-				if(send_to_server) {
-					sprintf(name, "send_split_packet_%d_CS.bin", cnt++);
-				} else {
-					sprintf(name, "send_split_packet_%d_SC.bin", cnt++);
-				}
-
-				fd = fopen(name, "wb");
-				fwrite((unsigned char *)&data, BITS_TO_BYTES(bits), 1, fd);
-				fclose(fd);
-			}
-			#endif
-
 			output.AlignWriteToByteBoundary();
 			output.WriteBits((unsigned char *)&data, bits);
 			output.AlignWriteToByteBoundary();
-
-
-			#if NETCODE_DEBUG_CHECKSTREAM
-			if(seq.original_data)
-				delete seq.original_data;
-			#endif
 
 			//NetDbgPrintf("%s Sending packet size %d\n",direction,BITS_TO_BYTES(bits));
 			//printf("Sending msg: %d [%d]\n", (uint8_t)data[0], BITS_TO_BYTES(bits));
@@ -424,7 +397,6 @@ namespace SAMP {
 			it++;
 		}
 	}
-	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void SAMPPacketHandler::processSplitPacket(RaknetSplitData *data) {
 		std::map<int, RakNetByteSeq>::iterator it = data->m_sequences.begin();
 		RakNet::BitStream *seq_data = new RakNet::BitStream();

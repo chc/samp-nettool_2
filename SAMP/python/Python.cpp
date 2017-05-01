@@ -15,6 +15,10 @@
 
 #include <StringCompressor.h>
 
+namespace SAMP {
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
+}
+
 std::vector<gs_SAMPServer *> m_py_servers;
 std::vector<gs_SAMPClient *> m_py_clients;
 PyObject *nf_gen_gpci_method(PyObject *self, PyObject *args);
@@ -145,15 +149,19 @@ namespace Py {
 	}
 	void OnGotRPC(SAMP::Client *client, uint32_t rpc_id, RakNet::BitStream *data, bool client_to_server) {
 		RPCNameMap *rpc_map = GetRPCNameMapByID(rpc_id);
+		/*
 		if(client_to_server) {
 			printf("C->S Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
 		} else {
 			printf("S->C Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
 		}
-		assert(rpc_map);
-		if(!rpc_map) {
-			return;
+		*/
+		if(!rpc_map || rpc_id == 103) {
+			static int i = 0;
+			SAMP::dump_raknet_bitstream(data, "%c_rpc_%d_%d.bin", client_to_server ? 'C' : 'S', rpc_id,i++);
 		}
+		assert(rpc_map);
+
 		std::vector<gs_SAMPClient *> py_clients_cpy = m_py_clients;
 		std::vector<gs_SAMPClient *>::iterator it = py_clients_cpy.begin();
 		while(it != py_clients_cpy.end()) {

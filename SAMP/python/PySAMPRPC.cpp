@@ -478,7 +478,7 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 
 	PyObject *seq_dict = PyDict_New();
 	
-	printf("CreateObj In size: %d\n",bs->GetNumberOfBytesUsed());
+	//printf("CreateObj In size: %d\n",bs->GetNumberOfBytesUsed());
 	bs->Read(temp_uint16);
 	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromLong(temp_uint16));
 
@@ -645,9 +645,6 @@ void WriteObjectMaterialTextInfo(PyObject *dict, RakNet::BitStream *out) {
 	free((void *)server_name_wide);
 	StringCompressor::Instance()->EncodeString(servername, strlen(servername)+1,out);
 
-}
-namespace SAMP {
-	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 }
 void CreateObjectPyDictToRPC(RPCNameMap *map, RakNet::BitStream *out, PyObject* dict, bool client_to_server) {
 	PyObject *dict_item, *mat_dict = NULL, *mat_text_dict = NULL;

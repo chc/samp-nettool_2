@@ -557,7 +557,6 @@ namespace SAMP {
 		out->Write(sync_data->health);
 		out->AlignWriteToDWORDBoundary();
 	}
-	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
 	void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server) {
 		int32_t num_players;
 		in->Read(num_players);
