@@ -120,7 +120,7 @@ void PyRPCDictToBitStream(RPCNameMap *map, RakNet::BitStream *out, PyObject* dic
 				memset(str,0, wcslen(wstr)+1);
 				wcstombs(str, wstr, wcslen(wstr));
 				if(strlen(str) == 0) {
-					out->Write((uint8_t)-1);
+					out->Write((uint8_t)0);
 				} else {
 					out->Write((uint8_t)strlen(str));
 					out->Write(str, strlen(str));
@@ -134,7 +134,7 @@ void PyRPCDictToBitStream(RPCNameMap *map, RakNet::BitStream *out, PyObject* dic
 				memset(str,0, wcslen(wstr)+1);
 				wcstombs(str, wstr, wcslen(wstr));
 				if(strlen(str) == 0) {
-					out->Write((uint16_t)-1);
+					out->Write((uint16_t)0);
 				} else {
 					out->Write((uint16_t)strlen(str));
 					out->Write(str, strlen(str));
@@ -148,7 +148,7 @@ void PyRPCDictToBitStream(RPCNameMap *map, RakNet::BitStream *out, PyObject* dic
 				memset(str,0, wcslen(wstr)+1);
 				wcstombs(str, wstr, wcslen(wstr));
 				if(strlen(str) == 0) {
-					out->Write((uint32_t)-1);
+					out->Write((uint32_t)0);
 				} else {
 					out->Write((uint32_t)strlen(str));
 					out->Write(str, strlen(str));
