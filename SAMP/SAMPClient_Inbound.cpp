@@ -168,11 +168,8 @@ namespace SAMP {
 		data->ReadCompressed(bits);
 
 		RakNet::BitStream bs;
-		#define MAX_SYNC_SIZE 1024
-		unsigned char sync_data[MAX_SYNC_SIZE];
-		int unread_bits = data->GetNumberOfUnreadBits();
-		data->ReadBits((unsigned char *)&sync_data, unread_bits);
-		bs.WriteBits(sync_data, unread_bits);
+
+		bs.Write(data);
 
 		//static int i = 0;
 		//dump_raknet_bitstream(&bs, "C_rpc_%d_%d.bin", rpc_id,i++);

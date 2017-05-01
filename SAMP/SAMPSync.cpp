@@ -589,6 +589,5 @@ namespace SAMP {
 				out->Write(map_sync->entries[i].z);
 			}
 		}
-		out->AlignWriteToDWORDBoundary();
 	}
 }

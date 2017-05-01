@@ -349,6 +349,19 @@ RPCNameMap mp_rpc_map[] = {
 											{"unk", ERPCVariableType_Uint8,false, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
+
+	{"SetRaceCheckpoint", ESAMPRPC_SetRaceCheckpoint, {
+											{"type", ERPCVariableType_Uint8,false, true}, 
+											{"x", ERPCVariableType_Float,false, true}, 
+											{"y", ERPCVariableType_Float,false, true}, 
+											{"z", ERPCVariableType_Float,false, true}, 
+											{"next_x", ERPCVariableType_Float,false, true}, 
+											{"next_y", ERPCVariableType_Float,false, true}, 
+											{"next_z", ERPCVariableType_Float,false, true}, 
+											{"size", ERPCVariableType_Float,false, true}, 
+											{"unk", ERPCVariableType_Uint8,false, true}, 
+											{NULL, ERPCVariableType_NoInit}
+										}},
 	{"SendChatMessage", ESAMPRPC_ChatMessage, {
 											{"playerid", ERPCVariableType_Uint16,false, true}, 
 											{"Message", ERPCVariableType_LenStr,true, true}, 

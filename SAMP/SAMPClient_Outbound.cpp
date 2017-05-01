@@ -203,11 +203,7 @@ namespace SAMP {
 	}
 	void SAMPOutboundClientHandler::m_handle_sync(RakNet::BitStream *data, PacketEnumeration id) {
 		RakNet::BitStream bs;
-		#define MAX_SYNC_SIZE 1024
-		unsigned char sync_data[MAX_SYNC_SIZE];
-		int unread_bits = data->GetNumberOfUnreadBits();
-		data->ReadBits((unsigned char *)&sync_data, unread_bits);
-		bs.WriteBits(sync_data, unread_bits);
+		bs.Write(data);
 		bs.ResetReadPointer();
 		//AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 		Py::OnGotSync(mp_client, id, &bs, false);
