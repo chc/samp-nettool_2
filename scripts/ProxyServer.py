@@ -30,6 +30,7 @@ def proxy_client_rpc_hndlr(connection, rpcid, rpc_data):
 	if not "proxy_delegator" in connection.context:
 		connection.context['proxy_delegator'] = connection.context['proxy_client'].getProxyDelegator()
 
+	#if rpcid == SAMP.RPC_SendPlayerDialog:
 	print("Proxy got: {} {}\n".format(rpcid, rpc_data))
 	if connection.source_connection != None:
 		connection.source_connection.SendRPC(rpcid, rpc_data)
@@ -37,13 +38,16 @@ def proxy_client_rpc_hndlr(connection, rpcid, rpc_data):
 proxy_last_anim_num = 0
 last_anim_num = 0
 def proxy_client_sync_hndlr(connection, type, sync_data):
-	#print("S->C Got Sync: {} {}\n".format(type,sync_data))
+	if type == SAMP.PACKET_MARKERS_SYNC:
+		print("S->C Got Sync: {} {}\n".format(type,sync_data))
 	global proxy_last_anim_num
 	if connection.source_connection != None:
-		if "anim" in sync_data:
-			if proxy_last_anim_num > 250000000:
-				proxy_last_anim_num = -250000000
-			sync_data["anim"] = proxy_last_anim_num
+		if "quat" in sync_data and connection.source_connection.context['proxy_client'].distort_quat:
+			quat = sync_data["quat"]
+			sync_data["quat"][0] = quat[2]
+			sync_data["quat"][1] = quat[3]
+			sync_data["quat"][2] = quat[1]
+			sync_data["quat"][3] = quat[0]
 		connection.source_connection.SendSync(type, sync_data)	
 
 #add to client response, check for if banned/wrong pw/server full, etc
@@ -70,9 +74,14 @@ def server_conn_sync_hndlr(connection, type, sync_data):
 	global last_anim_num
 	if connection.proxy_connection != None:
 		#print("Send sync: {} {}\n".format(type, sync_data))
-		if "keys" in sync_data and sync_data["keys"] == 0:
-			sync_data["keys"] =  2
-			
+		#if "keys" in sync_data and sync_data["keys"] == 0: #horn spam
+			#sync_data["keys"] =  2
+		if "quat" in sync_data and connection.context['proxy_client'].distort_quat:
+			quat = sync_data["quat"]
+			sync_data["quat"][0] = quat[2]
+			sync_data["quat"][1] = quat[3]
+			sync_data["quat"][2] = quat[1]
+			sync_data["quat"][3] = quat[0]
 		connection.proxy_connection.SendSync(type, sync_data)
 		return None
 
@@ -81,12 +90,16 @@ def server_conn_stats_update_hndlr(connection, money, drunk):
 		connection.proxy_connection.SendStatsUpdate(money, drunk)
 
 def server_weapons_update_hndlr(connection, data):
-	print("Wep Data: {}\n".format(data))
 	if connection.proxy_connection != None:
 		connection.proxy_connection.SendWeaponData(data)
 def server_conn_rpc_hndlr(connection, rpcid, rpc_data):
 	print("We got RPC: {} {}\n".format(rpcid, rpc_data))
 	if connection.proxy_connection != None:
+		if not "proxied_delegator" in connection.context:
+			connection.context['proxied_delegator'] = connection.context['proxy_client'].getClientProxiedDelegator()
+		if rpcid in connection.context['proxied_delegator']:
+			if not connection.context['proxied_delegator'][rpcid](connection, rpcid, rpc_data):
+				return None
 		connection.proxy_connection.SendRPC(rpcid, rpc_data)
 		return None
 	else:
@@ -117,6 +130,7 @@ class ProxyClient():
 		connection.stats_update_handler = (server_conn_stats_update_hndlr)
 		connection.weapons_update_handler = (server_weapons_update_hndlr)
 		self.connection = connection
+		self.distort_quat = False
 		self.players = []
 		clients.append(self)
 		print("Done proxy client\n")
@@ -185,7 +199,25 @@ class ProxyClient():
 			self.connection.SendRPC(SAMP.RPC_VehicleCreate, veh)
 	####
 
+	#PROXY MODE C-> DELEGATORS
+	#ONLY ACTIVE WHEN IN PROXY NODE
+	def getClientProxiedDelegator(self):
+		ret = {}
+		ret[SAMP.RPC_ClientCmd] = self.handle_clientcmd_rpc_proxied
+		ret[SAMP.RPC_ClientCheck] = self.handle_clientcheck_rpc_proxied
+		return ret
 
+	def handle_clientcheck_rpc_proxied(self, connection, rpcid, rpc_data):
+		connection.SendRPC(SAMP.RPC_SendClientMessage, {'Colour': 0xFF0000FF, 'Message': 'CLIENT CHECK: {}'.format(self.rpc_data)})
+		return True
+	def handle_clientcmd_rpc_proxied(self, connection, rpcid, rpc_data):
+		split_cmds = re.findall(r'\S+', rpc_data["Command"])
+		cmd = split_cmds[0][1:]
+		if cmd == "distort":
+			self.distort_quat = not self.distort_quat
+			connection.SendRPC(SAMP.RPC_SendClientMessage, {'Colour': 0xFFFFFFFF, 'Message': 'Distort mode set to: {}'.format(self.distort_quat)})
+			return False
+		return True
 
 	#NON-PROXY MODE DELEGATORS
 	#ONLY ACTIVE WHEN NOT IN PROXY MODE(INITIAL CONNECT/ON DISCONNECT)
@@ -198,7 +230,8 @@ class ProxyClient():
 		ret[SAMP.RPC_RequestSpawn] = self.handle_requestspawn_rpc
 		ret[SAMP.RPC_ScoreboardSelectPlayer] = self.handle_select_scoreboard_player_rpc
 		return ret
-		
+
+	
 	def handle_select_scoreboard_player_rpc(self, connection, rpcid, rpc_data):
 		connection.SendRPC(SAMP.RPC_SendClientMessage, {'Colour': 0xFFFFFFFF, 'Message': 'You selected {}'.format(rpc_data["id"])})
 	def handle_clientjoin_rpc(self, connection, rpcid, rpc_data):
@@ -234,6 +267,9 @@ class ProxyClient():
 			connection.proxy_connection.sync_handler = (proxy_client_sync_hndlr)
 			connection.proxy_connection.context = {'proxy_client': self}
 			connection.proxy_connection.Connect(ip_str)
+		elif cmd == "test":
+			send_rpc = {'id': 4661, 'msg': '/basickeys - keys to get you started\n/savestats - save your stats\n/pickupgun - pickup dropped gun\n/dropgun - drop your current weapon\n/survival - blood, hunger, thirst etc\n/version - SA:MP version\n/getid - Get a persons ID\n/stopambient - turn off ambient\n/firstperson - first person view\n/ask - Use this when you need help\n/r - send a radio message\n/ooc- Global Chat (needs radio device)\n/me - self expression command\n/shout - yell :)\n/local - local chat\n/pm - Private message someone\n/blockpm & /unblockpm - self explained\n/inv - show inventory\n/acmds - Admin Commands\n/rules - List of server rules\n', 'button_2': '', 'button_1': 'Close', 'type': 0, 'title': 'DayZ - General CMDSs'}
+			connection.SendRPC(SAMP.RPC_SendPlayerDialog, send_rpc)
 	def handle_sendchatmsg_rpc(self, connection, rpcid, rpc_data):
 		connection.SendRPC(SAMP.RPC_SendChatMessage, {'playerid': 0, "Message": rpc_data["Message"]})
 	def handle_requestclass_rpc(self, connection, rpcid, rpc_data):
@@ -261,8 +297,4 @@ class ProxyServer(): #TODO BASE SERVER
 		self.server.SetNewConnectionHandler(server_new_conn_hndlr)
 		self.server.Listen(listen_address)
 		
-def getClientProxiedDelegator():
-	delegator = {}
-	return delegator
-
-_thread.start_new_thread(sync_thread, ())
+#_thread.start_new_thread(sync_thread, ())
