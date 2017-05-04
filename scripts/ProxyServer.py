@@ -69,8 +69,8 @@ class ProxyClient():
 
 	def handle_dialog_response(self, connection, rpcid, rpc_data):
 		if self.dialog_handler:
-			self.dialog_handler(rpc_data["response"], rpc_data["selected_item"])
-			self.dialog_handler = None
+			if self.dialog_handler(rpc_data["response"], rpc_data["selected_item"]):
+				self.dialog_handler = None
 			return False
 		return True
 
@@ -78,7 +78,7 @@ class ProxyClient():
 		split_cmds = re.findall(r'\S+', rpc_data["Command"])
 		cmd = split_cmds[0][1:]
 		if cmd == "toolmenu":
-			self.connection_mgr.showToolMenu()
+			self.dialog_handler = self.connection_mgr.showToolMenu()
 			return False
 		return True
 	#NON-PROXY MODE DELEGATORS

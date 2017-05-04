@@ -33,29 +33,35 @@ class OutboundConnectionManager():
 		self.proxy_connection.SendRPC(SAMP.RPC_RequestClass, RPCData)
 
 	def __init__(self, client):
+		self.tool_settings = {}
 		self.tool_settings_entries = [
-			{'name': 'Health Hacks', 'value': False, 'key': 'health_hacks'},
-			{'name': 'Wall Hacks', 'value': False, 'key': 'wall_hacks'},
-			{'name': 'Aimbot(Non-locking)', 'value': False, 'key': 'nonlocking_aimbot'},
-			{'name': 'Walking Distort', 'value': False, 'key': 'walk_distort'},
-			{'name': 'Force local chat', 'value': False, 'key': 'local_chat'},
-			{'name': 'Disable vehicle collision', 'value': False, 'key': 'veh_collision'},
-			{'name': 'Force time of day', 'value': False, 'submenu': self.showTimeOfDayMenu},
-			{'name': 'Force Weather', 'value': False, 'submenu': self.showWeatherMenu},
-			{'name': 'Vehicle speed boost(Horn)', 'value': False, 'key': 'veh_speed_boost'},
-			{'name': 'Horn Spammer', 'value': False, 'key': 'veh_horn_spam'},
-			{'name': 'Vehicle Override', 'value': False, 'submenu': self.showVehicleOverrideMenu},			
-			{'name': 'Connect/Quit messages', 'value': False, 'key': 'connect_quit_msgs'},			
-			{'name': 'Toggle Spectator mode', 'value': False, 'key': 'spec_mode'},
-			{'name': 'Block paused', 'value': False, 'key': 'block_paused'},
-			{'name': 'Object finder', 'value': False, 'key': 'object_finder'},
-			{'name': 'Textdraw blocker', 'value': False, 'key': 'textdraw_blocker'},			
-			{'name': 'Chat morpher', 'value': False, 'key': 'chat_morph'}, #morph menu
-			{'name': 'Ping bugger', 'value': False, 'key': 'ping_bugger'}, #65535 ping, 0 ping
-			{'name': 'RPC Control', 'value': False, 'submenu': self.showRPCBlockerMenu}, #dump RPC in/out, block RPCs, spoof RPCs
-			{'name': 'Server Specifics', 'value': False, 'submenu': self.showServerSpecificMenu},
+			{'name': 'Health Hacks', 'key': 'health_hacks'},
+			{'name': 'Wall Hacks', 'key': 'wall_hacks'},
+			{'name': 'Aimbot(Non-locking)', 'key': 'nonlocking_aimbot'},
+			{'name': 'Walking Distort', 'key': 'walk_distort'},
+			{'name': 'Force local chat', 'key': 'local_chat'},
+			{'name': 'Disable vehicle collision', 'key': 'veh_collision'},
+			{'name': 'Force time of day', 'on_select': self.showTimeOfDayMenu},
+			{'name': 'Force Weather', 'on_select': self.showWeatherMenu},
+			{'name': 'Vehicle speed boost(Horn)', 'key': 'veh_speed_boost'},
+			{'name': 'Horn Spammer', 'key': 'veh_horn_spam'},
+			{'name': 'Vehicle Override', 'on_select': self.showVehicleOverrideMenu},			
+			{'name': 'Connect/Quit messages', 'key': 'connect_quit_msgs'},			
+			{'name': 'Toggle Spectator mode', 'key': 'spec_mode'},
+			{'name': 'Block paused', 'key': 'block_paused'},
+			{'name': 'Object finder', 'key': 'object_finder'},
+			{'name': 'Textdraw blocker', 'key': 'textdraw_blocker'},			
+			{'name': 'Chat morpher', 'key': 'chat_morph'}, #morph menu
+			{'name': 'Ping bugger', 'key': 'ping_bugger'}, #65535 ping, 0 ping
+			{'name': 'RPC Control', 'on_select': self.showRPCBlockerMenu}, #dump RPC in/out, block RPCs, spoof RPCs
+			{'name': 'Server Specifics', 'on_select': self.showServerSpecificMenu},
 
 		]
+
+		for setting in self.tool_settings_entries:
+			if "key" in setting:
+				self.tool_settings[setting["key"]] = False
+
 		self.servers = [
 			{'name': 'UIF', 'connection_string': '51.254.85.134:7776'},
 			{'name': 'WC-RP', 'connection_string': 'samp.wc-rp.com:7777'},
@@ -75,9 +81,7 @@ class OutboundConnectionManager():
 			connection_string = self.servers[list_index]["connection_string"]
 			self.client.connection.SendRPC(SAMP.RPC_SendClientMessage, {'Message': "Got conn string: {}".format(connection_string), "Colour": 0xFFFFFFFF})
 			self.proxy_connection.Connect(connection_string)
-			return connection_string
-		else:
-			return None
+		return True
 	def showConnectionMenu(self):
 		dialog_string = "Name\tConnection String\n"
 		for server in self.servers:
@@ -100,12 +104,16 @@ class OutboundConnectionManager():
 	def showTimeOfDayMenu(self):
 		return None
 	def handleToolMenuResponse(self, response, list_index):
-		return None
+		item = self.tool_settings_entries[list_index]
+
+		self.tool_settings[item["key"]] = not self.tool_settings[item["key"]]
+		self.client.connection.SendRPC(SAMP.RPC_SendClientMessage, {'Message': "Tool menu: {}".format(item['name']), "Colour": 0xFFFFFFFF})
+		return False
 	def showToolMenu(self):
 		dialog_string = "Name\tOn/Off\n"
 		for entry in self.tool_settings_entries:
-			if "submenu" not in entry:
-				dialog_string += "{}\t{}\n".format(entry["name"], entry["value"])
+			if "key" in entry:
+				dialog_string += "{}\t{}\n".format(entry["name"], self.tool_settings[entry["key"]])
 			else:
 				dialog_string += "{}\n".format(entry["name"])
 
@@ -117,4 +125,8 @@ class OutboundConnectionManager():
 	def SendRPC(self, rpc_id, rpc_data):
 		self.proxy_connection.SendRPC(rpc_id, rpc_data)
 	def SendSync(self, type, data):
+		if type == SAMP.PACKET_VEHICLE_SYNC:
+			if self.tool_settings["veh_horn_spam"]:
+				if data["keys"] == 0:
+					data["keys"] = 2
 		self.proxy_connection.SendSync(type, data)
