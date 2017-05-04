@@ -8,7 +8,8 @@ import uuid
 import random
 
 from ProxyServer import ProxyServer
-server = ProxyServer("127.0.0.1:7774")
+server = ProxyServer("0.0.0.0:7774")
+#server = ProxyServer("127.0.0.1:7774")
 
 
 
