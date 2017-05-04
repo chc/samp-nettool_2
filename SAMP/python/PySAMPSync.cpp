@@ -599,6 +599,9 @@ namespace Py {
 			entry.x = PyLong_AsLong(PyList_GetItem(item, 0));
 			entry.y = PyLong_AsLong(PyList_GetItem(item, 1));
 			entry.z = PyLong_AsLong(PyList_GetItem(item, 2));
+
+			out->entries.push_back(entry);
+
 		}
 	}
 

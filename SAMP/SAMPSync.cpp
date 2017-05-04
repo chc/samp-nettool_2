@@ -59,10 +59,19 @@ namespace SAMP {
 			in->Read(player_sync->pos[2]);
 			in->ReadNormQuat(player_sync->quat[0], player_sync->quat[1], player_sync->quat[2], player_sync->quat[3]);
 
-			in->Read(type); //health/armour
 
+			byteHealth = 0;
+			byteArmour = 0;
+
+			in->ReadBits((unsigned char *)&byteHlTemp, 4);
+			in->ReadBits((unsigned char *)&byteArmTemp, 4);
+
+			/*
+			in->Read(type); //health/armour			
 			byteArmTemp = (type & 0x0F);
 			byteHlTemp = (type >> 4);
+			*/
+
 
 			if(byteArmTemp == 0xF) byteArmour = 100;
 			else if(byteArmTemp == 0) byteArmour = 0;
@@ -71,6 +80,8 @@ namespace SAMP {
 			if(byteHlTemp == 0xF) byteHealth = 100;
 			else if(byteHlTemp == 0) byteHealth = 0;
 			else byteHealth = byteHlTemp * 7;
+			
+
 
 			player_sync->armour = byteArmour;
 			player_sync->health = byteHealth;
@@ -148,6 +159,7 @@ namespace SAMP {
 
 			out->WriteNormQuat(player_sync->quat[0], player_sync->quat[1], player_sync->quat[2],player_sync->quat[3]);
 
+
 			if(player_sync->health > 0 && player_sync->health < 100) {
 				health_armour = ((uint8_t)(player_sync->health / 7)) << 4;
 			} else if(player_sync->health >= 100) {
@@ -158,6 +170,7 @@ namespace SAMP {
 			} else if(player_sync->armour >= 100) {
 				health_armour |= 0xF;
 			}
+
 			out->Write(health_armour);
 
 			out->Write(player_sync->weapon);

@@ -234,6 +234,7 @@ namespace Py {
 				dict = SyncToPyDict_UnoccupiedVeh(&unoccupied_sync, client_to_server);
 				break;
 			case SAMP::ID_MARKERS_SYNC:
+				//SAMP::dump_raknet_bitstream(data, "markers_in.bin");
 				ReadMarkerSync(&markers_sync, data, client_to_server);
 				dict = SyncToPyDict_Marker(&markers_sync, client_to_server);
 				break;

@@ -11,6 +11,9 @@
 
 #include "structmember.h"
 
+namespace SAMP {
+	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
+}
 
 extern Net::SelectNetEventManager* g_event_mgr;
 PyMethodDef SAMPClient_methods[] = {
@@ -181,6 +184,7 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 		case SAMP::ID_MARKERS_SYNC:
 			Py::PyDictToSync_Marker(&markers_sync, send_dict, send_to_server);
 			SAMP::WriteMarkerSync(&markers_sync, out_bs, send_to_server);
+			//SAMP::dump_raknet_bitstream(out_bs, "markers_out.bin");
 			break;
 	}
 	out_bs->ResetReadPointer();

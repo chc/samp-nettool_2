@@ -126,8 +126,8 @@ RPCNameMap mp_rpc_map[] = {
 										}},
 	{"DeathMessage", ESAMPRPC_DeathMessage, {
 													{"playerid", ERPCVariableType_Uint16,true, true}, 
-													{"reason", ERPCVariableType_Uint8,true, true}, 
 													{"killerid", ERPCVariableType_Uint16,true, true}, 
+													{"reason", ERPCVariableType_Uint8,true, true}, 
 													{NULL, ERPCVariableType_NoInit}}
 													},
 	{"Delete3DTextLabel", ESAMPRPC_Delete3DTextLabel, {
@@ -363,7 +363,7 @@ RPCNameMap mp_rpc_map[] = {
 											{NULL, ERPCVariableType_NoInit}
 										}},
 	{"SendChatMessage", ESAMPRPC_ChatMessage, {
-											{"playerid", ERPCVariableType_Uint16,false, true}, 
+											{"id", ERPCVariableType_Uint16,false, true}, 
 											{"Message", ERPCVariableType_LenStr,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
