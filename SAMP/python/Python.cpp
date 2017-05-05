@@ -99,11 +99,24 @@ namespace Py {
 	void PySAMP_CheckAndPrintErrors() {
 		PyObject *ptype, *pvalue, *ptraceback;
 		PyObject* exceptionType = PyErr_Occurred();
+		PyObject* pRepr;
 		if(exceptionType) {
 			PyErr_Fetch(&ptype, &pvalue, &ptraceback);
-			wprintf(L"%s\n", PyUnicode_AsWideCharString(ptype, NULL));
-			wprintf(L"%s\n", PyUnicode_AsWideCharString(pvalue, NULL));
-			wprintf(L"%s\n", PyUnicode_AsWideCharString(ptraceback, NULL));
+			if(ptype != NULL) {
+				pRepr = PyObject_Repr(ptype);
+				wprintf(L"%s\n", PyUnicode_AsWideCharString(pRepr, NULL));
+				Py_DECREF(pRepr);
+			}
+			if(pvalue != NULL) {
+				pRepr = PyObject_Repr(pvalue);
+				wprintf(L"%s\n", PyUnicode_AsWideCharString(pRepr, NULL));
+				Py_DECREF(pRepr);
+			}
+			if(ptraceback != NULL) {
+				pRepr = PyObject_Repr(ptraceback);
+				wprintf(L"%s\n", PyUnicode_AsWideCharString(ptraceback, NULL));
+				Py_DECREF(pRepr);
+			}
 			PyErr_Clear();
 		}
 	}

@@ -362,7 +362,7 @@ RPCNameMap mp_rpc_map[] = {
 											{"unk", ERPCVariableType_Uint8,false, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
-	{"SendChatMessage", ESAMPRPC_ChatMessage, {
+	{"ChatMessage", ESAMPRPC_ChatMessage, {
 											{"id", ERPCVariableType_Uint16,false, true}, 
 											{"Message", ERPCVariableType_LenStr,true, true}, 
 											{NULL, ERPCVariableType_NoInit}

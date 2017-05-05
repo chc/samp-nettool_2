@@ -30,7 +30,6 @@ class ProxyClient():
 		#	connection.proxy_connection.SendWeaponData(data)
 		return None
 	def server_conn_rpc_hndlr(self, connection, rpcid, rpc_data):
-		print("We got RPC: {} {}\n".format(rpcid, rpc_data))
 		if not "delegator" in connection.context:
 			connection.context['delegator'] = connection.context['proxy_client'].getClientDelegator()
 
