@@ -167,9 +167,9 @@ namespace Py {
 			printf("C->S Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
 		} else {
 			printf("S->C Got RPC %d(%s) - %d (%d)\n",rpc_id, ((rpc_map && rpc_map->name) ? rpc_map->name : NULL), data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
-		}
+		}its 
 		*/
-		if(!rpc_map || rpc_id == 103) {
+		if(!rpc_map) {
 			static int i = 0;
 			SAMP::dump_raknet_bitstream(data, "%c_rpc_%d_%d.bin", client_to_server ? 'C' : 'S', rpc_id,i++);
 		}

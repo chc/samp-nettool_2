@@ -9,6 +9,7 @@ class OutboundConnectionManager():
 	def proxy_client_rpc_hndlr(self, connection, rpcid, rpc_data):
 		delegator = self.getRPCDelegator()
 		ret = True
+		#print("Got RPC {} - {}\n".format(rpcid, rpc_data))
 		if rpcid in delegator:
 			ret = delegator[rpcid](connection, rpcid, rpc_data)
 		
@@ -57,7 +58,7 @@ class OutboundConnectionManager():
 	def __init__(self, client):
 		self.tool_settings = {}
 		self.player_info = {}
-		self.injected_labels_offset = 1
+		self.injected_labels_offset = 500
 		self.tool_settings_entries = [
 			{'name': 'Health Hacks', 'key': 'health_hacks'},
 			{'name': 'Anti-TP', 'key': 'anti_tp'},
@@ -87,6 +88,8 @@ class OutboundConnectionManager():
 
 		]
 
+		self.playerid = 0
+
 		for setting in self.tool_settings_entries:
 			if "key" in setting:
 				self.tool_settings[setting["key"]] = False
@@ -96,7 +99,8 @@ class OutboundConnectionManager():
 			{'name': 'WC-RP', 'connection_string': 'samp.wc-rp.com:7777'},
 			{'name': 'CrazyBobs #1', 'connection_string': 's1.crazybobs.net:7777'},
 			{'name': 'CrazyBobs #2', 'connection_string': 's2.crazybobs.net:7777'},
-			{'name': 'PTP', 'connection_string': '37.187.196.107:7777'}
+			{'name': 'PTP', 'connection_string': '37.187.196.107:7777'},
+			{'name': 'DayZ', 'connection_string': '185.11.146.127:7778'}
 		]
 		self.client = client
 
@@ -139,8 +143,8 @@ class OutboundConnectionManager():
 		item = self.tool_settings_entries[list_index]
 
 		self.tool_settings[item["key"]] = not self.tool_settings[item["key"]]
-		if "onselect" in self.tool_settings:
-			self.tool_settings["onselect"](item["key"], self.tool_settings[item["key"]])
+		if "onselect" in item:
+			item["onselect"](item["key"], self.tool_settings[item["key"]])
 		return True
 	def showToolMenu(self):
 		dialog_string = "Name\tOn/Off\n"
@@ -197,7 +201,7 @@ class OutboundConnectionManager():
 			self.player_info[rpc_data["id"]]["name"] = rpc_data["name"]
 		return True
 	def handleSetPlayerColour(self, connection, rpcid, rpc_data):
-		if rpc_data["id"] != self.playerid:
+		if rpc_data["id"] != self.playerid and rpc_data["id"] in self.player_info:
 			self.player_info[rpc_data["id"]]["colour"] = rpc_data["colour"]
 			if self.tool_settings["full_alpha"]:
 				rpc_data["colour"] = rpc_data["colour"] | 0xFF
@@ -241,7 +245,7 @@ class OutboundConnectionManager():
 				return False
 
 		if self.tool_settings["anti_tp"]:
-			if rpc_id == SAMP.RPC_SetPlayerPos or rpc_id == SAMP.RPC_SetPlayerAngle or rpc_id == SAMP.RPC_SetPlayerPosFindZ or rpc_id == SAMP.RPC_SetPlayerInterior:
+			if rpc_id == SAMP.RPC_SetPlayerPos or rpc_id == SAMP.RPC_SetPlayerFacingAngle or rpc_id == SAMP.RPC_SetPlayerPosFindZ or rpc_id == SAMP.RPC_SetPlayerInterior:
 				return False
 		self.proxy_connection.SendRPC(rpc_id, rpc_data)
 	def SendSync(self, type, data):

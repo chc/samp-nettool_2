@@ -62,6 +62,8 @@ namespace SAMP {
 
 			byteHealth = 0;
 			byteArmour = 0;
+			byteHlTemp = 0;
+			byteArmTemp = 0;
 
 			in->ReadBits((unsigned char *)&byteHlTemp, 4);
 			in->ReadBits((unsigned char *)&byteArmTemp, 4);
