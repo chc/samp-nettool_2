@@ -790,6 +790,11 @@ RPCNameMap mp_rpc_map[] = {
 		{"unknown", ERPCVariableType_Uint8,false, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
+	{"DetachTrailerFromVehicle", ESAMPRPC_DetachTrailerFromVehicle, {
+		{"id", ERPCVariableType_Uint16,false, true},
+		{"pad", ERPCVariableType_Uint8,false, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
 	{"Weather", ESAMPRPC_SetPlayerWeather, {
 		{"id", ERPCVariableType_Uint8,false, true},
 		{NULL, ERPCVariableType_NoInit}

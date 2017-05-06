@@ -110,6 +110,7 @@
 		ESAMPRPC_RemoveMapIcon = 144,
 		ESAMPRPC_SetGravity = 146,
 		ESAMPRPC_SetVehicleHealth = 147,
+		ESAMPRPC_DetachTrailerFromVehicle = 149,
 		ESAMPRPC_SetPlayerWeather = 152,
 		ESAMPRPC_SetPlayerSkin = 153,
 		ESAMPRPC_ExitVehicle = 154,
