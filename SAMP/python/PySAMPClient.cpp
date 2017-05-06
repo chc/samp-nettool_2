@@ -221,7 +221,7 @@ PyObject *pyi_sampclient_send_weapons_update(gs_SAMPClient *self, PyObject *args
 	RakNet::BitStream *out_bs = new RakNet::BitStream;
 	
 	dict_item = PyDict_GetItemString(send_dict, "unk");
-	out_bs->Write((uint32_t)dict_item ? PyLong_AsUnsignedLong(dict_item) : 0xFFFFFFFF);
+	out_bs->Write((uint32_t)(dict_item ? PyLong_AsUnsignedLong(dict_item) : 0xFFFFFFFF));
 
 	list = PyDict_GetItemString(send_dict, "weapons");
 
