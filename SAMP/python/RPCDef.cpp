@@ -400,9 +400,11 @@ RPCNameMap mp_rpc_map[] = {
 										}},
 	{"ShowNameTag", ESAMPRPC_ShowNameTag, {
 											{"playerid", ERPCVariableType_Uint16,true, true}, 
-											{"state", ERPCVariableType_Uint16,true, true}, 
+											{"state", ERPCVariableType_Uint8,true, true}, 
+											{"pad", ERPCVariableType_Uint8,true, true}, 
 											{NULL, ERPCVariableType_NoInit}
 										}},
+											
 	{"InterpolateCamera", ESAMPRPC_InterpolateCamera, {
 											{"sx", ERPCVariableType_Float,false, true}, 
 											{"sy", ERPCVariableType_Float,false, true}, 
