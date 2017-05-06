@@ -291,6 +291,10 @@ class OutboundConnectionManager():
 					data["quat"][3] = quat[0]
 
 		self.proxy_connection.SendSync(type, data)
+	def SendStatsUpdate(self, money, drunk):
+		self.proxy_connection.SendStatsUpdate(money, drunk)
+	def SendWeaponsUpdate(self, data):
+		self.proxy_connection.SendWeaponData(data)
 	def deleteAllPlayerLabels(self):
 		for playerid, player in self.player_info.items():
 			label_id = self.injected_labels_offset + playerid

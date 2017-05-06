@@ -21,13 +21,11 @@ class ProxyClient():
 		self.connection_mgr.SendSync(type, sync_data)
 
 	def server_conn_stats_update_hndlr(self, connection, money, drunk):
-		#if connection.proxy_connection != None:
-			#connection.proxy_connection.SendStatsUpdate(money, drunk)
+		self.connection_mgr.SendStatsUpdate(money, drunk)
 		return None
 
 	def server_weapons_update_hndlr(self, connection, data):
-		#if connection.proxy_connection != None:
-		#	connection.proxy_connection.SendWeaponData(data)
+		self.connection_mgr.SendWeaponsUpdate(data)
 		return None
 	def server_conn_rpc_hndlr(self, connection, rpcid, rpc_data):
 		if not "delegator" in connection.context:
