@@ -95,10 +95,10 @@ def server_new_conn_hndlr(server, connection, password):
 	print("New conn, clients is: {}\n".format(server))
 	server.context['self'].clients.append(ProxyClient(server.context['self'], connection))
 
-#	if password == "123321":
-	return SAMP.CONN_RESPONSE_REASON_ACCEPTED
-#	else:
-#		return SAMP.CONN_RESPONSE_REASON_INVALID_PASS
+	if password == "hello123":
+		return SAMP.CONN_RESPONSE_REASON_ACCEPTED
+	else:
+		return SAMP.CONN_RESPONSE_REASON_INVALID_PASS
 
 class ProxyServer(): #TODO BASE SERVER
 	def __init__(self, listen_address):
