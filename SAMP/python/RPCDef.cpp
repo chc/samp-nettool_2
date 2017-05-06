@@ -169,7 +169,7 @@ RPCNameMap mp_rpc_map[] = {
 													{NULL, ERPCVariableType_NoInit}}
 													},
 	{"ForceClassSelection", ESAMPRPC_ForceClassSelection, {
-													{"unk", ERPCVariableType_Uint16,false, true}, 
+													{"unk", ERPCVariableType_Uint8,false, true}, 
 													{NULL, ERPCVariableType_NoInit}}
 													},
 														
@@ -914,6 +914,11 @@ RPCNameMap mp_rpc_map[] = {
 		},
 		SetPlayerAttachedObjectRPCToPyDict, SetPlayerAttachedObjectPyDictToRPC
 	},
+	{"GangZoneDestroy", ESAMPRPC_GangZoneDestroy, {
+		{"id", ERPCVariableType_Uint16,false, true},
+		{"pad", ERPCVariableType_Uint8,false, true},
+		{NULL, ERPCVariableType_NoInit}
+	}},
 	{"GangZoneFlash", ESAMPRPC_GangZoneFlash, {
 		{"id", ERPCVariableType_Uint16,false, true},
 		{"colour", ERPCVariableType_Uint32,false, true},
