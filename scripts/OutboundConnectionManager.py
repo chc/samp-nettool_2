@@ -100,7 +100,12 @@ class OutboundConnectionManager():
 			{'name': 'CrazyBobs #1', 'connection_string': 's1.crazybobs.net:7777'},
 			{'name': 'CrazyBobs #2', 'connection_string': 's2.crazybobs.net:7777'},
 			{'name': 'PTP', 'connection_string': '37.187.196.107:7777'},
-			{'name': 'DayZ', 'connection_string': '185.11.146.127:7778'}
+			{'name': 'DayZ', 'connection_string': '185.11.146.127:7778'},
+			{'name': 'Swat vs Terrorists', 'connection_string': '158.69.221.102:7777'},
+			{'name': 'Minigames', 'connection_string': '149.202.65.49:7777'},
+			{'name': 'LS CnR', 'connection_string': '164.132.241.61:7777'},
+			{'name': 'CoD', 'connection_string': '91.134.156.45:7777'},
+			{'name': 'SA CnR', 'connection_string': '192.169.82.202:7777'}
 		]
 		self.client = client
 

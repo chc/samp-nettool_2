@@ -912,6 +912,8 @@ RPCNameMap mp_rpc_map[] = {
 		{"miny", ERPCVariableType_Float,false, true},
 		{"maxx", ERPCVariableType_Float,false, true},
 		{"maxy", ERPCVariableType_Float,false, true},
+		{"colour", ERPCVariableType_Uint32,false, true},
+		{"pad", ERPCVariableType_Uint8,false, true},
 		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"PlayCrimeReport", ESAMPRPC_PlayCrimeReport, {
