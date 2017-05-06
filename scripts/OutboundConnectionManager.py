@@ -207,7 +207,7 @@ class OutboundConnectionManager():
 		if rpc_data["id"] != self.playerid and rpc_data["id"] in self.player_info:
 			self.player_info[rpc_data["id"]]["colour"] = rpc_data["colour"]
 			if self.tool_settings["full_alpha"]:
-				rpc_data["colour"] = rpc_data["colour"] | 0xFF
+				rpc_data["colour"] = rpc_data["colour"] | 0x000000FF
 				self.client.connection.SendRPC(rpcid, rpc_data)
 				return False
 		return True
