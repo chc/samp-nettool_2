@@ -92,8 +92,6 @@ bool PySAMP_ClientReady() {
 	gs_SAMPClientType.tp_alloc = PyType_GenericAlloc;
 	gs_SAMPClientType.tp_members = SAMPClient_members;
 
-	printf("SIZE IS: %d\n", sizeof(PyMemberDef));
-
 	if (PyType_Ready(&gs_SAMPClientType) < 0)
 		return false;
 	return true;

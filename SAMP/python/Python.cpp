@@ -78,7 +78,6 @@ namespace Py {
 
 		const char *path = "scripts/__init__.py";
 		FILE *fd = fopen(path, "r");
-		printf("FD is: %p\n", fd);
 		PyRun_AnyFile(fd, path);
 		fclose(fd);		
 	}
