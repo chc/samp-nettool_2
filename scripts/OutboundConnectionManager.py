@@ -215,6 +215,11 @@ class OutboundConnectionManager():
 		self.player_info[rpc_data["id"]]["streamed"] = True
 		self.player_info[rpc_data["id"]]["skin"] = rpc_data["skin"]
 		self.player_info[rpc_data["id"]]["team"] = rpc_data["team"]
+
+		if self.tool_settings["full_alpha"]:
+			rpc_data["colour"] = rpc_data["colour"] | 0x000000FF
+			self.client.connection.SendRPC(rpcid, rpc_data)
+			return False
 		return True
 	def handleRemovePlayerToWorld(self, connection, rpcid, rpc_data):
 		self.player_info[rpc_data["id"]]["streamed"] = False
