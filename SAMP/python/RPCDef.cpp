@@ -183,9 +183,17 @@ RPCNameMap mp_rpc_map[] = {
 													{NULL, ERPCVariableType_NoInit}}
 													},
 	{"SetInterior", ESAMPRPC_SetInterior, {
-													{"id", ERPCVariableType_Uint8,true, false}, 
+													{"id", ERPCVariableType_Uint8,true, true}, 
 													{NULL, ERPCVariableType_NoInit}}
 													},
+	{"MapMarker", ESAMPRPC_MapMarker, {
+													{"x", ERPCVariableType_Float,true, false}, 
+													{"y", ERPCVariableType_Float,true, false}, 
+													{"z", ERPCVariableType_Float,true, false}, 
+													{"pad", ERPCVariableType_Uint8,true, false}, 
+													{NULL, ERPCVariableType_NoInit}}
+													},
+														
 	{"TogglePlayerSpectating", ESAMPRPC_TogglePlayerSpectating, {
 													{"status", ERPCVariableType_Uint8,false, true}, 
 													{"playerid", ERPCVariableType_Uint16,false, true}, 

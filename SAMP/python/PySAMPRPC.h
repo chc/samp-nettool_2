@@ -89,6 +89,7 @@
 		ESAMPRPC_EditAttachedObject = 116,
 		ESAMPRPC_EditObject = 117,
 		ESAMPRPC_SetInterior = 118,
+		ESAMPRPC_MapMarker = 119,
 		ESAMPRPC_GangZoneDestroy = 120,
 		ESAMPRPC_GangZoneFlash = 121,
 		ESAMPRPC_StopObject = 122,
