@@ -119,7 +119,7 @@ namespace DataStructures
 	template <class list_type>
 		List<list_type>::~List()
 	{
-		if (allocation_size>0)
+		if (allocation_size>0 && listArray)
 			delete [] listArray;
 	}
 
@@ -259,10 +259,12 @@ namespace DataStructures
 			//		new_array[ counter ] = listArray[ counter ];
 
 			// Don't call constructors, assignment operators, etc.
-			memcpy(new_array, listArray, list_size*sizeof(list_type));
+			if(listArray) {
+				memcpy(new_array, listArray, list_size*sizeof(list_type));
 
-			// set old array to point to the newly allocated and twice as large array
-			delete[] listArray;
+				// set old array to point to the newly allocated and twice as large array
+				delete[] listArray;
+			}
 
 			listArray = new_array;
 		}

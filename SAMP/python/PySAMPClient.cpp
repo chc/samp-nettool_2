@@ -1,3 +1,5 @@
+#include <Python.h>
+#include "structmember.h"
 
 #include "main.h"
 #include "PySAMPClient.h"
@@ -9,7 +11,7 @@
 
 #include "SelectNetEventManager.h"
 
-#include "structmember.h"
+
 
 namespace SAMP {
 	void dump_raknet_bitstream(RakNet::BitStream *stream, const char *fmt, ...);
@@ -89,6 +91,8 @@ bool PySAMP_ClientReady() {
 	gs_SAMPClientType.tp_new = SAMPClient_New;
 	gs_SAMPClientType.tp_alloc = PyType_GenericAlloc;
 	gs_SAMPClientType.tp_members = SAMPClient_members;
+
+	printf("SIZE IS: %d\n", sizeof(PyMemberDef));
 
 	if (PyType_Ready(&gs_SAMPClientType) < 0)
 		return false;

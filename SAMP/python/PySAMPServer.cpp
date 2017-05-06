@@ -1,3 +1,5 @@
+#include <Python.h>
+#include "structmember.h"
 
 #include "main.h"
 #include "PySAMPServer.h"
@@ -6,7 +8,6 @@
 #include "SAMP/SAMPClient.h"
 #include "SAMP/python/Python.h"
 
-#include "structmember.h"
 PyMethodDef SAMPServer_methods[] = {
     								{"Listen",  (PyCFunction)pyi_sampserver_listen, METH_VARARGS,
  								    "Initiates the listening socket"},

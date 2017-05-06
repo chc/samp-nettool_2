@@ -530,43 +530,43 @@ const char *GetAuthKey(const char *key) {
 	return NULL;
 }
 
-void BIG_NUM_MUL(unsigned long in[5], unsigned long out[6], unsigned long factor)
+void BIG_NUM_MUL(uint32_t in[5], uint32_t out[6], uint32_t factor)
 {
 	/*
 		Based on TTMath library by Tomasz Sowa.
 	*/
 
-	unsigned long src[5] = {0};
+	uint32_t src[5] = {0};
 	for (int i = 0; i < 5; i++)
 		src[i] = ((in[4-i]>>24) | ((in[4-i]<<8) & 0x00FF0000) | ((in[4-i]>>8) & 0x0000FF00) | (in[4-i]<<24));
 
-	unsigned long long tmp = 0;
+	uint64_t tmp = 0;
 
-	tmp = (unsigned long long)(src[0])*(unsigned long long)(factor);
+	tmp = (uint64_t)(src[0])*(uint64_t)(factor);
 	out[0] = tmp&0xFFFFFFFF;
 	out[1] = tmp>>32;
-	tmp = (unsigned long long)(src[1])*(unsigned long long)(factor) + (unsigned long long)(out[1]);
+	tmp = (uint64_t)(src[1])*(uint64_t)(factor) + (uint64_t)(out[1]);
 	out[1] = tmp&0xFFFFFFFF;
 	out[2] = tmp>>32;
-	tmp = (unsigned long long)(src[2])*(unsigned long long)(factor) + (unsigned long long)(out[2]);
+	tmp = (uint64_t)(src[2])*(uint64_t)(factor) + (uint64_t)(out[2]);
 	out[2] = tmp&0xFFFFFFFF;
 	out[3] = tmp>>32;
-	tmp = (unsigned long long)(src[3])*(unsigned long long)(factor) + (unsigned long long)(out[3]);
+	tmp = (uint64_t)(src[3])*(uint64_t)(factor) + (uint64_t)(out[3]);
 	out[3] = tmp&0xFFFFFFFF;
 	out[4] = tmp>>32;
-	tmp = (unsigned long long)(src[4])*(unsigned long long)(factor) + (unsigned long long)(out[4]);
+	tmp = (uint64_t)(src[4])*(uint64_t)(factor) + (uint64_t)(out[4]);
 	out[4] = tmp&0xFFFFFFFF;
 	out[5] = tmp>>32;
 
 	for (int i = 0; i < 12; i++)
 	{
-		unsigned char temp = ((unsigned char*)out)[i];
-		((unsigned char*)out)[i] = ((unsigned char*)out)[23 - i];
-		((unsigned char*)out)[23 - i] = temp;
+		uint8_t temp = ((uint8_t*)out)[i];
+		((uint8_t*)out)[i] = ((uint8_t*)out)[23 - i];
+		((uint8_t*)out)[23 - i] = temp;
 	}
 }
 
-int gen_gpci(char buf[64], unsigned long factor) /* by bartekdvd */
+int gen_gpci(char buf[64], uint32_t factor) /* by bartekdvd */
 {
 	unsigned char out[16*4] = {0};
 
@@ -579,9 +579,9 @@ int gen_gpci(char buf[64], unsigned long factor) /* by bartekdvd */
 
 	out[i] = 0;
 
-	BIG_NUM_MUL((unsigned long*)out, (unsigned long*)out, factor);
+	BIG_NUM_MUL((uint32_t*)out, (uint32_t*)out, factor);
 
-	unsigned int notzero = 0;
+	uint32_t notzero = 0;
 	buf[0] = '0'; buf[1] = '\0';
 
 	if (factor == 0) return 1;
@@ -589,18 +589,18 @@ int gen_gpci(char buf[64], unsigned long factor) /* by bartekdvd */
 	int pos = 0;
 	for (int i = 0; i < 24; i++)
 	{
-		unsigned char tmp = out[i] >> 4;
-		unsigned char tmp2 = out[i]&0x0F;
+		uint8_t tmp = out[i] >> 4;
+		uint8_t tmp2 = out[i]&0x0F;
 		
 		if (notzero || tmp)
 		{
-			buf[pos++] = (char)((tmp > 9)?(tmp + 55):(tmp + 48));
+			buf[pos++] = (int8_t)((tmp > 9)?(tmp + 55):(tmp + 48));
 			if (!notzero) notzero = 1;
 		}
 
 		if (notzero || tmp2)
 		{
-			buf[pos++] = (char)((tmp2 > 9)?(tmp2 + 55):(tmp2 + 48));
+			buf[pos++] = (int8_t)((tmp2 > 9)?(tmp2 + 55):(tmp2 + 48));
 			if (!notzero) notzero = 1;
 		}
 	}
