@@ -66,6 +66,7 @@
 		ESAMPRPC_InterpolateCamera = 82,
 		ESAMPRPC_SelectTextDraw = 83,
 		ESAMPRPC_SetObjectMaterialText = 84,
+		ESAMPRPC_GangZoneStopFlash = 85,
 		ESAMPRPC_ApplyAnimation = 86,
 		ESAMPRPC_ClearAnimations = 87,
 		ESAMPRPC_SetPlayerSpecialAction = 88,

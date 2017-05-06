@@ -425,6 +425,11 @@ RPCNameMap mp_rpc_map[] = {
 		},
 		SetObjectMaterialRPCToPyDict, SetObjectMaterialPyDictToRPC
 	},
+	{"GangZoneStopFlash", ESAMPRPC_GangZoneStopFlash, {
+		{"id", ERPCVariableType_Uint16,false, true}, 
+		{"pad", ERPCVariableType_Uint8,false, true}, 
+		{NULL, ERPCVariableType_NoInit}
+	}},
 	{"PlayerUpdate", ESAMPRPC_PlayerUpdate, {
 											{"unknown", ERPCVariableType_Uint32,true, true}, 
 											{"pad", ERPCVariableType_Uint8,true, true}, 
