@@ -38,7 +38,8 @@ class OutboundConnectionManager():
 				self.updatePlayerLabel(self.player_info[data["playerid"]])
 
 		self.client.connection.SendSync(type, data)	
-
+	def setPlayerName(self, name):
+		self.player_name = name
 	#add to client response, check for if banned/wrong pw/server full, etc
 	def proxy_client_accepted(self, connection, playerid, challenge):
 		#print("Proxy Client accepted {} {} {}\n".format(connection, playerid, challenge))
@@ -48,7 +49,7 @@ class OutboundConnectionManager():
 		RPCData["Mod"] = 1
 		RPCData["Unknown"] = RPCData["Challenge"]
 		RPCData["Version"] = "0.3.7-R2"
-		RPCData["Name"] = "Nardi"
+		RPCData["Name"] = self.player_name
 		RPCData["GPCI"] = "342791B35BB3761EF389D7746B78BC0075932049AC0"#SAMP.GenGPCI(1001*4)
 		self.proxy_connection.SendRPC(SAMP.RPC_ClientJoin, RPCData)
 

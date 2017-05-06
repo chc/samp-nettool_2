@@ -64,6 +64,7 @@ class ProxyClient():
 		'playerid': 0, 'chat_radius': 10000.0, 'show_player_markers': 1, 'drop_money_on_death': 0, 'unknown_4': 0}
 		connection.SendRPC(SAMP.RPC_InitGame, init_data)
 		
+		self.connection_mgr.setPlayerName(rpc_data["Name"])
 		self.dialog_handler = self.connection_mgr.showConnectionMenu()
 
 	def handle_dialog_response(self, connection, rpcid, rpc_data):
