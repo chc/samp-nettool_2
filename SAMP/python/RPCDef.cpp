@@ -804,6 +804,12 @@ RPCNameMap mp_rpc_map[] = {
 		{"health", ERPCVariableType_Float,false, true},
 		{"unknown", ERPCVariableType_Uint8,false, true},
 		{NULL, ERPCVariableType_NoInit}
+	}},	
+	{"AttachTrailerToVehicle", ESAMPRPC_AttachTrailerToVehicle, {
+		{"trailerid", ERPCVariableType_Uint16,false, true},
+		{"vehicleid", ERPCVariableType_Uint16,false, true},
+		{"pad", ERPCVariableType_Uint8,false, true},
+		{NULL, ERPCVariableType_NoInit}
 	}},
 	{"DetachTrailerFromVehicle", ESAMPRPC_DetachTrailerFromVehicle, {
 		{"id", ERPCVariableType_Uint16,false, true},
