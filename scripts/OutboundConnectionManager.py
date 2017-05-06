@@ -140,9 +140,12 @@ class OutboundConnectionManager():
 	def showTimeOfDayMenu(self):
 		return None
 	def handleToolMenuResponse(self, response, list_index):
+		if not response:
+			return False
 		item = self.tool_settings_entries[list_index]
 
 		self.tool_settings[item["key"]] = not self.tool_settings[item["key"]]
+		self.client.connection.SendRPC(SAMP.RPC_SendClientMessage, {'Message': "{} now {}".format(item["key"],self.tool_settings[item["key"]]), "Colour": 0xFFFFFFFF})
 		if "onselect" in item:
 			item["onselect"](item["key"], self.tool_settings[item["key"]])
 		return True
