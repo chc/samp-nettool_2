@@ -78,6 +78,7 @@ class OutboundConnectionManager():
 			#{'name': 'Vehicle Override', 'on_select': self.showVehicleOverrideMenu},			
 			{'name': 'Connect/Quit messages', 'key': 'connect_quit_msgs'},
 			{'name': 'Disable Bullets', 'key': 'no_bullets'},
+			{'name': 'Map Marker TP', 'key': 'map_marker_tp'},
 			#{'name': 'Toggle Spectator mode', 'key': 'spec_mode'},
 			#{'name': 'Block paused', 'key': 'block_paused'},
 			#{'name': 'Object finder', 'key': 'object_finder'},
@@ -106,7 +107,8 @@ class OutboundConnectionManager():
 			{'name': 'Minigames', 'connection_string': '149.202.65.49:7777'},
 			{'name': 'LS CnR', 'connection_string': '164.132.241.61:7777'},
 			{'name': 'CoD', 'connection_string': '91.134.156.45:7777'},
-			{'name': 'SA CnR', 'connection_string': '192.169.82.202:7777'}
+			{'name': 'SA CnR', 'connection_string': '192.169.82.202:7777'},
+			{'name': 'NL-RP', 'connection_string': 'samp.nl-rp.net:7777'}
 		]
 		self.client = client
 
@@ -260,6 +262,11 @@ class OutboundConnectionManager():
 
 		if self.tool_settings["anti_tp"]:
 			if rpc_id == SAMP.RPC_SetPlayerPos or rpc_id == SAMP.RPC_SetPlayerFacingAngle or rpc_id == SAMP.RPC_SetPlayerPosFindZ or rpc_id == SAMP.RPC_SetPlayerInterior:
+				return False
+
+		if self.tool_settings["map_marker_tp"]:
+			if rpc_id == SAMP.RPC_MapMarker:
+				self.client.connection.SendRPC(SAMP.RPC_SetPlayerPosFindZ, rpc_data)
 				return False
 		self.proxy_connection.SendRPC(rpc_id, rpc_data)
 	def SendSync(self, type, data):
