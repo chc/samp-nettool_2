@@ -68,7 +68,7 @@ class ProxyClient():
 
 	def handle_dialog_response(self, connection, rpcid, rpc_data):
 		if self.dialog_handler:
-			if self.dialog_handler(rpc_data["response"], rpc_data["selected_item"]):
+			if self.dialog_handler(rpc_data["button"], rpc_data["selected_item"]):
 				self.dialog_handler = None
 			return False
 		return True
