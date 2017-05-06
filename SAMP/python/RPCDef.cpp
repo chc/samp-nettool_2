@@ -168,6 +168,11 @@ RPCNameMap mp_rpc_map[] = {
 													{"message", ERPCVariableType_LenU32Str,false, true}, 
 													{NULL, ERPCVariableType_NoInit}}
 													},
+	{"ForceClassSelection", ESAMPRPC_ForceClassSelection, {
+													{"unk", ERPCVariableType_Uint16,false, true}, 
+													{NULL, ERPCVariableType_NoInit}}
+													},
+														
 	{"CreateExplosion", ESAMPRPC_CreateExplosion, {
 													{"x", ERPCVariableType_Float,false, true}, 
 													{"y", ERPCVariableType_Float,false, true}, 

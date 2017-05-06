@@ -59,6 +59,7 @@
 		ESAMPRPC_RemovePlayerFromVehicle = 71,
 		ESAMPRPC_SetPlayerColor = 72,
 		ESAMPRPC_ShowGameText = 73,
+		ESAMPRPC_ForceClassSelection = 74,
 		ESAMPRPC_ShowMenu = 76,
 		ESAMPRPC_CreateExplosion = 79,
 		ESAMPRPC_ShowNameTag = 80,

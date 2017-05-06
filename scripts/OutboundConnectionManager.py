@@ -49,7 +49,7 @@ class OutboundConnectionManager():
 		RPCData["Unknown"] = RPCData["Challenge"]
 		RPCData["Version"] = "0.3.7-R2"
 		RPCData["Name"] = "Nardi"
-		RPCData["GPCI"] = SAMP.GenGPCI(1001*4)
+		RPCData["GPCI"] = "342791B35BB3761EF389D7746B78BC0075932049AC0"#SAMP.GenGPCI(1001*4)
 		self.proxy_connection.SendRPC(SAMP.RPC_ClientJoin, RPCData)
 
 		RPCData = {'class_id': 0}
