@@ -6,7 +6,7 @@
 	enum ESAMPRPC {
 		ESAMPRPC_SetPlayerName = 11,
 		ESAMPRPC_SetPlayerPos = 12,	
-		ESAMPRPC_SetPlayerPosFindZ = 12,	
+		ESAMPRPC_SetPlayerPosFindZ = 13,	
 		ESAMPRPC_SetPlayerHealth = 14,
 		ESAMPRPC_TogglePlayerControllable = 15,
 		ESAMPRPC_PlaySound = 16,

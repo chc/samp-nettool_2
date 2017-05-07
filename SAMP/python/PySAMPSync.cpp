@@ -58,8 +58,12 @@ namespace Py {
 		//move back to player sync struct
 		PyObject *dict_item;
 
-		dict_item = PyDict_GetItemString(dict, "playerid");
-		out->playerid = PyLong_AsLong(dict_item);
+		if(!client_to_server) {
+			dict_item = PyDict_GetItemString(dict, "playerid");
+			out->playerid = PyLong_AsLong(dict_item);
+		} else {
+			out->playerid = 0;
+		}
 
 		dict_item = PyDict_GetItemString(dict, "leftright_keys");
 		out->leftright_keys = PyLong_AsLong(dict_item);
