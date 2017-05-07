@@ -566,19 +566,15 @@ void BIG_NUM_MUL(uint32_t in[5], uint32_t out[6], uint32_t factor)
 	}
 }
 
-int gen_gpci(char buf[64], uint32_t factor) /* by bartekdvd */
+int gen_gpci(char buf[64], uint32_t factor, const char *source) /* by bartekdvd */
 {
 	unsigned char out[16*4] = {0};
 
-	static const char alphanum[] =
-		"0123456789"
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	int i;
-	for (i = 0; i < 6*4; ++i)
-		out[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+	for (i = 0; i < strlen(source) && i < 6*4; ++i)
+		out[i] = source[i];
 
 	out[i] = 0;
-
 	BIG_NUM_MUL((uint32_t*)out, (uint32_t*)out, factor);
 
 	uint32_t notzero = 0;

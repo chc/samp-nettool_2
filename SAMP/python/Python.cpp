@@ -333,10 +333,19 @@ namespace Py {
 PyObject *nf_gen_gpci_method(PyObject *self, PyObject *args) {
 	unsigned long factor = 0;
 	char gpci[4*16] = {0};
-	if(!PyArg_ParseTuple(args, "I", &factor)) {
+
+	PyObject *src_obj;
+	if(!PyArg_ParseTuple(args, "IO", &factor, &src_obj)) {
 		Py_RETURN_NONE;
 	}
-	gen_gpci(gpci, factor);
+	wchar_t *wstr = Py::copyPythonString(src_obj);
+	char *str = (char *)malloc(wcslen(wstr)+1);
+	memset(str,0, wcslen(wstr)+1);
+	wcstombs(str, wstr, wcslen(wstr));
+	gen_gpci(gpci, factor, str);
+
+	free(wstr);
+	free(str);
 	
 	return PyUnicode_FromString(gpci);
 }

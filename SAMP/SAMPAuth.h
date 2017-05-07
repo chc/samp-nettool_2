@@ -9,5 +9,5 @@ typedef struct {
 //auth stuff
 const char *GetAuthKey(const char *key);
 
-int gen_gpci(char buf[64], uint32_t factor);
+int gen_gpci(char buf[64], uint32_t factor, const char *source);
 #endif //_SAMPAUTH_H
