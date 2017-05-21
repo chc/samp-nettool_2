@@ -51,11 +51,15 @@ class ProxyClient():
 		self.connection.weapons_update_handler = (self.server_weapons_update_hndlr)
 		self.connection.disconnect_handler = (self.server_disconnect_hndlr)
 		self.connection_mgr = OutboundConnectionManager(self)
+
+
+		self.in_connection_menu = False
 		
 
 
 	def showConnectionMenu(self):
 		self.dialog_handler = self.connection_mgr.showConnectionMenu()
+		self.in_connection_menu = True
 	def handle_clientjoin_rpc(self, connection, rpcid, rpc_data):
 		print("Got client join: - {}\n".format(rpc_data))
 
@@ -75,7 +79,8 @@ class ProxyClient():
 		if self.dialog_handler:
 			if self.dialog_handler(rpc_data["button"], rpc_data["selected_item"]):
 				self.dialog_handler = None
-			else:
+				self.in_connection_menu = False
+			else if not self.in_connection_menu:
 				self.connection.Disconnect()
 			return False
 		return True
