@@ -22,6 +22,7 @@ namespace SAMP {
 		void SendRPC(int rpcid, RakNet::BitStream *rpc_data);
 		void SendMessage(int rpcid, RakNet::BitStream *rpc_data);
 
+		void SendDisconnect();
 		bool GetInbound() { return m_inbound; };
 	private:
 		SAMP::Server *mp_server;

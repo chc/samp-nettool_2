@@ -11,8 +11,6 @@
 PyMethodDef SAMPServer_methods[] = {
     								{"Listen",  (PyCFunction)pyi_sampserver_listen, METH_VARARGS,
  								    "Initiates the listening socket"},
-									{"SetNewConnectionHandler", (PyCFunction)pyi_sampserver_setnewconnhndlr, METH_VARARGS,
- 								    "Sets the New connection handler"},
     								{NULL, NULL, 0, NULL}};
 
 
@@ -41,7 +39,7 @@ PyTypeObject gs_SAMPServerType = {
 };
 
 static PyMemberDef SAMPServer_members[] = {
-	{"context", T_OBJECT_EX, offsetof(gs_SAMPServer, mp_context), 0,"stats updatehandler function"},
+	{"new_connection_handler", T_OBJECT_EX, offsetof(gs_SAMPServer, mp_new_conn_hndlr), 0,"new connection handler callback function"},
     {NULL}  /* Sentinel */
 };
 
@@ -60,11 +58,6 @@ PyObject *pyi_sampserver_listen(gs_SAMPServer *self, PyObject *args) {
 	SAMP::Server *serv = new SAMP::Server(mb_str);
 	self->samp_server = serv;
 	addSAMPServer(serv);
-	Py_RETURN_NONE;
-}
-PyObject *pyi_sampserver_setnewconnhndlr(gs_SAMPServer *self, PyObject *args) {
-	if (!PyArg_ParseTuple(args, "O", &self->mp_new_conn_hndlr))
-        Py_RETURN_NONE;
 	Py_RETURN_NONE;
 }
 PyObject * SAMPServer_New(PyTypeObject *type, PyObject *args, PyObject *kwd) {

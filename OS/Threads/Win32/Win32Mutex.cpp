@@ -8,7 +8,7 @@ namespace OS {
         NULL); 
 	}
 	CWin32Mutex::~CWin32Mutex() {
- 		CloseHandle(&m_mutex);
+ 		CloseHandle(m_mutex);
 	}
 	void CWin32Mutex::lock() {
 		WaitForSingleObject(&m_mutex, INFINITE);

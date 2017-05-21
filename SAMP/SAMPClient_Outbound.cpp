@@ -45,6 +45,7 @@ namespace SAMP {
 		mp_send_func(bs, mp_client, true);
 	}
 	SAMPOutboundClientHandler::~SAMPOutboundClientHandler() {
+		printf("SAMP Outbound handler delete\n");
 	}
 	void SAMPOutboundClientHandler::handle_bitstream(RakNet::BitStream *stream) {
 		if(!m_raknet_mode) {

@@ -43,6 +43,7 @@ namespace SAMP {
 		if(!m_inbound) {
 			close(m_sd);
 		}
+		delete mp_packet_handler;
 	}
 	void Client::think(fd_set *set) {
 		//send msg queue
@@ -119,8 +120,13 @@ namespace SAMP {
 	void Client::SendMessage(int msgid, RakNet::BitStream *rpc_data) {
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)msgid);
-		bs.Write(rpc_data);
-		mp_packet_handler->AddToOutputStream(&bs, UNRELIABLE_SEQUENCED, SAMP::MEDIUM_PRIORITY);
-		
+
+		if(rpc_data)
+			bs.Write(rpc_data);
+		mp_packet_handler->AddToOutputStream(&bs, UNRELIABLE_SEQUENCED, SAMP::MEDIUM_PRIORITY);	
+	}
+
+	void Client::SendDisconnect() {
+		SendMessage(ID_DISCONNECTION_NOTIFICATION, NULL);
 	}
 }

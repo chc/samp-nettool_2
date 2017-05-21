@@ -154,7 +154,7 @@ namespace Py {
 		while(it2 != m_py_clients.end()) {
 			gs_SAMPClient *samp_client = *it2;
 			if(samp_client->samp_client == client) {
-				PyObject *arglist = Py_BuildValue("NI",samp_client, (int)reason);
+				PyObject *arglist = Py_BuildValue("OI",samp_client, (int)reason);
 				PyObject *ret = (PyObject *)PyObject_CallObject(samp_client->mp_disconnect_handler, arglist);
 				PySAMP_CheckAndPrintErrors();
 				Py_DECREF(arglist);

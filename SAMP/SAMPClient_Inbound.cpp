@@ -44,6 +44,7 @@ namespace SAMP {
 		gettimeofday(&m_last_sent_ping, NULL);
 	}
 	SAMPInboundClientHandler::~SAMPInboundClientHandler() {
+		printf("SAMP Inbound handler delete\n");
 	}
 	void SAMPInboundClientHandler::handle_bitstream(RakNet::BitStream *stream) {
 		if(!m_raknet_mode) {
@@ -272,12 +273,10 @@ namespace SAMP {
 	void SAMPInboundClientHandler::m_connected_pong(RakNet::BitStream *data, PacketEnumeration id) {
 	}
 	void SAMPInboundClientHandler::m_handle_disconnect(RakNet::BitStream *data, PacketEnumeration id) {
-		printf("C->S D/C Packet len: %d %d\n",data->GetNumberOfBitsUsed(), data->GetNumberOfBytesUsed());
 		uint8_t type;
 		data->Read(type);
-		printf("C->S DC Type: %d\n", type);
 
-		mp_client->SetDelete(true);
+		Py::OnClientDisconnect(mp_client->GetServer(), mp_client, EConnRejectReason_Disconnected);
 	}
 	void SAMPInboundClientHandler::m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id) {
 		RakNet::BitStream bs;

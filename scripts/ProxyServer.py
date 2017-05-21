@@ -27,29 +27,35 @@ class ProxyClient():
 	def server_weapons_update_hndlr(self, connection, data):
 		self.connection_mgr.SendWeaponsUpdate(data)
 		return None
+	def server_disconnect_hndlr(self, connection, reason):
+		self.connection_mgr.Disconnect()
+		self.server.Delete(self)
+		self.connection = None
+		self.connection_mgr = None
 	def server_conn_rpc_hndlr(self, connection, rpcid, rpc_data):
-		if not "delegator" in connection.context:
-			connection.context['delegator'] = connection.context['proxy_client'].getClientDelegator()
+		rpc_delegator = self.getClientDelegator()
 
 		ret = True
-		if rpcid in connection.context['delegator']:
-			ret = connection.context['delegator'][rpcid](connection, rpcid, rpc_data)
+		if rpcid in rpc_delegator:
+			ret = rpc_delegator[rpcid](connection, rpcid, rpc_data)
 
 		if ret:
 			self.connection_mgr.SendRPC(rpcid, rpc_data)
 		
 	def __init__(self, server, connection):
 		self.connection = connection
-		self.connection.context = {'server': server, 'proxy_client': self, 'connection': connection}
+		self.server = server
 		self.connection.rpc_handler = (self.server_conn_rpc_hndlr)
 		self.connection.sync_handler = (self.server_conn_sync_hndlr)
 		self.connection.stats_update_handler = (self.server_conn_stats_update_hndlr)
 		self.connection.weapons_update_handler = (self.server_weapons_update_hndlr)
+		self.connection.disconnect_handler = (self.server_disconnect_hndlr)
 		self.connection_mgr = OutboundConnectionManager(self)
 		
 
 
-
+	def showConnectionMenu(self):
+		self.dialog_handler = self.connection_mgr.showConnectionMenu()
 	def handle_clientjoin_rpc(self, connection, rpcid, rpc_data):
 		print("Got client join: - {}\n".format(rpc_data))
 
@@ -63,12 +69,14 @@ class ProxyClient():
 		connection.SendRPC(SAMP.RPC_InitGame, init_data)
 		
 		self.connection_mgr.setPlayerName(rpc_data["Name"])
-		self.dialog_handler = self.connection_mgr.showConnectionMenu()
+		self.showConnectionMenu()
 
 	def handle_dialog_response(self, connection, rpcid, rpc_data):
 		if self.dialog_handler:
 			if self.dialog_handler(rpc_data["button"], rpc_data["selected_item"]):
 				self.dialog_handler = None
+			else:
+				self.connection.Disconnect()
 			return False
 		return True
 
@@ -78,6 +86,9 @@ class ProxyClient():
 		if cmd == "toolmenu":
 			self.dialog_handler = self.connection_mgr.showToolMenu()
 			return False
+		if cmd == "disconnect":
+			self.connection_mgr.Disconnect()
+			self.showConnectionMenu()
 		return True
 	#NON-PROXY MODE DELEGATORS
 	#ONLY ACTIVE WHEN NOT IN PROXY MODE(INITIAL CONNECT/ON DISCONNECT)
@@ -90,21 +101,25 @@ class ProxyClient():
 
 
 
-def server_new_conn_hndlr(server, connection, password):
-	print("New conn, clients is: {}\n".format(server))
-	server.context['self'].clients.append(ProxyClient(server.context['self'], connection))
-
-	if password == "hello123":
-		return SAMP.CONN_RESPONSE_REASON_ACCEPTED
-	else:
-		return SAMP.CONN_RESPONSE_REASON_INVALID_PASS
-
 class ProxyServer(): #TODO BASE SERVER
 	def __init__(self, listen_address):
 		self.clients = []
 		self.server = SAMP.Server()
-		self.server.context = {'self': self}
 		print("Server: {}\n".format(self.server))
-		self.server.SetNewConnectionHandler(server_new_conn_hndlr)
+		self.server.new_connection_handler = (self.server_new_conn_hndlr)
 		self.server.Listen(listen_address)
 		
+	def Delete(self, client):
+		
+		self.clients.remove(client)
+
+		print("Delete client: {} {}\n".format(client, self.clients))
+
+	def server_new_conn_hndlr(self, server, connection, password):
+		print("New conn, clients is: {} {}\n".format(self,server))
+		self.clients.append(ProxyClient(self, connection))
+
+		if password == "hello123":
+			return SAMP.CONN_RESPONSE_REASON_ACCEPTED
+		else:
+			return SAMP.CONN_RESPONSE_REASON_INVALID_PASS

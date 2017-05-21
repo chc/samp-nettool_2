@@ -37,7 +37,12 @@ class OutboundConnectionManager():
 			if self.tool_settings["player_info"] and data["playerid"] in self.player_info:
 				self.updatePlayerLabel(self.player_info[data["playerid"]])
 
-		self.client.connection.SendSync(type, data)	
+		self.client.connection.SendSync(type, data)
+
+	def proxy_client_disconnect_hndlr(self, connection, reason):
+		self.client.connection.SendRPC(SAMP.RPC_SendClientMessage, {'Message': "You have been disconnected, reason: {}".format(reason), "Colour": 0xFFFFFFFF})
+		self.proxy_connection = None
+		self.client.showConnectionMenu()
 	def setPlayerName(self, name):
 		self.player_name = name
 	#add to client response, check for if banned/wrong pw/server full, etc
@@ -98,6 +103,7 @@ class OutboundConnectionManager():
 				self.tool_settings[setting["key"]] = False
 
 		self.servers = [
+			{'name': 'localhost', 'connection_string': 'localhost:7777'},
 			{'name': 'UIF', 'connection_string': '51.254.85.134:7776'},
 			{'name': 'WC-RP', 'connection_string': 'samp.wc-rp.com:7777'},
 			{'name': 'CrazyBobs #1', 'connection_string': 's1.crazybobs.net:7777'},
@@ -112,11 +118,6 @@ class OutboundConnectionManager():
 			{'name': 'NL-RP', 'connection_string': 'samp.nl-rp.net:7777'}
 		]
 		self.client = client
-
-		self.proxy_connection = SAMP.Client()
-		self.proxy_connection.conn_accepted_handler = (self.proxy_client_accepted)
-		self.proxy_connection.rpc_handler = (self.proxy_client_rpc_hndlr)
-		self.proxy_connection.sync_handler = (self.proxy_client_sync_hndlr)
 		#self.proxy_connection.context = {'proxy_client': self}
 
 
@@ -125,8 +126,19 @@ class OutboundConnectionManager():
 		if response:
 			connection_string = self.servers[list_index]["connection_string"]
 			self.client.connection.SendRPC(SAMP.RPC_SendClientMessage, {'Message': "Got conn string: {}".format(connection_string), "Colour": 0xFFFFFFFF})
+
+
+			self.proxy_connection = SAMP.Client()
+			self.proxy_connection.conn_accepted_handler = (self.proxy_client_accepted)
+			self.proxy_connection.rpc_handler = (self.proxy_client_rpc_hndlr)
+			self.proxy_connection.sync_handler = (self.proxy_client_sync_hndlr)
+			self.proxy_connection.disconnect_handler = (self.proxy_client_disconnect_hndlr)
+
 			self.proxy_connection.Connect(connection_string)
-		return True
+		return response
+	def Disconnect(self):
+		self.proxy_connection.Disconnect()
+		self.proxy_connection = None
 	def showConnectionMenu(self):
 		dialog_string = "Name\tConnection String\n"
 		for server in self.servers:

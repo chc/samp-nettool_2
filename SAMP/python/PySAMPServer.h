@@ -20,5 +20,4 @@ bool PySAMP_ServerReady();
 void PySAMP_InitServerObj(PyObject *m);
 
 PyObject *pyi_sampserver_listen(gs_SAMPServer *self, PyObject *args);
-PyObject *pyi_sampserver_setnewconnhndlr(gs_SAMPServer *self, PyObject *args);
 #endif //_PYSAMPSERVER_H
