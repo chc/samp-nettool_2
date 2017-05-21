@@ -382,16 +382,16 @@ namespace SAMP {
 		}
 	}
 	void SAMPPacketHandler::tryProcessSplitPackets() {
-		std::map<int, RaknetSplitData>::iterator it, beg, end;
-		beg = m_split_data.begin();
+		std::map<int, RaknetSplitData>::iterator it, end;
 		end = m_split_data.end();
-		it = beg;
+		it = m_split_data.begin();
 		while(it != end) {
 			std::pair<int, RaknetSplitData> map_data = *it;
 			RaknetSplitData data = map_data.second;
 			if(data.m_sequences.size() == data.m_count) {
 				processSplitPacket(&data);
-				it = m_split_data.erase(it);
+				m_split_data.erase(it);
+				it = m_split_data.begin();
 				continue;
 			}
 			it++;
