@@ -115,7 +115,8 @@ class OutboundConnectionManager():
 			{'name': 'LS CnR', 'connection_string': '164.132.241.61:7777'},
 			{'name': 'CoD', 'connection_string': '91.134.156.45:7777'},
 			{'name': 'SA CnR', 'connection_string': '192.169.82.202:7777'},
-			{'name': 'NL-RP', 'connection_string': 'samp.nl-rp.net:7777'}
+			{'name': 'NL-RP', 'connection_string': 'samp.nl-rp.net:7777'},
+			{'name': 'PR-RP', 'connection_string': 'play.pr-rp.com:7777'},
 		]
 		self.client = client
 		#self.proxy_connection.context = {'proxy_client': self}
