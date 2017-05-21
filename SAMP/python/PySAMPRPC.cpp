@@ -50,7 +50,7 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 			case ERPCVariableType_LenU32Str:
 				uint32_t len32;
 				bs->Read(len32);
-				if(len32 != (uint32_t)-1 && len != 0) {
+				if(len32 != (uint32_t)-1 && len32 != 0) {
 					bs->Read(str,len32);
 					str[len32] = 0;
 				} else str[0] = 0;
@@ -61,7 +61,7 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 			case ERPCVariableType_LenU16Str:
 				uint16_t len16;
 				bs->Read(len16);
-				if(len16 != (uint16_t)-1 && len != 0) {
+				if(len16 != (uint16_t)-1 && len16 != 0) {
 					bs->Read(str,len16);
 					str[len16] = 0;
 				} else str[0] = 0;
