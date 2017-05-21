@@ -9,7 +9,8 @@ class OutboundConnectionManager():
 	def proxy_client_rpc_hndlr(self, connection, rpcid, rpc_data):
 		delegator = self.getRPCDelegator()
 		ret = True
-		#print("Got RPC {} - {}\n".format(rpcid, rpc_data))
+		if rpcid == SAMP.RPC_SendClientMessage:
+			print("Got RPC {} - {}\n".format(rpcid, rpc_data))
 		if rpcid in delegator:
 			ret = delegator[rpcid](connection, rpcid, rpc_data)
 		
@@ -257,6 +258,10 @@ class OutboundConnectionManager():
 		print("Client init: {}\n".format(rpc_data))
 		self.playerid = rpc_data["playerid"]
 		return True
+
+	def handleClientCheck(self, connection, rpcid, rpc_data):
+		self.client.connection.SendRPC(SAMP.RPC_SendClientMessage, {'Message': "Client Check: {}".format(rpc_data), "Colour": 0xFFFFFFFF})
+		return True
 	def getRPCDelegator(self):
 		ret = {}
 		ret[SAMP.RPC_ServerJoin] = self.handleServerJoin
@@ -267,6 +272,7 @@ class OutboundConnectionManager():
 		ret[SAMP.RPC_DeletePlayerFromWorld] = self.handleRemovePlayerToWorld
 		ret[SAMP.RPC_ChatMessage] = self.handleChatMessage
 		ret[SAMP.RPC_InitGame] = self.handleInitGame
+		ret[SAMP.RPC_ClientCheck] = self.handleClientCheck
 		return ret
 
 	def SendRPC(self, rpc_id, rpc_data):
