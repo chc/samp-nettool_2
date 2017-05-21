@@ -301,6 +301,12 @@ namespace Py {
 		Py_DECREF(arglist);
 		Py_XDECREF(ret);
 	}
+
+	struct WepData{
+		uint8_t wep_id;
+		uint16_t ammo;
+		uint8_t weap_unk;
+	} _WepData;
 	void OnGotWeaponsUpdate(SAMP::Client *client, RakNet::BitStream *data, bool client_to_server) {
 		//there is no server to client so no need to check
 		PyObject *list;
@@ -311,11 +317,7 @@ namespace Py {
 
 		PyDict_SetItem(dict, PyUnicode_FromString("unk"), PyLong_FromUnsignedLong(unk));
 
-		struct WepData{
-			uint8_t wep_id;
-			uint16_t ammo;
-			uint8_t weap_unk;
-		} _WepData;
+
 		std::vector<WepData> weps;
 		while(data->GetNumberOfUnreadBits() > 0) {
 			data->Read(_WepData.wep_id);
