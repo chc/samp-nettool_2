@@ -40,6 +40,12 @@ namespace Net {
 		while(it3 != m_net_clients.end()) {
 			Net::Client *client = *it3;
 			client->think(&m_fdset);
+
+			if(client->ShouldDelete()) {
+				delete client;
+				it3 = m_net_clients.erase(it3);
+				continue;
+			}
 			it3++;
 		}
 	}

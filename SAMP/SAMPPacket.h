@@ -163,7 +163,7 @@ namespace SAMP {
 	class SAMPPacketHandler /*: public Net::PacketHandler*/ {
 	public:
 		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); m_transtate_out.m_out_split_id = 0; m_transtate_out.m_out_seq = 0; m_transtate_out.m_ordering_channel = 0; memset(&m_transtate_out.m_ordering_index,0,NUMBER_OF_ORDERED_STREAMS * sizeof(int)); };
-		~SAMPPacketHandler() { delete mp_mutex;};
+		virtual ~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
 		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
 		virtual void process_racket_sequence(RakNetByteSeq &byte_seq) = 0;

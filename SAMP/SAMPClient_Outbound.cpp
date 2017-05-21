@@ -276,6 +276,8 @@ namespace SAMP {
 		uint8_t type;
 		data->Read(type); //always uninitalized
 		printf("DC Type: %d\n", type);
+
+		Py::OnClientDisconnect(mp_client->GetServer(), mp_client, EConnRejectReason_Disconnected);
 	}
 	void SAMPOutboundClientHandler::m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id) {
 		RakNet::BitStream bs;

@@ -40,7 +40,7 @@ PyTypeObject gs_SAMPClientType = {
     "Client",             /*tp_name*/
     sizeof(gs_SAMPClient), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
-    0,                         /*tp_dealloc*/
+    PySAMP_ClientDelete,       /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
@@ -59,11 +59,12 @@ PyTypeObject gs_SAMPClientType = {
     "SAMP Client Object",       /* tp_doc */
 };
 
-static PyMemberDef SAMPClient_members[9] = {
+static PyMemberDef SAMPClient_members[10] = {
     {"proxy_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_proxy_connection), 0,"proxy connection object"},
 	{"source_connection", T_OBJECT, offsetof(gs_SAMPClient, mp_source_connection), 0,"source connection object"},
 	{"rpc_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_rpc_handler), 0,"rpc handler function"},
 	{"sync_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_sync_handler), 0,"rpc handler function"},
+	{"disconnect_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_disconnect_handler), 0,"disconnect handler function"},
 	{"conn_accepted_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_conn_accepted_handler), 0,"connection accepted handler function"},
 	{"stats_update_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_stats_update_handler), 0,"stats updatehandler function"},
 	{"weapons_update_handler", T_OBJECT, offsetof(gs_SAMPClient, mp_weapons_update_handler), 0,"weapon update handler callback function"},
@@ -246,4 +247,10 @@ PyObject *pyi_sampclient_send_weapons_update(gs_SAMPClient *self, PyObject *args
 
 	delete out_bs;
 	Py_RETURN_NONE;
+}
+
+void PySAMP_ClientDelete(PyObject *m) {
+	gs_SAMPClient *self = (gs_SAMPClient *)m;
+
+	Py::OnClientDelete(self->samp_server, self->samp_client);
 }

@@ -29,6 +29,8 @@ namespace Py {
 
 
 	EConnRejectReason OnNewConnection(SAMP::Server *server, SAMP::Client *client, std::string password = "");
+	void OnClientDisconnect(SAMP::Server *server, SAMP::Client *client, EConnRejectReason reason);
+	void OnClientDelete(SAMP::Server *server, SAMP::Client *client);
 	void OnGotRPC(SAMP::Client *client, uint32_t rpc_id, RakNet::BitStream *data, bool client_to_server);
 	void OnConnectionAccepted(SAMP::Client *client, int playerid, uint32_t challenge);
 	void OnGotSync(SAMP::Client *client, SAMP::PacketEnumeration type, RakNet::BitStream *data, bool client_to_server);

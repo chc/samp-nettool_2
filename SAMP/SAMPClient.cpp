@@ -34,9 +34,12 @@ namespace SAMP {
 
 		m_sd = socket(AF_INET, SOCK_DGRAM, 0);
 
+		mp_server = NULL;
+
 		mp_packet_handler = new SAMPOutboundClientHandler(client_send_func, client_recv_func, this, &m_sock_addr);
 	}
 	Client::~Client() {
+		Py::OnClientDelete(mp_server, this);
 		if(!m_inbound) {
 			close(m_sd);
 		}

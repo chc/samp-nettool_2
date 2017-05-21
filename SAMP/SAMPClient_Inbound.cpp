@@ -276,6 +276,8 @@ namespace SAMP {
 		uint8_t type;
 		data->Read(type);
 		printf("C->S DC Type: %d\n", type);
+
+		mp_client->SetDelete(true);
 	}
 	void SAMPInboundClientHandler::m_handle_recv_static_data(RakNet::BitStream *data, PacketEnumeration id) {
 		RakNet::BitStream bs;

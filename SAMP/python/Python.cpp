@@ -138,8 +138,9 @@ namespace Py {
 				response = (EConnRejectReason)PyLong_AsLong(ret);
 
 
-				if(std::find(m_py_clients.begin(),m_py_clients.end(), conn_obj) == m_py_clients.end())
+				if(std::find(m_py_clients.begin(),m_py_clients.end(), conn_obj) == m_py_clients.end()) {
 					m_py_clients.push_back(conn_obj);
+				}
 
 				Py_XDECREF(ret);
 				Py_DECREF(arglist);
@@ -147,6 +148,33 @@ namespace Py {
 			it++;
 		}
 		return response;
+	}
+	void OnClientDisconnect(SAMP::Server *server, SAMP::Client *client, EConnRejectReason reason) {
+		std::vector<gs_SAMPClient *>::iterator it2 = m_py_clients.begin();		
+		while(it2 != m_py_clients.end()) {
+			gs_SAMPClient *samp_client = *it2;
+			if(samp_client->samp_client == client) {
+				PyObject *arglist = Py_BuildValue("NI",samp_client, (int)reason);
+				PyObject *ret = (PyObject *)PyObject_CallObject(samp_client->mp_disconnect_handler, arglist);
+				PySAMP_CheckAndPrintErrors();
+				Py_DECREF(arglist);
+				Py_XDECREF(ret);
+				break;
+			}
+			it2++;
+		}
+	}
+	void OnClientDelete(SAMP::Server *server, SAMP::Client *client) {
+		std::vector<gs_SAMPClient *>::iterator it2 = m_py_clients.begin();		
+		while(it2 != m_py_clients.end()) {
+			gs_SAMPClient *samp_client = *it2;
+			if(samp_client->samp_client == client) {
+				//Py_DECREF(samp_client);
+				m_py_clients.erase(it2);
+				break;
+			}
+			it2++;
+		}
 	}
 	wchar_t *copyPythonString(PyObject *string) {
 		if(string) {

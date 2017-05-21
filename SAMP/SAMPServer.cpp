@@ -39,12 +39,17 @@ namespace SAMP {
 					client->handle_packet((const char *)&buf, len);
 				}
 			}
-			std::vector<SAMP::Client *>::iterator it = m_samp_clients.begin();
-			while(it != m_samp_clients.end()) {
-				SAMP::Client *client = *it;
-				client->think(set);
-				it++;
-			}
+		}
+		std::vector<SAMP::Client *>::iterator it = m_samp_clients.begin();
+		while(it != m_samp_clients.end()) {
+			SAMP::Client *client = *it;
+			client->think(set);
+			if(client->ShouldDelete()) {
+				delete client;
+				it = m_samp_clients.erase(it);
+				continue;
+			}				
+			it++;
 		}
 }
 	void Server::handle_query_info_packet(char *buf, int len, struct sockaddr_in *from, SAMPQueryHeader *header) {

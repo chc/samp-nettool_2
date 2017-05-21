@@ -181,7 +181,10 @@ namespace Py {
 	}
 	void PyDictToSync_Vehicle(SAMP::VEHICLE_SYNC_INFO *out, PyObject* dict, bool client_to_server) {
  		PyObject *dict_item = PyDict_GetItemString(dict, "playerid");
-		out->playerid = PyLong_AsLong(dict_item);
+		if(dict_item)
+			out->playerid = PyLong_AsLong(dict_item);
+		else
+			out->playerid = -1;
 
 		dict_item = PyDict_GetItemString(dict, "vehicleid");
 		out->vehicleid = PyLong_AsLong(dict_item);
