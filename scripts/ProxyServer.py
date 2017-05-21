@@ -80,7 +80,7 @@ class ProxyClient():
 			if self.dialog_handler(rpc_data["button"], rpc_data["selected_item"]):
 				self.dialog_handler = None
 				self.in_connection_menu = False
-			else if not self.in_connection_menu:
+			elif not self.in_connection_menu:
 				self.connection.Disconnect()
 			return False
 		return True
