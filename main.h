@@ -26,8 +26,5 @@ void addSAMPServer(SAMP::Server *server);
 
 uint32_t resolv(const char *host);
 void get_server_address_port(const char *input, char *address, uint16_t &port);
-#ifdef _WIN32
-	int gettimeofday(struct timeval * tp, struct timezone * tzp);
-#endif
 
 #endif //_MAIN_H

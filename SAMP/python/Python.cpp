@@ -65,7 +65,7 @@ namespace Py {
 		//Py_SetProgramName(L"scripts");
 		
 		//Py_SetPythonHome(L"E:\\Code\\Python-3.5.0"); //temp windows fix
-		Py_SetPath(L"E:\\Code\\nettool_new\\python35_d.zip;E:\\Code\\Python-3.5.0\\DLLs;E:\\Code\\Python-3.5.0\\lib;E:\\Code\\nettool_new\\scripts");
+		Py_SetPath(L"D:\\Python36\\python35_d.zip;D:\\Python36\\DLLs;D:\\Python36\\lib;D:\\Code\\nettool_2\\scripts");
 
 		//Py_SetPath(L"/usr/lib/python35.zip:/usr/lib/python3.5:/usr/lib/python3.5/plat-x86_64-linux-gnu:/usr/lib/python3.5/lib-dynload:/usr/local/lib/python3.5/dist-packages:/usr/lib/python3/dist-packages:/home/nettool/nettool_2/scripts");
 		//Py_SetPath(L"scripts");

@@ -41,7 +41,7 @@ namespace SAMP {
 
 		m_transtate_out.m_ordering_channel = 1;
 
-		gettimeofday(&m_last_sent_ping, NULL);
+		m_last_sent_ping = time(NULL);
 	}
 	SAMPInboundClientHandler::~SAMPInboundClientHandler() {
 		printf("SAMP Inbound handler delete\n");
@@ -129,11 +129,11 @@ namespace SAMP {
 			m_send_queue.clear();
 		}
 		mp_mutex->unlock();
-		struct timeval current_time;
-		gettimeofday(&current_time, NULL);
+		time_t current_time;
+		current_time = time(NULL);
 		
-		if(current_time.tv_sec - m_last_sent_ping.tv_sec > SAMP_SEND_PING_TIME) {
-			gettimeofday(&m_last_sent_ping, NULL);
+		if(current_time - m_last_sent_ping > SAMP_SEND_PING_TIME) {
+			m_last_sent_ping = time(NULL);
 			send_ping();
 		}
 	}

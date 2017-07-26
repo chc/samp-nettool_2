@@ -21,7 +21,7 @@ file (GLOB RAKNET_HDRS "SAMP/rak_minimal/*.h")
 
 set (ALL_SRCS ${MAIN_SRCS} ${MAIN_HDRS} ${SAMP_SRCS} ${SAMP_HDRS} ${PYTHON_SRCS} ${PYTHON_HDRS} ${RAKNET_SRCS} ${RAKNET_HDRS} ${LEGACY_SRCS} ${LEGACY_HDRS} ${OS_PLAT_SRCS} ${OS_PLAT_HDRS})
 
-include_directories ("." "/usr/local/include/python3.6m" "SAMP/rak_minimal")
+include_directories ("." "D:\\Python36\\include" "SAMP/rak_minimal")
 
 source_group("Sources" FILES ${MAIN_SRCS})
 source_group("Sources\\OS" FILES ${OS_PLAT_SRCS})
@@ -38,4 +38,4 @@ source_group("Headers\\SAMP\\rak_minimal" FILES ${RAKNET_HDRS})
 source_group("Headers\\Legacy" FILES ${LEGACY_HDRS})
 
 add_executable (nettool ${ALL_SRCS})
-target_link_libraries(nettool /usr/local/lib/libpython3.6m.a dl z pthread util)
+target_link_libraries(nettool D:\\Python36\\libs\\python36.lib)

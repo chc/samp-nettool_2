@@ -18,7 +18,7 @@ namespace SAMP {
 		void tick(fd_set *set);
 	private:
 		void send_ping();
-		struct timeval m_last_sent_ping;
+		time_t m_last_sent_ping;
 
 		void handle_nonrak_packet(RakNet::BitStream *stream);
 		void handle_raknet_packet(RakNet::BitStream *stream);
