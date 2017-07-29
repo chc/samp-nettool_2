@@ -2,6 +2,7 @@
 #include "SAMPClient.h"
 #include "python/Python.h"
 #include <algorithm>
+#include "rak_minimal/GetTime.h"
 namespace SAMP {
 	void SAMPPacketHandler::AddToOutputStream(RakNet::BitStream *bs, PacketReliability reliability, PacketPriority priority) {
 		
@@ -424,5 +425,12 @@ namespace SAMP {
 			process_racket_sequence(send_seq);
 		}
 		delete seq_data;
+	}
+	void SAMPPacketHandler::send_ping() {
+		RakNet::BitStream bs;
+		bs.Write((uint8_t)ID_INTERNAL_PING);
+		bs.Write((uint32_t)RakNet::GetTime());
+
+		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 }

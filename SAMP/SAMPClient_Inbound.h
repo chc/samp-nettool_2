@@ -17,26 +17,12 @@ namespace SAMP {
 
 		void tick(fd_set *set);
 	private:
-		void send_ping();
-		time_t m_last_sent_ping;
-
 		void handle_nonrak_packet(RakNet::BitStream *stream);
 		void handle_raknet_packet(RakNet::BitStream *stream);
 		void process_racket_sequence(RakNetByteSeq &byte_seq);
 		//initial connection packets
 		void send_cookie_request();
-		void send_open_conn_reply();
-		
-		bool m_raknet_mode;
-
-		bool m_sent_cookie_packet;
-		uint16_t m_server_cookie;
-
-		std::string m_password; //pw user sent to try join
-
-		SAMP::Client *mp_client;
-
-		SAMPPacketHandlerSendFunc mp_send_func;
+		void send_open_conn_reply();		
 
 		static SAMPClientMsgHandler m_msg_handlers[];
 

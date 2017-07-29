@@ -1,8 +1,6 @@
 #include "SAMPClient.h"
 #include "SAMPClient_Inbound.h"
 
-#include "rak_minimal/GetTime.h"
-
 namespace SAMP {
 	SAMPClientMsgHandler SAMPInboundClientHandler::m_msg_handlers[] = {
 		{ID_CONNECTION_REQUEST, ESAMPAuthState_WaitConnReq, &SAMPInboundClientHandler::m_handle_conn_req},
@@ -26,22 +24,9 @@ namespace SAMP {
 		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_disconnect},
 		{ID_RECEIVED_STATIC_DATA, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_recv_static_data},
 	};
-	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
-		m_raknet_mode = false;
-		m_server_cookie = 0x6969;
-		m_sent_cookie_packet = false;
-		mp_send_func = NULL;
-
-		mp_send_func = func;
-		mp_client = client;
-
+	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr, func, NULL, client) {
 		m_transtate_out.m_out_seq = 0;
-
-		m_in_addr = *in_addr;
-
-		m_transtate_out.m_ordering_channel = 1;
-
-		m_last_sent_ping = time(NULL);
+		m_transtate_out.m_ordering_channel = 1;		
 	}
 	SAMPInboundClientHandler::~SAMPInboundClientHandler() {
 		printf("SAMP Inbound handler delete\n");
@@ -136,14 +121,6 @@ namespace SAMP {
 			m_last_sent_ping = time(NULL);
 			send_ping();
 		}
-	}
-
-	void SAMPInboundClientHandler::send_ping() {
-		RakNet::BitStream bs;
-		bs.Write((uint8_t)ID_INTERNAL_PING);
-		bs.Write((uint32_t)RakNet::GetTime());
-
-		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
 
 	void SAMPInboundClientHandler::process_racket_sequence(RakNetByteSeq &byte_seq) {

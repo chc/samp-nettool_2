@@ -9,6 +9,7 @@
 #include <stack>
 
 #include <OS/Mutex.h>
+#include <time.h>
 
 namespace SAMP {
 
@@ -160,9 +161,27 @@ namespace SAMP {
 		ESAMPAuthState_SentAuthKey,
 		ESAMPAuthState_ConnAccepted,
 	};
+	class Client;
 	class SAMPPacketHandler /*: public Net::PacketHandler*/ {
 	public:
-		SAMPPacketHandler(const struct sockaddr_in *in_addr) { m_in_addr = *in_addr; mp_mutex = OS::CreateMutex(); m_transtate_out.m_out_split_id = 0; m_transtate_out.m_out_seq = 0; m_transtate_out.m_ordering_channel = 0; memset(&m_transtate_out.m_ordering_index,0,NUMBER_OF_ORDERED_STREAMS * sizeof(int)); };
+		SAMPPacketHandler(const struct sockaddr_in *in_addr, SAMPPacketHandlerSendFunc send_func = NULL, SAMPPacketHandlerRecvFunc recv_func = NULL, SAMP::Client *client = NULL) {
+			mp_mutex = OS::CreateMutex(); 
+			m_transtate_out.m_out_split_id = 0; 
+			m_transtate_out.m_out_seq = 0; 
+			m_transtate_out.m_ordering_channel = 0;
+			memset(&m_transtate_out.m_ordering_index,0,NUMBER_OF_ORDERED_STREAMS * sizeof(int));
+
+
+			m_raknet_mode = false;
+			m_server_cookie = 0x6969;
+			m_sent_cookie_packet = false;
+
+			mp_send_func = send_func;
+			mp_recv_func = recv_func;
+			mp_client = client;
+			m_in_addr = *in_addr;
+			m_last_sent_ping = time(NULL);
+		};
 		virtual ~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
 		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
@@ -197,6 +216,25 @@ namespace SAMP {
 		OS::CMutex *mp_mutex;
 
 		std::map<int, RaknetSplitData> m_split_data;
+
+
+
+		bool m_raknet_mode;
+
+		bool m_sent_cookie_packet;
+		uint16_t m_server_cookie;
+
+		SAMP::Client *mp_client;
+
+		SAMPPacketHandlerSendFunc mp_send_func;
+		SAMPPacketHandlerRecvFunc mp_recv_func;
+		int m_player_id;
+		struct sockaddr_in m_client_addr;
+		std::string m_password; //pw user sent to try join
+
+
+		void send_ping();
+		time_t m_last_sent_ping;
 	};
 
 }

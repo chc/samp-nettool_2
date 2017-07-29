@@ -22,25 +22,13 @@ namespace SAMP {
 		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_disconnect},
 		{ID_RECEIVED_STATIC_DATA, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_recv_static_data},
 	};
-	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr) {
-		m_raknet_mode = false;
-		m_server_cookie = 0x6969;
-		m_sent_cookie_packet = false;
-		mp_send_func = NULL;
-
-		mp_send_func = send_func;
-		mp_recv_func = recv_func;
-		mp_client = client;
-
+	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr, send_func, recv_func, client) {
 		m_transtate_out.m_out_seq = 0;
-
-		m_in_addr = *in_addr;
+		m_transtate_out.m_ordering_channel = 2;
 
 		RakNet::BitStream bs;
 		bs.Write((uint8_t)ID_OPEN_CONNECTION_REQUEST);
 		bs.Write((uint16_t)SAMP_COOKIE);
-
-		m_transtate_out.m_ordering_channel = 2;
 
 		mp_send_func(bs, mp_client, true);
 	}
