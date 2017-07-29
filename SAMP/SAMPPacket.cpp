@@ -433,4 +433,12 @@ namespace SAMP {
 
 		AddToOutputStream(&bs, UNRELIABLE, SAMP::HIGH_PRIORITY);
 	}
+	void SAMPPacketHandler::handle_bitstream(RakNet::BitStream *stream) {
+		if (!m_raknet_mode) {
+			handle_nonrak_packet(stream);
+		}
+		else {
+			handle_raknet_packet(stream);
+		}
+	}
 }

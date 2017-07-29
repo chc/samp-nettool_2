@@ -184,7 +184,7 @@ namespace SAMP {
 		};
 		virtual ~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
-		virtual void handle_bitstream(RakNet::BitStream *stream) = 0;
+		void handle_bitstream(RakNet::BitStream *stream);
 		virtual void process_racket_sequence(RakNetByteSeq &byte_seq) = 0;
 		void AddToOutputStream(RakNet::BitStream *bs, 
 			PacketReliability reliability, 
@@ -206,6 +206,9 @@ namespace SAMP {
 		void sendPacket(RakNetPacketHead head, bool splits_processed, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt);
 		void sendByteSeqs(RaknetStreamTransState &trans_state, const std::vector<RakNetByteSeq> seqs, SAMPPacketHandlerSendFunc mp_send_func, void *extra, bool encrypt);
 		void freeRaknetPacket(RakNetPacketHead *packet);
+
+		virtual void handle_nonrak_packet(RakNet::BitStream *stream) = 0;
+		virtual void handle_raknet_packet(RakNet::BitStream *stream) = 0;
 
 		RaknetStreamTransState m_transtate_out;
 

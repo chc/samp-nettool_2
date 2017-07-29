@@ -13,10 +13,8 @@ namespace SAMP {
 	public:
 		SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr);
 		~SAMPInboundClientHandler();
-		void handle_bitstream(RakNet::BitStream *stream);
-
 		void tick(fd_set *set);
-	private:
+	protected:
 		void handle_nonrak_packet(RakNet::BitStream *stream);
 		void handle_raknet_packet(RakNet::BitStream *stream);
 		void process_racket_sequence(RakNetByteSeq &byte_seq);

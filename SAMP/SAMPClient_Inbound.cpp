@@ -31,13 +31,6 @@ namespace SAMP {
 	SAMPInboundClientHandler::~SAMPInboundClientHandler() {
 		printf("SAMP Inbound handler delete\n");
 	}
-	void SAMPInboundClientHandler::handle_bitstream(RakNet::BitStream *stream) {
-		if(!m_raknet_mode) {
-			handle_nonrak_packet(stream);
-		} else {
-			handle_raknet_packet(stream);
-		}
-	}
 	void SAMPInboundClientHandler::handle_raknet_packet(RakNet::BitStream *stream) {
 		//void readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input);
 		RakNetPacketHead packet;
