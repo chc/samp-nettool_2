@@ -22,7 +22,7 @@ namespace SAMP {
 		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_disconnect},
 		{ID_RECEIVED_STATIC_DATA, ESAMPAuthState_ConnAccepted, &SAMPOutboundClientHandler::m_handle_recv_static_data},
 	};
-	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr, send_func, recv_func, client) {
+	SAMPOutboundClientHandler::SAMPOutboundClientHandler(SAMPPacketHandlerSendFunc send_func, SAMPPacketHandlerRecvFunc recv_func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr, true, send_func, recv_func, client) {
 		m_transtate_out.m_out_seq = 0;
 		m_transtate_out.m_ordering_channel = 2;
 
@@ -34,32 +34,6 @@ namespace SAMP {
 	}
 	SAMPOutboundClientHandler::~SAMPOutboundClientHandler() {
 		printf("SAMP Outbound handler delete\n");
-	}
-	void SAMPOutboundClientHandler::handle_raknet_packet(RakNet::BitStream *stream) {
-		RakNetPacketHead packet;
-		readRaknetPacket(packet, stream);
-		
-		std::vector<RakNetByteSeq>::iterator it = packet.byte_seqs.begin();
-		while(it != packet.byte_seqs.end()) {
-			RakNetByteSeq byte_seq = *it;
-			if(byte_seq.reliability == RELIABLE || byte_seq.reliability == RELIABLE_SEQUENCED || byte_seq.reliability == RELIABLE_ORDERED) {
-				m_transtate_out.m_send_acks.push_back(byte_seq.seqid);
-			}
-			//handle non-split packets instantly, split packets are processed later
-			if(!byte_seq.has_split_packet) {
-				process_racket_sequence(byte_seq);
-			} else {
-				//store split packet for later
-				m_split_data[byte_seq.split_packet_id].m_sequences[byte_seq.split_packet_index] = byte_seq;
-				m_split_data[byte_seq.split_packet_id].m_count = byte_seq.split_packet_count;
-			}
-			it++;
-		}
-		if(m_transtate_out.m_send_acks.size() > 0) {
-			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, true);
-			m_send_queue.clear();
-		}
-		tryProcessSplitPackets();
 	}
 	void SAMPOutboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
 		RakNet::BitStream bs;

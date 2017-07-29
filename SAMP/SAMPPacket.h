@@ -164,7 +164,7 @@ namespace SAMP {
 	class Client;
 	class SAMPPacketHandler /*: public Net::PacketHandler*/ {
 	public:
-		SAMPPacketHandler(const struct sockaddr_in *in_addr, SAMPPacketHandlerSendFunc send_func = NULL, SAMPPacketHandlerRecvFunc recv_func = NULL, SAMP::Client *client = NULL) {
+		SAMPPacketHandler(const struct sockaddr_in *in_addr, bool encrypt, SAMPPacketHandlerSendFunc send_func = NULL, SAMPPacketHandlerRecvFunc recv_func = NULL, SAMP::Client *client = NULL) {
 			mp_mutex = OS::CreateMutex(); 
 			m_transtate_out.m_out_split_id = 0; 
 			m_transtate_out.m_out_seq = 0; 
@@ -181,6 +181,7 @@ namespace SAMP {
 			mp_client = client;
 			m_in_addr = *in_addr;
 			m_last_sent_ping = time(NULL);
+			m_encrypt = encrypt;
 		};
 		virtual ~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
@@ -208,7 +209,7 @@ namespace SAMP {
 		void freeRaknetPacket(RakNetPacketHead *packet);
 
 		virtual void handle_nonrak_packet(RakNet::BitStream *stream) = 0;
-		virtual void handle_raknet_packet(RakNet::BitStream *stream) = 0;
+		void handle_raknet_packet(RakNet::BitStream *stream);
 
 		RaknetStreamTransState m_transtate_out;
 
@@ -238,6 +239,7 @@ namespace SAMP {
 
 		void send_ping();
 		time_t m_last_sent_ping;
+		bool m_encrypt;
 	};
 
 }

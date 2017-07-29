@@ -24,42 +24,12 @@ namespace SAMP {
 		{ID_DISCONNECTION_NOTIFICATION, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_disconnect},
 		{ID_RECEIVED_STATIC_DATA, ESAMPAuthState_ConnAccepted, &SAMPInboundClientHandler::m_handle_recv_static_data},
 	};
-	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr, func, NULL, client) {
+	SAMPInboundClientHandler::SAMPInboundClientHandler(SAMPPacketHandlerSendFunc func, SAMP::Client *client, const struct sockaddr_in *in_addr) : SAMPPacketHandler(in_addr, false, func, NULL, client) {
 		m_transtate_out.m_out_seq = 0;
-		m_transtate_out.m_ordering_channel = 1;		
+		m_transtate_out.m_ordering_channel = 1;	
 	}
 	SAMPInboundClientHandler::~SAMPInboundClientHandler() {
 		printf("SAMP Inbound handler delete\n");
-	}
-	void SAMPInboundClientHandler::handle_raknet_packet(RakNet::BitStream *stream) {
-		//void readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input);
-		RakNetPacketHead packet;
-		//std::vector<RakNetByteSeq> byte_seqs;
-		readRaknetPacket(packet, stream);
-		std::vector<RakNetByteSeq>::iterator it = packet.byte_seqs.begin();
-		while(it != packet.byte_seqs.end()) {
-			RakNetByteSeq byte_seq = *it;
-			if(byte_seq.reliability == RELIABLE || byte_seq.reliability == RELIABLE_SEQUENCED || byte_seq.reliability == RELIABLE_ORDERED) {
-				m_transtate_out.m_send_acks.push_back(byte_seq.seqid);
-			}
-
-			//handle non-split packets instantly, split packets are processed later
-			if(!byte_seq.has_split_packet) {
-				process_racket_sequence(byte_seq);
-			} else {
-				//store split packet for later
-				m_split_data[byte_seq.split_packet_id].m_sequences[byte_seq.split_packet_index] = byte_seq;
-				m_split_data[byte_seq.split_packet_id].m_count = byte_seq.split_packet_count;
-			}
-			it++;
-		}
-		if(m_transtate_out.m_send_acks.size() > 0) {
-			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
-			m_send_queue.clear();
-		}
-
-		tryProcessSplitPackets();
-		//freeRaknetPacket(&packet);
 	}
 	void SAMPInboundClientHandler::handle_nonrak_packet(RakNet::BitStream *stream) {
 		uint8_t msgid;
@@ -98,12 +68,6 @@ namespace SAMP {
 		mp_mutex->lock();
 		if(m_send_queue.size() > 0 || m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
-			/*
-			for(std::vector<RakNetByteSeq>::iterator it = m_send_queue.begin();it != m_send_queue.end();it++) {
-				RakNetByteSeq seq = *it;
-				delete seq.data;
-			}
-			*/
 			m_send_queue.clear();
 		}
 		mp_mutex->unlock();

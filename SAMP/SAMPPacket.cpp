@@ -441,4 +441,31 @@ namespace SAMP {
 			handle_raknet_packet(stream);
 		}
 	}
+	void SAMPPacketHandler::handle_raknet_packet(RakNet::BitStream *stream) {
+		RakNetPacketHead packet;
+		readRaknetPacket(packet, stream);
+
+		std::vector<RakNetByteSeq>::iterator it = packet.byte_seqs.begin();
+		while (it != packet.byte_seqs.end()) {
+			RakNetByteSeq byte_seq = *it;
+			if (byte_seq.reliability == RELIABLE || byte_seq.reliability == RELIABLE_SEQUENCED || byte_seq.reliability == RELIABLE_ORDERED) {
+				m_transtate_out.m_send_acks.push_back(byte_seq.seqid);
+			}
+			//handle non-split packets instantly, split packets are processed later
+			if (!byte_seq.has_split_packet) {
+				process_racket_sequence(byte_seq);
+			}
+			else {
+				//store split packet for later
+				m_split_data[byte_seq.split_packet_id].m_sequences[byte_seq.split_packet_index] = byte_seq;
+				m_split_data[byte_seq.split_packet_id].m_count = byte_seq.split_packet_count;
+			}
+			it++;
+		}
+		if (m_transtate_out.m_send_acks.size() > 0) {
+			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, m_encrypt);
+			m_send_queue.clear();
+		}
+		tryProcessSplitPackets();
+	}
 }
