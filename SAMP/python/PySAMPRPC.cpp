@@ -10,6 +10,7 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 	int i=0;
 	char str[4096];
 	wchar_t wstr[4096];
+	PyObject *py_obj;
 	while(map->mp_rpc_var_desc[i].type != ERPCVariableType_NoInit) {
 		if((!map->mp_rpc_var_desc[i].client_var && client_to_server) || (!map->mp_rpc_var_desc[i].server_var && !client_to_server)) {
 			i++;
@@ -19,23 +20,23 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 			case ERPCVariableType_Uint32:
 				uint32_t u32_val;
 				bs->Read(u32_val);
-				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromUnsignedLong(u32_val));
+				py_obj = PyLong_FromUnsignedLong(u32_val);
 				break;
 			case ERPCVariableType_Uint8:
 				uint8_t u8_val;
 				bs->Read(u8_val);
-				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromUnsignedLong(u8_val));
+				py_obj = PyLong_FromUnsignedLong(u8_val);
 				break;
 
 			case ERPCVariableType_Uint16:
 				uint16_t u16_val;
 				bs->Read(u16_val);
-				PyDict_SetItem(rpc_dict, PyUnicode_FromString(map->mp_rpc_var_desc[i].name), PyLong_FromUnsignedLong(u16_val));
+				py_obj = PyLong_FromUnsignedLong(u16_val);
 				break;
 			case ERPCVariableType_Float:
 				float f_val;
 				bs->Read(f_val);
-				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, PyFloat_FromDouble(f_val));
+				py_obj = PyFloat_FromDouble(f_val);
 			break;
 			case ERPCVariableType_LenStr:
 				uint8_t len;
@@ -45,7 +46,7 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 					str[len] = 0;
 				} else str[0] = 0;
 				mbstowcs (wstr, str, strlen(str)+1);
-				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, PyUnicode_FromWideChar(wstr, -1));
+				py_obj = PyUnicode_FromWideChar(wstr, -1);
 			break;
 			case ERPCVariableType_LenU32Str:
 				uint32_t len32;
@@ -56,7 +57,7 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 				} else str[0] = 0;
 
 				mbstowcs (wstr, str, strlen(str)+1);
-				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, PyUnicode_FromWideChar(wstr, -1));
+				py_obj = PyUnicode_FromWideChar(wstr, -1);
 			break;
 			case ERPCVariableType_LenU16Str:
 				uint16_t len16;
@@ -66,17 +67,18 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 					str[len16] = 0;
 				} else str[0] = 0;
 				mbstowcs (wstr, str, strlen(str)+1);
-				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, PyUnicode_FromWideChar(wstr, -1));
+				py_obj = PyUnicode_FromWideChar(wstr, -1);
 			break;
 			
 			case ERPCVariableType_LenStr_Compressed:
 				StringCompressor::Instance()->DecodeString(str, sizeof(str), bs);
 				mbstowcs (wstr, str, strlen(str)+1);
-				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, PyUnicode_FromWideChar(wstr, -1));
+				py_obj = PyUnicode_FromWideChar(wstr, -1);
 			break;
 			case ERPCVariableType_CompressedBool:
 				bool bval;
 				bs->ReadCompressed(bval);
+				py_obj = NULL;
 				PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, bval ? Py_True : Py_False);
 			break;
 			case ERPCVariableType_Custom:
@@ -84,7 +86,12 @@ PyObject* RPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool client_to_ser
 				return map->mp_cust_bitstream_to_py_dict(map, bs, true);
 			break;
 			default:
+				py_obj = NULL;
 			break;
+		}
+		if (py_obj) {
+			PyDict_SetItemString(rpc_dict, map->mp_rpc_var_desc[i].name, py_obj);
+			Py_DECREF(py_obj);
 		}
 		i++;
 	}
