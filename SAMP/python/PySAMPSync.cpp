@@ -23,22 +23,22 @@ namespace Py {
 
 
 		PyObject *py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
 		PyDict_SetItemString(sync_dict, ("pos"), py_pos); Py_DECREF(py_pos);
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->move_speed[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->move_speed[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->move_speed[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->move_speed[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->move_speed[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->move_speed[2]));
 		PyDict_SetItemString(sync_dict, ("vel"), py_pos); Py_DECREF(py_pos);
 
 		PyObject *py_quats = PyList_New(4);
-		PyList_SET_ITEM(py_quats,0,PyFloat_FromDouble(sync->quat[0]));
-		PyList_SET_ITEM(py_quats,1,PyFloat_FromDouble(sync->quat[1]));
-		PyList_SET_ITEM(py_quats,2,PyFloat_FromDouble(sync->quat[2]));
-		PyList_SET_ITEM(py_quats,3,PyFloat_FromDouble(sync->quat[3]));	
+		PyList_SetItem(py_quats,0,PyFloat_FromDouble(sync->quat[0]));
+		PyList_SetItem(py_quats,1,PyFloat_FromDouble(sync->quat[1]));
+		PyList_SetItem(py_quats,2,PyFloat_FromDouble(sync->quat[2]));
+		PyList_SetItem(py_quats,3,PyFloat_FromDouble(sync->quat[3]));	
 		PyDict_SetItemString(sync_dict, ("quat"), py_quats); Py_DECREF(py_quats);
 
 		py_obj = PyLong_FromLong(sync->health);
@@ -57,9 +57,9 @@ namespace Py {
 		PyDict_SetItemString(sync_dict, ("surf_flags"), py_obj); Py_DECREF(py_obj);
 
 		PyObject *py_surfoffset = PyList_New(3);
-		PyList_SET_ITEM(py_surfoffset,0,PyFloat_FromDouble(sync->surfoffset[0]));
-		PyList_SET_ITEM(py_surfoffset,1,PyFloat_FromDouble(sync->surfoffset[1]));
-		PyList_SET_ITEM(py_surfoffset,2,PyFloat_FromDouble(sync->surfoffset[2]));
+		PyList_SetItem(py_surfoffset,0,PyFloat_FromDouble(sync->surfoffset[0]));
+		PyList_SetItem(py_surfoffset,1,PyFloat_FromDouble(sync->surfoffset[1]));
+		PyList_SetItem(py_surfoffset,2,PyFloat_FromDouble(sync->surfoffset[2]));
 		PyDict_SetItemString(sync_dict, ("surf_offset"), py_surfoffset);
 
 		py_obj = PyLong_FromLong(sync->anim);
@@ -148,29 +148,29 @@ namespace Py {
 		PyDict_SetItemString(sync_dict, ("keys"), py_obj); Py_DECREF(py_obj);
 
 		PyObject *py_quats = PyList_New(4);
-		PyList_SET_ITEM(py_quats,0,PyFloat_FromDouble(sync->quat[0]));
-		PyList_SET_ITEM(py_quats,1,PyFloat_FromDouble(sync->quat[1]));
-		PyList_SET_ITEM(py_quats,2,PyFloat_FromDouble(sync->quat[2]));
-		PyList_SET_ITEM(py_quats,3,PyFloat_FromDouble(sync->quat[3]));	
+		PyList_SetItem(py_quats,0,PyFloat_FromDouble(sync->quat[0]));
+		PyList_SetItem(py_quats,1,PyFloat_FromDouble(sync->quat[1]));
+		PyList_SetItem(py_quats,2,PyFloat_FromDouble(sync->quat[2]));
+		PyList_SetItem(py_quats,3,PyFloat_FromDouble(sync->quat[3]));	
 		PyDict_SetItemString(sync_dict, ("quat"), py_quats);  Py_DECREF(py_quats);
 
 		PyObject *py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
 		PyDict_SetItemString(sync_dict, ("pos"), py_pos); Py_DECREF(py_pos);
 
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->vel[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->vel[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->vel[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->vel[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->vel[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->vel[2]));
 		PyDict_SetItemString(sync_dict, ("vel"), py_pos); Py_DECREF(py_pos);
 
 		PyObject *py_vel = PyList_New(3);
-		PyList_SET_ITEM(py_vel ,0,PyFloat_FromDouble(sync->vel[0]));
-		PyList_SET_ITEM(py_vel ,1,PyFloat_FromDouble(sync->vel[1]));
-		PyList_SET_ITEM(py_vel ,2,PyFloat_FromDouble(sync->vel[2]));
+		PyList_SetItem(py_vel ,0,PyFloat_FromDouble(sync->vel[0]));
+		PyList_SetItem(py_vel ,1,PyFloat_FromDouble(sync->vel[1]));
+		PyList_SetItem(py_vel ,2,PyFloat_FromDouble(sync->vel[2]));
 		PyDict_SetItemString(sync_dict, ("vel"), py_vel); Py_DECREF(py_vel);
 
 		py_obj = PyFloat_FromDouble(sync->health);
@@ -263,16 +263,16 @@ namespace Py {
 		PyObject *sync_dict = PyDict_New();
 		PyObject *py_pos = PyList_New(3);
 		PyObject *py_obj;
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
-		PyDict_SetItem(sync_dict, PyUnicode_FromString("pos"), py_pos); Py_DECREF(py_pos);
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
+		PyDict_SetItemString(sync_dict, ("pos"), py_pos); Py_DECREF(py_pos);
 
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->angle[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->angle[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->angle[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->angle[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->angle[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->angle[2]));
 		PyDict_SetItemString(sync_dict, ("angle"), py_pos); Py_DECREF(py_pos);
 
 		py_obj = PyFloat_FromDouble(sync->z);
@@ -337,22 +337,22 @@ namespace Py {
 		PyObject *py_pos = PyList_New(3);
 		PyObject *py_obj;
 
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->origin[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->origin[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->origin[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->origin[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->origin[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->origin[2]));
 		PyDict_SetItemString(sync_dict, ("origin"), py_pos); Py_DECREF(py_pos);
 
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->target[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->target[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->target[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->target[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->target[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->target[2]));
 		PyDict_SetItemString(sync_dict, ("target"), py_pos); Py_DECREF(py_pos);
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->center[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->center[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->center[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->center[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->center[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->center[2]));
 		PyDict_SetItemString(sync_dict, ("center"), py_pos); Py_DECREF(py_pos);
 
 
@@ -411,9 +411,9 @@ namespace Py {
 		PyObject *py_pos = PyList_New(3);
 		PyObject *py_obj;
 
-		PyList_SET_ITEM(py_pos,0, PyFloat_FromDouble(sync->position[0]));
-		PyList_SET_ITEM(py_pos,1, PyFloat_FromDouble(sync->position[1]));
-		PyList_SET_ITEM(py_pos,2, PyFloat_FromDouble(sync->position[2]));
+		PyList_SetItem(py_pos,0, PyFloat_FromDouble(sync->position[0]));
+		PyList_SetItem(py_pos,1, PyFloat_FromDouble(sync->position[1]));
+		PyList_SetItem(py_pos,2, PyFloat_FromDouble(sync->position[2]));
 		PyDict_SetItemString(sync_dict, ("position"), py_pos); Py_DECREF(py_pos);
 
 
@@ -502,9 +502,9 @@ namespace Py {
 			PyDict_SetItemString(sync_dict, ("playerid"), py_obj);  Py_DECREF(py_obj);
 		}
 
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->position[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->position[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->position[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->position[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->position[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->position[2]));
 		PyDict_SetItemString(sync_dict, ("position"), py_pos); Py_DECREF(py_pos);
 		
 		py_obj = PyLong_FromLong(sync->leftright_keys);
@@ -557,33 +557,33 @@ namespace Py {
 		py_obj = PyLong_FromLong(sync->vehicle_id);
 		PyDict_SetItemString(sync_dict, ("vehicleid"), py_obj); Py_DECREF(py_obj);
 
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->pos[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->pos[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->pos[2]));
 		PyDict_SetItemString(sync_dict, ("position"), py_pos); Py_DECREF(py_pos);
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->velocity[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->velocity[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->velocity[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->velocity[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->velocity[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->velocity[2]));
 		PyDict_SetItemString(sync_dict, ("velocity"), py_pos); Py_DECREF(py_pos);
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->roll[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->roll[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->roll[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->roll[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->roll[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->roll[2]));
 		PyDict_SetItemString(sync_dict, ("roll"), py_pos); Py_DECREF(py_pos);
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->direction[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->direction[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->direction[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->direction[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->direction[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->direction[2]));
 		PyDict_SetItemString(sync_dict, ("direction"), py_pos); Py_DECREF(py_pos);
 
 		py_pos = PyList_New(3);
-		PyList_SET_ITEM(py_pos ,0,PyFloat_FromDouble(sync->turning_speed[0]));
-		PyList_SET_ITEM(py_pos ,1,PyFloat_FromDouble(sync->turning_speed[1]));
-		PyList_SET_ITEM(py_pos ,2,PyFloat_FromDouble(sync->turning_speed[2]));
+		PyList_SetItem(py_pos ,0,PyFloat_FromDouble(sync->turning_speed[0]));
+		PyList_SetItem(py_pos ,1,PyFloat_FromDouble(sync->turning_speed[1]));
+		PyList_SetItem(py_pos ,2,PyFloat_FromDouble(sync->turning_speed[2]));
 		PyDict_SetItemString(sync_dict, ("turning_speed"), py_pos); Py_DECREF(py_pos);
 
 		py_obj = PyFloat_FromDouble(sync->health);
@@ -645,18 +645,18 @@ namespace Py {
 			PyObject *py_pos = PyList_New(3);
 
 			py_obj = PyLong_FromLong(sync->entries[i].x);
-			PyList_SET_ITEM(py_pos, 0, py_obj);
+			PyList_SetItem(py_pos, 0, py_obj);
 			py_obj = PyLong_FromLong(sync->entries[i].y);
-			PyList_SET_ITEM(py_pos,1, py_obj);
+			PyList_SetItem(py_pos,1, py_obj);
 			py_obj = PyLong_FromLong(sync->entries[i].z);
-			PyList_SET_ITEM(py_pos,2, py_obj);
+			PyList_SetItem(py_pos,2, py_obj);
 			
 
 			PyDict_SetItemString(sync_dict, ("pos"), py_pos); Py_DECREF(py_pos);
 			py_obj = PyLong_FromLong(sync->entries[i].playerid);
 			PyDict_SetItemString(sync_dict, ("playerid"), py_obj); Py_DECREF(py_obj);
 			PyDict_SetItemString(sync_dict, ("active"), sync->entries[i].active ? Py_True : Py_False);
-			PyList_SET_ITEM(py_list, i, sync_dict);
+			PyList_SetItem(py_list, i, sync_dict);
 		}
 
 		PyDict_SetItemString(dict, ("entries"), py_list); Py_DECREF(py_list);
@@ -696,6 +696,88 @@ namespace Py {
 		PyModule_AddIntConstant(module, "PACKET_UNOCCUPIED_SYNC", SAMP::ID_UNOCCUPIED_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_BULLET_SYNC", SAMP::ID_BULLET_SYNC);
 		PyModule_AddIntConstant(module, "PACKET_AIM_SYNC", SAMP::ID_AIM_SYNC);
+
+		PyModule_AddIntConstant(module, "WEAPON_FISTS", 0);
+		PyModule_AddIntConstant(module, "WEAPON_BRASSKNUCKLE", 1);
+		PyModule_AddIntConstant(module, "WEAPON_GOLFCLUB", 2);
+		PyModule_AddIntConstant(module, "WEAPON_NITESTICK", 3);
+		PyModule_AddIntConstant(module, "WEAPON_KNIFE", 4);
+		PyModule_AddIntConstant(module, "WEAPON_BAT", 5);
+		PyModule_AddIntConstant(module, "WEAPON_SHOVEL", 6);
+		PyModule_AddIntConstant(module, "WEAPON_POOLSTICK", 7);
+		PyModule_AddIntConstant(module, "WEAPON_KATANA", 8);
+		PyModule_AddIntConstant(module, "WEAPON_CHAINSAW", 9);
+		PyModule_AddIntConstant(module, "WEAPON_DILDO", 10);
+		PyModule_AddIntConstant(module, "WEAPON_DILDO2", 11);
+		PyModule_AddIntConstant(module, "WEAPON_VIBRATOR", 12);
+		PyModule_AddIntConstant(module, "WEAPON_VIBRATOR2", 13);
+		PyModule_AddIntConstant(module, "WEAPON_FLOWER", 14);
+		PyModule_AddIntConstant(module, "WEAPON_CANE", 15);
+		PyModule_AddIntConstant(module, "WEAPON_GRENADE", 16);
+		PyModule_AddIntConstant(module, "WEAPON_TEARGAS", 17);
+		PyModule_AddIntConstant(module, "WEAPON_MOLTOV", 18);
+		PyModule_AddIntConstant(module, "WEAPON_COLT45", 22);
+		PyModule_AddIntConstant(module, "WEAPON_SILENCED", 23);
+		PyModule_AddIntConstant(module, "WEAPON_DEAGLE", 24);
+		PyModule_AddIntConstant(module, "WEAPON_SHOTGUN", 25);
+		PyModule_AddIntConstant(module, "WEAPON_SAWEDOFF", 26);
+		PyModule_AddIntConstant(module, "WEAPON_SHOTGSPA", 27);
+		PyModule_AddIntConstant(module, "WEAPON_UZI", 28);
+		PyModule_AddIntConstant(module, "WEAPON_MP5", 29);
+		PyModule_AddIntConstant(module, "WEAPON_AK47", 30);
+		PyModule_AddIntConstant(module, "WEAPON_M4", 31);
+		PyModule_AddIntConstant(module, "WEAPON_TEC9", 32);
+		PyModule_AddIntConstant(module, "WEAPON_RIFLE", 33);
+		PyModule_AddIntConstant(module, "WEAPON_SNIPER", 34);
+		PyModule_AddIntConstant(module, "WEAPON_ROCKETLAUNCHER", 35);
+		PyModule_AddIntConstant(module, "WEAPON_HEATSEEKER", 36);
+		PyModule_AddIntConstant(module, "WEAPON_FLAMETHROWER", 37);
+		PyModule_AddIntConstant(module, "WEAPON_MINIGUN", 38);
+		PyModule_AddIntConstant(module, "WEAPON_SATCHEL", 39);
+		PyModule_AddIntConstant(module, "WEAPON_BOMB", 40);
+		PyModule_AddIntConstant(module, "WEAPON_SPRAYCAN", 41);
+		PyModule_AddIntConstant(module, "WEAPON_FIREEXTINGUISHER", 42);
+		PyModule_AddIntConstant(module, "WEAPON_CAMERA", 43);
+		PyModule_AddIntConstant(module, "WEAPON_PARACHUTE", 46);
+		PyModule_AddIntConstant(module, "WEAPON_VEHICLE", 49);
+		PyModule_AddIntConstant(module, "WEAPON_DROWN", 53);
+		PyModule_AddIntConstant(module, "WEAPON_COLLISION", 54);
+
+
+
+		PyModule_AddIntConstant(module, "KEY_ACTION", 1);
+		PyModule_AddIntConstant(module, "KEY_CROUCH", 2);
+		PyModule_AddIntConstant(module, "KEY_FIRE", 4);
+		PyModule_AddIntConstant(module, "KEY_SPRINT", 8);
+		PyModule_AddIntConstant(module, "KEY_SECONDARY_ATTACK", 16);
+		PyModule_AddIntConstant(module, "KEY_JUMP", 32);
+		PyModule_AddIntConstant(module, "KEY_LOOK_RIGHT", 64);
+		PyModule_AddIntConstant(module, "KEY_HANDBRAKE", 128);
+		PyModule_AddIntConstant(module, "KEY_LOOK_LEFT", 256);
+		PyModule_AddIntConstant(module, "KEY_SUBMISSION", 512);
+		PyModule_AddIntConstant(module, "KEY_LOOK_BEHIND", 512);
+		PyModule_AddIntConstant(module, "KEY_WALK", 1024);
+		PyModule_AddIntConstant(module, "KEY_ANALOG_UP", 2048);
+		PyModule_AddIntConstant(module, "KEY_ANALOG_DOWN", 4096);
+		PyModule_AddIntConstant(module, "KEY_ANALOG_LEFT", 8192);
+		PyModule_AddIntConstant(module, "KEY_ANALOG_RIGHT", 16384);
+		PyModule_AddIntConstant(module, "KEY_YES", 65536);
+		PyModule_AddIntConstant(module, "KEY_NO", 131072);
+		PyModule_AddIntConstant(module, "KEY_CTRL_BACK", 262144);
+
+		PyModule_AddIntConstant(module, "KEY_UP", -128);
+		PyModule_AddIntConstant(module, "KEY_DOWN", 128);
+		PyModule_AddIntConstant(module, "KEY_LEFT", -128);
+		PyModule_AddIntConstant(module, "KEY_RIGHT", 128);
+
+		PyModule_AddIntConstant(module, "DIALOG_STYLE_MSGBOX", 0);
+		PyModule_AddIntConstant(module, "DIALOG_STYLE_INPUT", 1);
+		PyModule_AddIntConstant(module, "DIALOG_STYLE_LIST", 2);
+		PyModule_AddIntConstant(module, "DIALOG_STYLE_PASSWORD", 3);
+		PyModule_AddIntConstant(module, "DIALOG_STYLE_TABLIST", 4);
+		PyModule_AddIntConstant(module, "DIALOG_STYLE_TABLIST_HEADERS", 5);
+
+
 
 		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_ACCEPTED", EConnRejectReason_Accepted);
 		PyModule_AddIntConstant(module, "CONN_RESPONSE_REASON_INVALID_PASS", EConnRejectReason_InvalidPass);

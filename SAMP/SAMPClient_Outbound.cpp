@@ -195,8 +195,7 @@ namespace SAMP {
 		data->Read(len);
 		data->Read(key,len);
 		key[len]=0;
-
-
+		
 		const char *auth_key = GetAuthKey(key);
 
 		RakNet::BitStream bs;

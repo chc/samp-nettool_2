@@ -309,7 +309,7 @@ PyObject *GameInitRPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool clien
 	PyObject *py_list = PyList_New(212);
 	for(int i=0;i<212;i++) {
 		bs->Read(temp_uint8);
-		PyList_SET_ITEM(py_list, i, PyLong_FromUnsignedLong(temp_uint8));
+		PyList_SetItem(py_list, i, PyLong_FromUnsignedLong(temp_uint8));
 	}
 	PyDict_SetItemString(seq_dict, ("preloaded_models"), py_list);	Py_DECREF(py_list);
 
@@ -581,23 +581,23 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 
 		bs->Read(temp_float);
 
-		PyList_SET_ITEM(py_list, 0, PyFloat_FromDouble(temp_float));
+		PyList_SetItem(py_list, 0, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
 
-		PyList_SET_ITEM(py_list, 1, PyFloat_FromDouble(temp_float));
+		PyList_SetItem(py_list, 1, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
 
-		PyList_SET_ITEM(py_list, 2, PyFloat_FromDouble(temp_float));
+		PyList_SetItem(py_list, 2, PyFloat_FromDouble(temp_float));
 		PyDict_SetItemString(attach_dict, ("pos"), py_list); Py_DECREF(py_list);
 
 
 		py_list = PyList_New(3);
 		bs->Read(temp_float);
-		PyList_SET_ITEM(py_list, 0, PyFloat_FromDouble(temp_float));
+		PyList_SetItem(py_list, 0, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
-		PyList_SET_ITEM(py_list, 1, PyFloat_FromDouble(temp_float));
+		PyList_SetItem(py_list, 1, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
-		PyList_SET_ITEM(py_list, 2, PyFloat_FromDouble(temp_float));
+		PyList_SetItem(py_list, 2, PyFloat_FromDouble(temp_float));
 		PyDict_SetItemString(attach_dict, ("rot"), py_list); Py_DECREF(py_list);
 
 		PyDict_SetItemString(seq_dict, ("attach_offsets"), attach_dict); Py_DECREF(attach_dict);
@@ -994,6 +994,7 @@ void SetPlayerAttachedObjectPyDictToRPC(struct _RPCNameMap *map, RakNet::BitStre
 PyObject *UpdateScoreBoardPingsIPRPCToPyDict(struct _RPCNameMap *nap, RakNet::BitStream *bs, bool) {
 	PyObject *seq_dict = PyDict_New();
 	std::vector<PyObject *> dicts;
+	PyObject *py_obj;
 	while(bs->GetNumberOfUnreadBits() > 0) {
 		uint16_t playerid;
 		int32_t score;
@@ -1006,9 +1007,12 @@ PyObject *UpdateScoreBoardPingsIPRPCToPyDict(struct _RPCNameMap *nap, RakNet::Bi
 			break;
 
 		PyObject *dict = PyDict_New();
-		PyDict_SetItem(dict, PyUnicode_FromString("id"), PyLong_FromUnsignedLong(playerid));
-		PyDict_SetItem(dict, PyUnicode_FromString("score"), PyLong_FromLong(score));
-		PyDict_SetItem(dict, PyUnicode_FromString("ping"), PyLong_FromUnsignedLong(ping));
+		py_obj = PyLong_FromUnsignedLong(playerid);
+		PyDict_SetItemString(dict, ("id"), py_obj); Py_DECREF(py_obj);
+		py_obj = PyLong_FromLong(score);
+		PyDict_SetItemString(dict, ("score"), py_obj); Py_DECREF(py_obj);
+		py_obj = PyLong_FromUnsignedLong(ping);
+		PyDict_SetItemString(dict, ("ping"), py_obj); Py_DECREF(py_obj);
 
 		dicts.push_back(dict);
 	}
@@ -1016,9 +1020,9 @@ PyObject *UpdateScoreBoardPingsIPRPCToPyDict(struct _RPCNameMap *nap, RakNet::Bi
 
 	PyObject *py_list = PyList_New(dicts.size());
 	for(int i=0;i<dicts.size();i++) {
-		PyList_SET_ITEM(py_list, i, dicts[i]);
+		PyList_SetItem(py_list, i, dicts[i]);
 	}
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("players"), py_list);
+	PyDict_SetItemString(seq_dict, ("players"), py_list); Py_DECREF(py_list);
 
 	return seq_dict;
 }

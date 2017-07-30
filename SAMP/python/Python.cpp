@@ -310,12 +310,14 @@ namespace Py {
 	void OnGotWeaponsUpdate(SAMP::Client *client, RakNet::BitStream *data, bool client_to_server) {
 		//there is no server to client so no need to check
 		PyObject *list;
+		PyObject *py_obj;
 		uint32_t unk;
 		PyObject *dict = PyDict_New();
 		
 		data->Read(unk);
 
-		PyDict_SetItem(dict, PyUnicode_FromString("unk"), PyLong_FromUnsignedLong(unk));
+		py_obj = PyLong_FromUnsignedLong(unk);
+		PyDict_SetItemString(dict, ("unk"), py_obj); Py_DECREF(py_obj);
 
 
 		std::vector<WepData> weps;
@@ -328,13 +330,16 @@ namespace Py {
 		list = PyList_New(weps.size());
 		for(int i=0;i<weps.size();i++) {
 			PyObject *item_dict = PyDict_New();
-			PyDict_SetItem(item_dict, PyUnicode_FromString("weapon"), PyLong_FromUnsignedLong(weps[i].wep_id));
-			PyDict_SetItem(item_dict, PyUnicode_FromString("ammo"), PyLong_FromUnsignedLong(weps[i].ammo));
-			PyDict_SetItem(item_dict, PyUnicode_FromString("unk"), PyLong_FromUnsignedLong(weps[i].weap_unk));
-			PyList_SET_ITEM(list, i, item_dict);
+			py_obj = PyLong_FromUnsignedLong(weps[i].wep_id);
+			PyDict_SetItemString(item_dict, ("weapon"), py_obj); Py_DECREF(py_obj);
+			py_obj = PyLong_FromUnsignedLong(weps[i].ammo);
+			PyDict_SetItemString(item_dict, ("ammo"), py_obj); Py_DECREF(py_obj);
+			py_obj = PyLong_FromUnsignedLong(weps[i].weap_unk);
+			PyDict_SetItemString(item_dict, ("unk"), py_obj); Py_DECREF(py_obj);
+			PyList_SetItem(list, i, item_dict);
 		}
 
-		PyDict_SetItem(dict, PyUnicode_FromString("weapons"), list);
+		PyDict_SetItemString(dict, ("weapons"), list); Py_DECREF(list);
 
 		gs_SAMPClient *py_client = GetPyClient(client);
 		if(py_client == NULL)
