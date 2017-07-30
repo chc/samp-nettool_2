@@ -48,7 +48,7 @@ namespace Py {
 		PyDict_SetItemString(sync_dict, ("armour"), py_obj); Py_DECREF(py_obj);
 
 		py_obj = PyLong_FromLong(sync->weapon);
-		PyDict_SetItemString(sync_dict, ("weapon"), py_obj); Py_DECREF(py_obj);
+		PyDict_SetItemString(sync_dict, ("holding_weapon"), py_obj); Py_DECREF(py_obj);
 
 		py_obj = PyLong_FromLong(sync->specialaction);
 		PyDict_SetItemString(sync_dict, ("specialaction"), py_obj); Py_DECREF(py_obj);
@@ -110,7 +110,7 @@ namespace Py {
 		dict_item = PyDict_GetItemString(dict, "armour");
 		out->armour = PyLong_AsLong(dict_item);
 
-		dict_item = PyDict_GetItemString(dict, "weapon");
+		dict_item = PyDict_GetItemString(dict, "holding_weapon");
 		out->weapon = PyLong_AsLong(dict_item);
 
 		dict_item = PyDict_GetItemString(dict, "specialaction");
@@ -183,7 +183,7 @@ namespace Py {
 		PyDict_SetItemString(sync_dict, ("player_armour"), py_obj); Py_DECREF(py_obj);
 
 		py_obj = PyLong_FromLong(sync->weapon);
-		PyDict_SetItemString(sync_dict, ("weapon"), py_obj); Py_DECREF(py_obj);
+		PyDict_SetItemString(sync_dict, ("player_holding_weapon"), py_obj); Py_DECREF(py_obj);
 
 		PyDict_SetItemString(sync_dict, ("siren"), sync->siren ? Py_True : Py_False);
 
@@ -245,7 +245,7 @@ namespace Py {
 		dict_item = PyDict_GetItemString(dict, "player_armour");
 		out->player_armour = PyLong_AsLong(dict_item);
 
-		dict_item = PyDict_GetItemString(dict, "weapon");
+		dict_item = PyDict_GetItemString(dict, "player_holding_weapon");
 		out->weapon = PyLong_AsLong(dict_item);
 
 		out->siren = PyDict_GetItemString(dict, "siren") == Py_True;
@@ -360,7 +360,7 @@ namespace Py {
 		PyDict_SetItemString(sync_dict, ("id"), py_obj); Py_DECREF(py_obj);
 
 		py_obj = PyLong_FromLong(sync->weapon);
-		PyDict_SetItemString(sync_dict, ("weapon"), py_obj); Py_DECREF(py_obj);
+		PyDict_SetItemString(sync_dict, ("player_holding_weapon"), py_obj); Py_DECREF(py_obj);
 
 		py_obj = PyLong_FromLong(sync->type);
 		PyDict_SetItemString(sync_dict, ("type"), py_obj); Py_DECREF(py_obj);
