@@ -3,13 +3,16 @@
 #include "python/Python.h"
 #include <algorithm>
 #include "rak_minimal/GetTime.h"
+
+#include <sstream>
 namespace SAMP {
 	void SAMPPacketHandler::AddToOutputStream(RakNet::BitStream *bs, PacketReliability reliability, PacketPriority priority) {
-		
 		RakNetByteSeq seq;
 		seq.seqid = m_transtate_out.m_out_seq++;
 		seq.reliability = reliability;
 		seq.has_split_packet = false;
+		seq.split_packet_id = 0;
+		seq.split_packet_index = 0;
 
 		if(seq.reliability == UNRELIABLE_SEQUENCED || seq.reliability == RELIABLE_SEQUENCED || seq.reliability == RELIABLE_ORDERED ) {
 			seq.orderingChannel = m_transtate_out.m_ordering_channel;
@@ -158,21 +161,12 @@ namespace SAMP {
 
 		if(seqs.size() == 0 && !has_acks)
 			return;
-		
-		if(head.acknowlegements.Size() > 0) {
-			if(encrypt) {
-				//printf("C->S Sending %d acks\n",head.acknowlegements.Size());
-			} else {
-				//printf("S->C Sending %d acks\n",head.acknowlegements.Size());
-			}
-		}
-		
-		
 
 		sendPacket(head, false, mp_send_func, extra, encrypt);
 	}
 	void SAMPPacketHandler::readRaknetPacket(RakNetPacketHead &head, RakNet::BitStream *input) {
 		RakNet::BitStream output;
+		RakNet::BitStream *last_bs = NULL;
 		bool hasacks;
 		input->Read(hasacks);
 		//NetDbgPrintf("**** %s msg read loop\n",direction);
@@ -184,14 +178,15 @@ namespace SAMP {
 			RakNetByteSeq packet;
 			memset(&packet,0,sizeof(packet));
 			packet.data = new RakNet::BitStream(MTUSize);
+			last_bs = packet.data;
 			packet.data->Reset();
 
 			if(!input->Read(packet.seqid)) 
-				break;
+				goto end_error;
 
 
-			if(!input->ReadBits(&packet.reliability, 4))
-				break;
+			if (!input->ReadBits(&packet.reliability, 4))
+				goto end_error;
 
 			
 			//NetDbgPrintf("\t*** %s reliability: %d\n", direction,packet.reliability);
@@ -207,7 +202,7 @@ namespace SAMP {
 
 
 			if(!input->Read(packet.has_split_packet)) {
-				break;
+				goto end_error;
 			}
 
 			if(packet.has_split_packet) {
@@ -222,12 +217,13 @@ namespace SAMP {
 			//loop through all data
 			uint16_t data_len;
 			if(!input->ReadCompressed(data_len)) {
-				break;
+				goto end_error;
 			}
 			char data[4096];
 			input->AlignReadToByteBoundary();
 			if(data_len > 0) {
 				if(!input->ReadBits((unsigned char *)&data, data_len)) {
+					goto end_error;
 				}
 
 				packet.data->WriteBits((unsigned char *)&data, data_len);
@@ -239,16 +235,18 @@ namespace SAMP {
 
 			head.byte_seqs.push_back(packet);
 		}
+		return;
+
+	end_error:
+		printf("Read Packet exit error\n");
+			if (last_bs) {
+				delete last_bs;
+			}
 	}
-	std::map<void *, int> deleted;
 	void SAMPPacketHandler::freeRaknetPacket(RakNetPacketHead *packet) {
 		std::vector<RakNetByteSeq>::iterator it = packet->byte_seqs.begin();
 		while(it != packet->byte_seqs.end()) {
 			RakNetByteSeq seq = *it;
-			deleted[seq.data]++;
-			if(deleted[seq.data] > 1) {
-				printf("** Double delete %p %d\n",seq.data, deleted[seq.data]);
-			}
 			delete seq.data;
 			it++;
 		}
@@ -327,8 +325,7 @@ namespace SAMP {
 				seq.has_split_packet = true;
 
 				int write_len = full_bs->GetNumberOfBitsUsed();
-				while(write_len > 0) {
-					
+				while(write_len > 0) {					
 					cur_seq = m_transtate_out.m_out_seq++;
 					seq.data = perform_packet_split(SPLIT_CHUNK_SIZE_BITS, write_len, full_bs);
 					seq.has_split_packet = true;
@@ -378,6 +375,13 @@ namespace SAMP {
 		while(it != split_packets.end()) {
 			RakNetPacketHead *p = *it;		
 			std::vector<RakNetByteSeq>::iterator seq_it = p->byte_seqs.begin();
+			while (seq_it != p->byte_seqs.end()) {
+				RakNetByteSeq seq = *seq_it;
+				if (seq.has_split_packet) {
+					delete seq.data;
+				}
+				seq_it++;
+			}
 			delete p;
 			it++;
 		}
@@ -441,10 +445,12 @@ namespace SAMP {
 			handle_raknet_packet(stream);
 		}
 	}
+
 	void SAMPPacketHandler::handle_raknet_packet(RakNet::BitStream *stream) {
 		RakNetPacketHead packet;
 		readRaknetPacket(packet, stream);
 
+		std::stringstream ss;
 		std::vector<RakNetByteSeq>::iterator it = packet.byte_seqs.begin();
 		while (it != packet.byte_seqs.end()) {
 			RakNetByteSeq byte_seq = *it;
@@ -454,6 +460,7 @@ namespace SAMP {
 			//handle non-split packets instantly, split packets are processed later
 			if (!byte_seq.has_split_packet) {
 				process_racket_sequence(byte_seq);
+				delete byte_seq.data;
 			}
 			else {
 				//store split packet for later
@@ -464,6 +471,10 @@ namespace SAMP {
 		}
 		if (m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, m_encrypt);
+			for (std::vector<RakNetByteSeq>::iterator it2 = m_send_queue.begin(); it2 != m_send_queue.end(); it2++) {
+				RakNetByteSeq seq = *it2;
+				delete seq.data;
+			}
 			m_send_queue.clear();
 		}
 		tryProcessSplitPackets();

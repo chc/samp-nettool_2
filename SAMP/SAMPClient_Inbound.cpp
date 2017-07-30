@@ -68,6 +68,10 @@ namespace SAMP {
 		mp_mutex->lock();
 		if(m_send_queue.size() > 0 || m_transtate_out.m_send_acks.size() > 0) {
 			sendByteSeqs(m_transtate_out, m_send_queue, mp_send_func, mp_client, false);
+			for (std::vector<RakNetByteSeq>::iterator it = m_send_queue.begin(); it != m_send_queue.end(); it++) {
+				RakNetByteSeq seq = *it;
+				delete seq.data;
+			}
 			m_send_queue.clear();
 		}
 		mp_mutex->unlock();

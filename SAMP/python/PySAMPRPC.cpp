@@ -195,103 +195,123 @@ PyObject *GameInitRPCToPyDict(RPCNameMap *map, RakNet::BitStream *bs, bool clien
 	wchar_t wstr[4096];
 
 	PyObject *seq_dict = PyDict_New();
-	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("zone_names"), temp_bool ? Py_True : Py_False);
+	PyObject *py_obj;
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("cj_walk"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("zone_names"), temp_bool ? Py_True : Py_False);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("allow_weapons"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("cj_walk"), temp_bool ? Py_True : Py_False);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("limit_chat_radius"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("allow_weapons"), temp_bool ? Py_True : Py_False);
+
+	bs->ReadCompressed(temp_bool);
+	PyDict_SetItemString(seq_dict, ("limit_chat_radius"), temp_bool ? Py_True : Py_False);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("chat_radius"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("chat_radius"), py_obj); Py_DECREF(py_obj);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("stunt_bonus"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("stunt_bonus"), temp_bool ? Py_True : Py_False);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("nametag_dist"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("nametag_dist"),py_obj); Py_DECREF(py_obj);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("disable_enter_exit"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("disable_enter_exit"), temp_bool ? Py_True : Py_False);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("nametag_los"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("nametag_los"), temp_bool ? Py_True : Py_False);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("manual_veh_lighting"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("manual_veh_lighting"), temp_bool ? Py_True : Py_False);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("num_spawn_classes"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("num_spawn_classes"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint16);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("playerid"), PyLong_FromUnsignedLong(temp_uint16));
+	py_obj = PyLong_FromUnsignedLong(temp_uint16);
+	PyDict_SetItemString(seq_dict, ("playerid"), py_obj); Py_DECREF(py_obj);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("show_nametags"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("show_nametags"), temp_bool ? Py_True : Py_False);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("show_player_markers"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("show_player_markers"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("server_hour"), PyLong_FromUnsignedLong(temp_uint8));
+	py_obj = PyLong_FromUnsignedLong(temp_uint8);
+	PyDict_SetItemString(seq_dict, ("server_hour"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("server_weather"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("server_weather"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("gravity"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("gravity"), py_obj); Py_DECREF(py_obj);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("lan_mode"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("lan_mode"), temp_bool ? Py_True : Py_False);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("drop_money_on_death"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("drop_money_on_death"), py_obj); Py_DECREF(py_obj);
 
 	bs->ReadCompressed(temp_bool);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("unknown"), temp_bool ? Py_True : Py_False);
+	PyDict_SetItemString(seq_dict, ("unknown"), temp_bool ? Py_True : Py_False);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("onfoot_sendrate"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("onfoot_sendrate"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("incar_sendrate"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("incar_sendrate"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("firing_sendrate"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("firing_sendrate"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("send_multiplier"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("send_multiplier"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("lagcomp"), PyLong_FromUnsignedLong(temp_uint8));
+	py_obj = PyLong_FromUnsignedLong(temp_uint8);
+	PyDict_SetItemString(seq_dict, ("lagcomp"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("unknown_2"), PyLong_FromUnsignedLong(temp_uint8));
+	py_obj = PyLong_FromUnsignedLong(temp_uint8);
+	PyDict_SetItemString(seq_dict, ("unknown_2"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("unknown_3"), PyLong_FromUnsignedLong(temp_uint8));
+	py_obj = PyLong_FromUnsignedLong(temp_uint8);
+	PyDict_SetItemString(seq_dict, ("unknown_3"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("unknown_4"), PyLong_FromUnsignedLong(temp_uint8));
+	py_obj = PyLong_FromUnsignedLong(temp_uint8);
+	PyDict_SetItemString(seq_dict, ("unknown_4"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8); //servername len
 	bs->Read((char *)&servername, temp_uint8);
 	servername[temp_uint8] = 0;
 	
 	mbstowcs (wstr, servername, strlen(servername)+1);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("hostname"), PyUnicode_FromWideChar(wstr, -1));
+	py_obj = PyUnicode_FromWideChar(wstr, -1);
+	PyDict_SetItemString(seq_dict, ("hostname"), py_obj); Py_DECREF(py_obj);
 
 	PyObject *py_list = PyList_New(212);
 	for(int i=0;i<212;i++) {
 		bs->Read(temp_uint8);
 		PyList_SET_ITEM(py_list, i, PyLong_FromUnsignedLong(temp_uint8));
 	}
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("preloaded_models"), py_list);	
+	PyDict_SetItemString(seq_dict, ("preloaded_models"), py_list);	Py_DECREF(py_list);
 
 	return seq_dict;
 }
@@ -405,45 +425,57 @@ void AddMaterialTextToDict(PyObject *dict, RakNet::BitStream *bs) {
 	uint32_t temp_uint32;
 	uint16_t temp_uint16;
 	uint8_t temp_uint8;
+	PyObject *py_obj;
 
 	char str[256];
 	wchar_t wstr[4096];
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(dict, PyUnicode_FromString("material_index"), PyLong_FromLong(temp_uint8));
+	py_obj = PyLong_FromLong(temp_uint8);
+	PyDict_SetItemString(dict, ("material_index"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(dict, PyUnicode_FromString("material_size"), PyLong_FromLong(temp_uint8));
+	py_obj = PyLong_FromLong(temp_uint8);
+	PyDict_SetItemString(dict, ("material_size"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
 	bs->Read(str, temp_uint8);
 	str[temp_uint8] = 0;	
 	mbstowcs (wstr, str, strlen(str)+1);
-	PyDict_SetItem(dict, PyUnicode_FromString("font"), PyUnicode_FromWideChar(wstr, -1));
+	py_obj = PyUnicode_FromWideChar(wstr, -1);
+	PyDict_SetItemString(dict, ("font"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(dict, PyUnicode_FromString("font_size"), PyLong_FromLong(temp_uint8));
+	py_obj = PyLong_FromLong(temp_uint8);
+	PyDict_SetItemString(dict, ("font_size"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(dict, PyUnicode_FromString("bold"), PyLong_FromLong(temp_uint8));
+	py_obj = PyLong_FromLong(temp_uint8);
+	PyDict_SetItemString(dict, ("bold"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(dict, PyUnicode_FromString("font_colour"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(dict, ("font_colour"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(dict, PyUnicode_FromString("back_colour"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(dict, ("back_colour"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(dict, PyUnicode_FromString("text_alignment"), PyLong_FromLong(temp_uint8));
+	py_obj = PyLong_FromLong(temp_uint8);
+	PyDict_SetItemString(dict, ("text_alignment"), py_obj); Py_DECREF(py_obj);
 
 
 	//compressed content
 	StringCompressor::Instance()->DecodeString(str, sizeof(str), bs);
 	mbstowcs (wstr, str, strlen(str)+1);
-	PyDict_SetItem(dict, PyUnicode_FromString("text"), PyUnicode_FromWideChar(wstr, -1));
+	py_obj = PyUnicode_FromWideChar(wstr, -1);
+	PyDict_SetItemString(dict, ("text"), py_obj); Py_DECREF(py_obj);
 }
 
 void AddMaterialToDict(PyObject *dict, RakNet::BitStream *bs) {
+	PyObject *py_obj;
+
 	uint32_t temp_uint32;
 	uint16_t temp_uint16;
 	uint8_t temp_uint8;
@@ -452,25 +484,30 @@ void AddMaterialToDict(PyObject *dict, RakNet::BitStream *bs) {
 	wchar_t wstr[4096];
 
 	bs->Read(temp_uint8);
-	PyDict_SetItem(dict, PyUnicode_FromString("index"), PyLong_FromLong(temp_uint8));
+	py_obj = PyLong_FromLong(temp_uint8);
+	PyDict_SetItemString(dict, ("index"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint16);
-	PyDict_SetItem(dict, PyUnicode_FromString("model"), PyLong_FromLong(temp_uint16));
+	py_obj = PyLong_FromLong(temp_uint16);
+	PyDict_SetItemString(dict, ("model"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
 	bs->Read(str, temp_uint8);
 	str[temp_uint8] = 0;	
 	mbstowcs (wstr, str, strlen(str)+1);
-	PyDict_SetItem(dict, PyUnicode_FromString("txdname"), PyUnicode_FromWideChar(wstr, -1));
+	py_obj = PyUnicode_FromWideChar(wstr, -1);
+	PyDict_SetItemString(dict, ("txdname"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint8);
 	bs->Read(str, temp_uint8);
 	str[temp_uint8] = 0;	
 	mbstowcs (wstr, str, strlen(str)+1);
-	PyDict_SetItem(dict, PyUnicode_FromString("texturename"), PyUnicode_FromWideChar(wstr, -1));
+	py_obj = PyUnicode_FromWideChar(wstr, -1);
+	PyDict_SetItemString(dict, ("texturename"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(dict, PyUnicode_FromString("material_colour"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(dict, ("material_colour"), py_obj); Py_DECREF(py_obj);
 }
 PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs, bool client_to_server) {
 	bool temp_bool;
@@ -484,34 +521,43 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 	wchar_t wstr[4096];
 
 	PyObject *seq_dict = PyDict_New();
+	PyObject *py_obj;
 	
-	//printf("CreateObj In size: %d\n",bs->GetNumberOfBytesUsed());
 	bs->Read(temp_uint16);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromLong(temp_uint16));
+	py_obj = PyLong_FromLong(temp_uint16);
+	PyDict_SetItemString(seq_dict, ("id"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("modelid"), PyLong_FromLong(temp_uint32));
+	py_obj = PyLong_FromLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("modelid"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("x"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("x"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("y"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("y"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("z"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("z"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("rx"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("rx"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("ry"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("ry"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("rz"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("rz"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("drawdist"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("drawdist"), py_obj); Py_DECREF(py_obj);
 
 
 	//unknowns
@@ -520,22 +566,29 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 
 	bs->Read(temp_uint16);
 	if(temp_uint16 != -1) is_attached = true;
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("attached_playerid"), PyLong_FromLong(temp_uint16));
+	py_obj = PyLong_FromLong(temp_uint16);
+	PyDict_SetItemString(seq_dict, ("attached_playerid"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint16);
 	if(temp_uint16 != -1) is_attached = true;
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("attached_vehicleid"), PyLong_FromLong(temp_uint16));
+	py_obj = PyLong_FromLong(temp_uint16);
+	PyDict_SetItemString(seq_dict, ("attached_vehicleid"), py_obj); Py_DECREF(py_obj);
 
 	if(is_attached) {
 		PyObject *attach_dict = PyDict_New();
 		PyObject *py_list = PyList_New(3);
+		PyObject *py_obj;
+
 		bs->Read(temp_float);
+
 		PyList_SET_ITEM(py_list, 0, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
+
 		PyList_SET_ITEM(py_list, 1, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
+
 		PyList_SET_ITEM(py_list, 2, PyFloat_FromDouble(temp_float));
-		PyDict_SetItem(attach_dict, PyUnicode_FromString("pos"), py_list);
+		PyDict_SetItemString(attach_dict, ("pos"), py_list); Py_DECREF(py_list);
 
 
 		py_list = PyList_New(3);
@@ -545,9 +598,9 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 		PyList_SET_ITEM(py_list, 1, PyFloat_FromDouble(temp_float));
 		bs->Read(temp_float);
 		PyList_SET_ITEM(py_list, 2, PyFloat_FromDouble(temp_float));
-		PyDict_SetItem(attach_dict, PyUnicode_FromString("rot"), py_list);
+		PyDict_SetItemString(attach_dict, ("rot"), py_list); Py_DECREF(py_list);
 
-		PyDict_SetItem(seq_dict, PyUnicode_FromString("attach_offsets"), attach_dict);
+		PyDict_SetItemString(seq_dict, ("attach_offsets"), attach_dict); Py_DECREF(attach_dict);
 	}
 
 	char struct_types[2];
@@ -561,11 +614,11 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 	if(struct_types[0] == 0x01 && struct_types[1] != 0x01) {
 		out_dict = PyDict_New();
 		AddMaterialTextToDict(out_dict, bs);
-		PyDict_SetItem(seq_dict, PyUnicode_FromString("material_text"), out_dict);
+		PyDict_SetItemString(seq_dict, ("material_text"), out_dict); Py_DECREF(out_dict);
 	} else {
 		out_dict = PyDict_New();
 		AddMaterialToDict(out_dict, bs);
-		PyDict_SetItem(seq_dict, PyUnicode_FromString("material"), out_dict);
+		PyDict_SetItemString(seq_dict, ("material"), out_dict); Py_DECREF(out_dict);
 	}
 
 	bs->Read(temp_uint8);//struct identifier??
@@ -573,7 +626,7 @@ PyObject *CreateObjectRPCToPyDict(struct _RPCNameMap *rpc, RakNet::BitStream *bs
 	if(temp_uint8 == 2) {
 		out_dict = PyDict_New();
 		AddMaterialTextToDict(out_dict, bs);
-		PyDict_SetItem(seq_dict, PyUnicode_FromString("material_text"), out_dict);
+		PyDict_SetItemString(seq_dict, ("material_text"), out_dict); Py_DECREF(out_dict);
 	}
 
 	return seq_dict;
@@ -764,20 +817,23 @@ PyObject *SetObjectMaterialRPCToPyDict(struct _RPCNameMap *map, RakNet::BitStrea
 	PyObject *seq_dict = PyDict_New();
 	PyObject *out_dict = PyDict_New();
 
+	PyObject *py_obj;
+
 	uint8_t identifier; //should always be 0x02;
 	uint16_t objid;
 	bs->Read(objid);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromUnsignedLong(objid));
+	py_obj = PyLong_FromUnsignedLong(objid);
+	PyDict_SetItemString(seq_dict, ("id"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(identifier);
 	switch(identifier) {
 		case 0x01:
 			AddMaterialToDict(out_dict, bs);
-			PyDict_SetItem(seq_dict, PyUnicode_FromString("material"), out_dict);
+			PyDict_SetItemString(seq_dict, ("material"), out_dict); Py_DECREF(out_dict);
 			break;
 		case 0x02:
 			AddMaterialTextToDict(out_dict, bs);
-			PyDict_SetItem(seq_dict, PyUnicode_FromString("material_text"), out_dict);
+			PyDict_SetItemString(seq_dict, ("material_text"), out_dict); Py_DECREF(out_dict);
 			break;
 	}
 
@@ -813,56 +869,72 @@ PyObject *SetPlayerAttachedObjectRPCToPyDict(struct _RPCNameMap *, RakNet::BitSt
 	uint8_t temp_uint8;
 
 	PyObject *seq_dict = PyDict_New();
+	PyObject *py_obj;
 	
 	bs->Read(temp_uint16);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("id"), PyLong_FromLong(temp_uint16));
+	py_obj = PyLong_FromLong(temp_uint16);
+	PyDict_SetItemString(seq_dict, ("id"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("index"), PyLong_FromLong(temp_uint32));
+	py_obj = PyLong_FromLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("index"), py_obj); Py_DECREF(py_obj);
 
 	tempbuf[0] = 0;
 	//bs->ReadBits((unsigned char *)&tempbuf, 1);
 	bs->ReadCompressed(bval);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("unk1"), bval == true ? Py_True : Py_False);//PyLong_FromLong(tempbuf[0]));
+	PyDict_SetItemString(seq_dict, ("unk1"), bval == true ? Py_True : Py_False);//PyLong_FromLong(tempbuf[0]));
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("modelid"), PyLong_FromLong(temp_uint32));
+	py_obj = PyLong_FromLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("modelid"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("bone"), PyLong_FromLong(temp_uint32));
+	py_obj = PyLong_FromLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("bone"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("x"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("x"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("y"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("y"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("z"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("z"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("rx"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("rx"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("ry"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("ry"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("rz"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("rz"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("sx"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("sx"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("sy"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("sy"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_float);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("sz"), PyFloat_FromDouble(temp_float));
+	py_obj = PyFloat_FromDouble(temp_float);
+	PyDict_SetItemString(seq_dict, ("sz"), PyFloat_FromDouble(temp_float)); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("mat_1"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("mat_1"), py_obj); Py_DECREF(py_obj);
 
 	bs->Read(temp_uint32);
-	PyDict_SetItem(seq_dict, PyUnicode_FromString("mat_2"), PyLong_FromUnsignedLong(temp_uint32));
+	py_obj = PyLong_FromUnsignedLong(temp_uint32);
+	PyDict_SetItemString(seq_dict, ("mat_2"), py_obj); Py_DECREF(py_obj);
 
 	return seq_dict;
 

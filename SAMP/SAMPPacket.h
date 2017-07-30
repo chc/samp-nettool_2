@@ -182,6 +182,8 @@ namespace SAMP {
 			m_in_addr = *in_addr;
 			m_last_sent_ping = time(NULL);
 			m_encrypt = encrypt;
+
+			m_send_queue.clear();
 		};
 		virtual ~SAMPPacketHandler() { delete mp_mutex;};
 		virtual void tick(fd_set *set) = 0;
