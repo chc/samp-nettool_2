@@ -19,7 +19,7 @@ namespace SAMP {
 			seq.orderingIndexType = m_transtate_out.m_ordering_index[seq.orderingChannel]++;
 		}
 
-		seq.data = new RakNet::BitStream();
+		seq.data = new RakNet::BitStream(MTUSize);
 
 		bs->ResetReadPointer();
 		seq.data->Write(bs);
@@ -404,7 +404,7 @@ namespace SAMP {
 	}
 	void SAMPPacketHandler::processSplitPacket(RaknetSplitData *data) {
 		std::map<int, RakNetByteSeq>::iterator it = data->m_sequences.begin();
-		RakNet::BitStream *seq_data = new RakNet::BitStream();
+		RakNet::BitStream *seq_data = new RakNet::BitStream(MTUSize);
 
 		RakNetByteSeq send_seq;
 		bool send = false;

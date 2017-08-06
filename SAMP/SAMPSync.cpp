@@ -192,7 +192,7 @@ namespace SAMP {
 				out->Write(player_sync->anim);
 			}
 		}
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 
 	void ReadVehicleSync(SAMP::VEHICLE_SYNC_INFO *vehicle_sync, RakNet::BitStream *in, bool client_to_server) {
@@ -370,7 +370,7 @@ namespace SAMP {
 			}
 		}
 
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 
 	void ReadAimSync(SAMP::SAMPAimSync *aim_sync, RakNet::BitStream *in, bool client_to_server) {
@@ -407,7 +407,7 @@ namespace SAMP {
 		out->WriteBits(&aim_sync->cam_zoom, 6);
 		out->WriteBits(&aim_sync->weapon_state, 2);
 		out->Write(aim_sync->unknown);
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 
 	void ReadBulletSync(SAMP::SAMPBulletSync *bullet_sync, RakNet::BitStream *in, bool client_to_server) {
@@ -445,7 +445,7 @@ namespace SAMP {
 		out->Write(bullet_sync->center[1]);
 		out->Write(bullet_sync->center[2]);
 		out->Write(bullet_sync->weapon);
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 	void ReadPassengerSync(SAMP::PASSENGER_SYNC_DATA *passenger_sync, RakNet::BitStream *in, bool client_to_server) {
 		if(!client_to_server) {
@@ -483,7 +483,7 @@ namespace SAMP {
 		out->Write(passenger_sync->position[0]);
 		out->Write(passenger_sync->position[1]);
 		out->Write(passenger_sync->position[2]);
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 	void ReadSpectatorSync(SPECTATOR_SYNC_DATA *spectator_sync, RakNet::BitStream *in, bool client_to_server) {
 		if(!client_to_server) {
@@ -509,7 +509,7 @@ namespace SAMP {
 		out->Write(spectator_sync->position[0]);
 		out->Write(spectator_sync->position[1]);
 		out->Write(spectator_sync->position[2]);
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 	void ReadUnoccupiedSync(SAMPUnoccupiedVehData *sync_data, RakNet::BitStream *in, bool client_to_server) {
 		if(!client_to_server) {
@@ -570,7 +570,7 @@ namespace SAMP {
 		out->Write(sync_data->turning_speed[2]);
 
 		out->Write(sync_data->health);
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 	void ReadMarkerSync(SAMPMarkerSync *map_sync, RakNet::BitStream *in, bool client_to_server) {
 		int32_t num_players;
@@ -604,6 +604,6 @@ namespace SAMP {
 				out->Write(map_sync->entries[i].z);
 			}
 		}
-		out->AlignWriteToDWORDBoundary();
+		out->AlignWriteToByteBoundary();
 	}
 }

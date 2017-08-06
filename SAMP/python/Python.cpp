@@ -141,6 +141,9 @@ namespace Py {
 				if(std::find(m_py_clients.begin(),m_py_clients.end(), conn_obj) == m_py_clients.end()) {
 					m_py_clients.push_back(conn_obj);
 				}
+				else {
+					Py_DECREF(conn_obj); //shouldn't happen
+				}
 
 				Py_XDECREF(ret);
 				Py_DECREF(arglist);
@@ -208,11 +211,11 @@ namespace Py {
 			gs_SAMPClient *py_client = *it;
 			if(py_client->samp_client == client) {
 				PyObject* py_dict = RPCToPyDict(rpc_map, data, client_to_server);
-				PyObject *arglist = Py_BuildValue("OiO",py_client, rpc_id, py_dict);
+				PyObject *arglist = Py_BuildValue("OiN",py_client, rpc_id, py_dict);
 				PyObject *ret = (PyObject *)PyObject_CallObject(py_client->mp_rpc_handler, arglist);
 				PySAMP_CheckAndPrintErrors();
 
-				Py_DECREF(py_dict);
+				//Py_DECREF(py_dict);
 				Py_DECREF(arglist);
 				Py_XDECREF(ret);
 			}
@@ -282,12 +285,14 @@ namespace Py {
 				return;
 		}
 		gs_SAMPClient *py_client = GetPyClient(client);
-		if(py_client == NULL)
+		if (py_client == NULL) {
+			Py_XDECREF(dict);
 			return;
-		PyObject *arglist = Py_BuildValue("OIO",py_client, (int)type, dict);
+		}
+		PyObject *arglist = Py_BuildValue("OIN",py_client, (int)type, dict);
 		PyObject *ret = (PyObject *)PyObject_CallObject(py_client->mp_sync_handler, arglist);
 		PySAMP_CheckAndPrintErrors();
-		Py_DECREF(dict);
+		//Py_DECREF(dict);
 		Py_DECREF(arglist);
 		Py_XDECREF(ret);
 	}
@@ -342,15 +347,17 @@ namespace Py {
 		PyDict_SetItemString(dict, ("weapons"), list); Py_DECREF(list);
 
 		gs_SAMPClient *py_client = GetPyClient(client);
-		if(py_client == NULL)
+		if (py_client == NULL) {
+			Py_DECREF(dict);
 			return;
+		}
+			
 
-		PyObject *arglist = Py_BuildValue("OO",py_client, dict);
+		PyObject *arglist = Py_BuildValue("ON",py_client, dict);
 		PyObject *ret = (PyObject *)PyObject_CallObject(py_client->mp_weapons_update_handler, arglist);
 
 		Py_DECREF(arglist);
 		Py_XDECREF(ret);
-		Py_DECREF(dict);
 	}
 	gs_SAMPClient *GetPyClient(SAMP::Client *client) {
 		std::vector<gs_SAMPClient *>::iterator it = m_py_clients.begin();

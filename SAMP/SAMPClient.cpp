@@ -97,7 +97,7 @@ namespace SAMP {
 		mp_packet_handler->handle_bitstream(&is);
 	}
 	void Client::SendRPC(int rpcid, RakNet::BitStream *rpc_data) {
-		RakNet::BitStream bs;
+		RakNet::BitStream bs(MTUSize);
 		bs.Write((uint8_t)ID_RPC);
 		bs.Write((uint8_t)rpcid);
 
@@ -107,7 +107,7 @@ namespace SAMP {
 		mp_packet_handler->AddToOutputStream(&bs, UNRELIABLE_SEQUENCED, SAMP::MEDIUM_PRIORITY);
 	}
 	void Client::SendMessage(int msgid, RakNet::BitStream *rpc_data) {
-		RakNet::BitStream bs;
+		RakNet::BitStream bs(MTUSize);
 		bs.Write((uint8_t)msgid);
 
 		if(rpc_data)

@@ -112,7 +112,7 @@ PyObject *pyi_sampclient_sendrpc(gs_SAMPClient *self, PyObject *args) {
 	if(!map)
 		Py_RETURN_NONE;
 
-	RakNet::BitStream *out_bs = new RakNet::BitStream;
+	RakNet::BitStream *out_bs = new RakNet::BitStream(MTUSize);
 
 	bool send_to_server = !self->samp_client->GetInbound();
 
@@ -146,7 +146,7 @@ PyObject *pyi_sampclient_sendsync(gs_SAMPClient *self, PyObject *args) {
 
 	bool send_to_server = !self->samp_client->GetInbound();
 
-	RakNet::BitStream *out_bs = new RakNet::BitStream;
+	RakNet::BitStream *out_bs = new RakNet::BitStream(MTUSize);
 
 	SAMP::PLAYER_SYNC_INFO player_sync;
 	SAMP::VEHICLE_SYNC_INFO vehicle_sync;
@@ -223,7 +223,7 @@ PyObject *pyi_sampclient_send_weapons_update(gs_SAMPClient *self, PyObject *args
         Py_RETURN_NONE;
 
 
-	RakNet::BitStream *out_bs = new RakNet::BitStream;
+	RakNet::BitStream *out_bs = new RakNet::BitStream(MTUSize);
 	
 	dict_item = PyDict_GetItemString(send_dict, "unk");
 	out_bs->Write((uint32_t)(dict_item ? PyLong_AsUnsignedLong(dict_item) : 0xFFFFFFFF));

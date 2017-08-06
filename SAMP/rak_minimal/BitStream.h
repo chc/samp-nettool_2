@@ -426,9 +426,7 @@ namespace RakNet
 		/// boundaries so so WriteAlignedBits and ReadAlignedBits both
 		/// calculate the same offset when aligning.
 		void AlignWriteToByteBoundary( void );
-
-		void AlignWriteToDWORDBoundary( void );
-		
+				
 		/// Align the next write and/or read to a byte boundary.  This can
 		/// be used to 'waste' bits to byte align for efficiency reasons It
 		/// can also be used to force coalesced bitstreams to start on byte
@@ -595,9 +593,6 @@ namespace RakNet
 		
 		/// true if the internal buffer is copy of the data passed to the constructor
 		bool copyData;
-
-		/// BitStreams that use less than BITSTREAM_STACK_ALLOCATION_SIZE use the stack, rather than the heap to store data.  It switches over if BITSTREAM_STACK_ALLOCATION_SIZE is exceeded
-		unsigned char stackData[BITSTREAM_STACK_ALLOCATION_SIZE];
 	};
 
 		template <class templateType>
