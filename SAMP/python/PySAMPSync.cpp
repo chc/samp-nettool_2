@@ -397,7 +397,7 @@ namespace Py {
 		out->center[1] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 1));
 		out->center[2] = PyFloat_AsDouble(PyList_GET_ITEM(dict_item, 2));
 
-		dict_item = PyDict_GetItemString(dict, "weapon");
+		dict_item = PyDict_GetItemString(dict, "player_holding_weapon");
 		out->weapon = (uint8_t)PyLong_AsLong(dict_item);
 
 		dict_item = PyDict_GetItemString(dict, "type");
